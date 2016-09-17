@@ -1,0 +1,7 @@
+:Base CppDoc.hlp
+1 CppDoc
+2 Introduction=HIDD_CPPDOC_INTRO
+2 Main Dialog=HIDD_CPPDOC_DIALOG
+2 Command Line=HIDD_CPPDOC_COMMANDLINE
+2 Documentation Comments=HIDD_CPPDOC_COMMENTS
+2 Privacy=HIDD_CPPDOC_PRIVACY

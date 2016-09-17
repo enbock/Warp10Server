@@ -1,0 +1,8 @@
+<html>
+	<head>
+		<title>Customized Class Index</title>
+		<h1>Customized Class Index</h1>
+		<h2>with details</h2>
+	</head>
+
+	<body>

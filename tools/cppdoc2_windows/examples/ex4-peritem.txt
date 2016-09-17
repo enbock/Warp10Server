@@ -1,0 +1,8 @@
+		<b>$C</b>!P extends <b>$P</b>!P
+		<blockquote>
+			$D
+			<br>
+			!FSee <a href=$R/$F>$F</a>.!F
+			!G<br>See <a href=$R/$G>$G</a>.!G
+		</blockquote>
+		<hr>

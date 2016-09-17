@@ -1,0 +1,337 @@
+CppDoc Version 2.4
+Release Notes
+
+
+Version 2.4.0         2005-04-20
+- *** Added the ability to read documentation comments *after* declarations, like this:  int foo; /// some documentation
+- Added a separate option ("Use C++ namespace as project", or -namespace-as-project on the command line) for using the C++ namespace (instead of the directory) as the project.  [http://www.cppdoc.com/app/bugs/gobug.do?id=22]
+- Added a button for Generate Command Line from the main dialog (previously this command was only in the system menu).
+- Added the ability to exclude files or directories by prefixing them with '#' in the list.  [http://www.cppdoc.com/app/bugs/gobug.do?id=6 | excluding files] 
+- Added the ability to accept multiple documentation comment formats [http://www.cppdoc.com/app/bugs/gobug.do?id=24 | more flexiblity in comments defining documentation]
+- Added support for a "@cppdoc:final" tag, which simply marks a C++ class as "final" in the generated docs.  [http://www.cppdoc.com/app/bugs/gobug.do?id=4 | CppDoc needs support for "final"]
+- Added an option ("Suppress details sections in output pages", or -suppress-details on the command line) to prevent Details sections from being generated on each page.  [http://www.cppdoc.com/app/bugs/gobug.do?id=11 | Ability to suppress the Detail Section output]
+- Added an option ("Reduce font size in summaries", or -reduce-summary-font on the command line) that reduces the size of the font in the lefthand (type) column of the summary tables.  Defaults to true (current behavior).  [http://www.cppdoc.com/app/bugs/gobug.do?id=10 | Font size on the Field/Method Summary Table left part]
+- Added "template" specification and template parameters in the header for class details.  [http://www.cppdoc.com/app/bugs/gobug.do?id=12 | Clearer template support] 
+- Fixed a hang in the preprocessor when parsing macro arguments with unbalanced parentheses within quoted strings (e.g., MYMACRO("(")).
+- Fixed a crash caused by #defines in root-level .cpp files with the "Mix C++ and C#" option set.  [http://www.cppdoc.com/app/bugs/gobug.do?id=13 | crash caused by #defines and "Mix C++ and C#" option] 
+- Fixed to include "final" and "public"/"private"/etc. in Java/C# class descriptions.  [http://www.cppdoc.com/app/bugs/gobug.do?id=14 | "final" and "public"/"private"/etc. not showing up in class description ]
+- Fixed an assert/crash that occurred when a documentation comment followed an unknown access specification (e.g., _published: /** this will crash */ ).
+- Fixed several undocumented preprocessor bugs.  The short story is that the preprocessor works better now.
+
+
+Version 2.3.1         2003-11-12
+- Added the ability to document fields on enums.
+- Added an option to the cppdoc-standard module that allows long lines in summary tables to wrap.
+- Added the ability to document preprocessor symbols and macros (#defines) (in the Windows GUI, this is in Other Options, called "Document preprocessor symbols and macros"; on the command line it is the -document-preprocessor option).
+- Added links to the new Bugs and Mailing List areas of the website.
+- Fixed to handle C# #region and #endregion.
+- Fixed to handle the #import directive.
+- Fixed to avoid an extraneous character written after including a custom header.
+
+
+Version 2.3.0         2002-07-10
+- Added options for syntax-coloring generated source file links.
+- Added an option to the cppdoc-standard module that appends source file links to documentation for global functions and variables.
+- Added a way to exclude parts of files from the documentation parser ("/* CPPDOC_BEGIN_EXCLUDE_DOC */", "/* CPPDOC_END_EXCLUDE_DOC */").
+- Added the ability (in the Other Options dialog or through the "-additional-header" flag) to add custom text within <HEAD>.
+- Added the ability to use @link to refer to global functions and variables in other projects (through the syntax {@link project.#member}).
+- Added an option to cppdoc-standard that allows a timestamp to be included in the footer navigation bar.
+- Added an option to cppdoc-standard that allows the CppDoc version to be included in the footer navigation bar.
+- Added an option to set the tab size in source code links ("-source-code-tab-size", or a checkbox in Other Options).
+- Added an option to parse mixed C# and C++ code ("-mix-cpp-csharp", or a checkbox in Other Options).  This causes namespaces to be used as projects, and uses "." as the qualifier instead of "::".
+- Added tool tips through the dialogs.  These can be disabled in Other Options.
+- Added an option ("-suppress-frames-links" on the command line) to suppress the "Frames/No Frames" links in the cppdoc-standard module.
+- Got C# and Java parsing in alpha shape.
+- Fixed to avoid stripping all spaces from the beginning of each comment line (specifically so the <pre> tag could be used correctly).
+- Fixed the cppdoc-standard module to avoid some incomplete function argument types in the named anchors generated for jumping to functions.
+- Fixed to strip some leading "*" and "/" characters from documentation comment lines when they appear.
+- Fixed unpredictable length of the first sentence of documentation (used in method summaries) when the documentation contains a decimal number.
+- Removed "throw" declarations from constructor summaries in output from the cppdoc-standard module.
+- Fixed to close the quotes on empty-value preprocessor defines as generated in the Generate Command Line dialog.
+- Changed to avoid including the Parameters, Returns, Author, etc. sections in the first sentence of documentation, which is used in the Master Index page and in Summary sections.
+- Made the list of ignored MFC macros (BEGIN_EVENTSINK_MAP, DECLARE_DYNAMIC, etc.) more comprehensive.
+- Fixed to avoid getting confused by a documentation comment that precedes the "namespace" token, when the "Make contents of namespaces global" option is set.
+- Fixed to avoid termination of file parsing on strings with escaped newlines (backslash at the end of the line).
+- Fixed to avoid skipping classes with virtual inheritance, e.g.,
+    class A : public virtual B
+- Fixed source code links generated with the "Custom" option to include the project directory.
+- Fixed to avoid losing documentation for C++ functions and variables with "enum" declared in the type/return-type.
+- Changed to remove blank lines surrounding indented classes when "In index frame, print class list hieerarchically" is checked.
+- Fixed a hang that occurred in documentation whose only period character ('.') occurred within a decimal number (cppdoc-standard module).
+
+
+Version 2.2.0         2002-04-29
+- Fixed to avoid incorrect parsing of static enums, unions and classes.
+- Fixed to correctly store a member variable type when it contains template parameters.
+- Changed to automatically emulate the STDMETHOD macro if it is not passed explicitly to the preprocessor.
+- Fixed to strip trailing documentation-comment characters in comments like the following:
+     /**********         /*---------
+      * Example.    or    - Example.
+      **********/         ----------*/
+- Fixed to prevent the "Insert <BR> at end of each line" option from causing the @see directive to misbehave, in the cppdoc-standard module.
+- Fixed to avoid replacing preprocessor defines within single-line ("//") comments.
+- Fixed to avoid crashing if the @see or @link tag is used in project.html or overview.html (cppdoc-standard module).
+- Fixed the @see and @link tags to work in project.html (cppdoc-standard module).
+- Added the "-index-file-base" option to the cppdoc-standard module, to prevent master index files from being overwritten by different calls to CppDoc.
+- Fixed to avoid forcing static class variables to be public.
+- Fixed to avoid cutting off the first sentence of documentation (used in class/method/variable summaries) in the middle of a decimal number.
+
+
+Version 2.2.0b1       2002-03-25
+- Released a command-line version compiled for Linux.
+- Changed to create a directory called "projects" for class details if none is specified on the command line.
+- Added a scroll bar to the Generate Command Line dialog, and fixed it to enable the "overwrite" option when "Pure Command Line" is selected.
+- Changed to disable the Go button during processing.
+- Changed the cppdoc-standard module to surround parameters from the @param tag with "<code></code>".
+- Changed to include the "= 0" in the declaration for a pure virtual function.
+- Added the option to include documentation for anonymous unions and enums.
+- Added file references ("in foo.cpp") to the Global Functions and Variables section of cppdoc-standard output.
+- Added the ability for the documentation to refer to any number of source files, rather than just two.
+- Changed the cppdoc-standard module to make active links for containing classes in the output for inner classes, e.g., "class <link>ContainingClass</link>::InnerClass".
+- Added the -ver option, to print version information.
+- Got rid of the extra <HR> at the bottom of output from the cppdoc-standard module.
+- Changed to break the first sentence of documentation (used in field and method summaries) at the <BR> tag, if it exists.
+- Changed to strip trailing '*' characters from the ends of documentation comment lines.
+- Added the percent-progress to the dialog's window title during processing.
+- Added "cc" to the default list of file extensions.
+- Fixed to avoid skipping single-line ("//") documentation comments that are preceeded by spaces.
+- Fixed to quote preprocessor definitions in the command generated by the Generate Command Line dialog.
+- Fixed to remove a trailing carriage return from the batch file created by the Generate Command Line dialog.
+- Fixed to avoid getting confused by external function definitions that appear within a namespace.
+- Fixed to concatenate continuations of documentation tags (@param, @return, etc.) that span multiple lines in a documentation comment.
+- Fixed to avoid generating a bogus class/variable when parsing an externally-defined static class member within a namespace.
+- Fixed to avoid concatenating an unused documentation comment to the next one.
+- Fixed the cppdoc-standard module to avoid hardcoding the background color behind the "Frames"/"No Frames" section of the header, and added an option to customize the foreground color of selected text in the header.
+- Fixed to avoid losing default parameters, "virtual" specifications, etc. when parsing an external function definition before parsing its declaration.
+- Fixed to surround the output filename with quotes in the Generate Command Line dialog.
+- Fixed to avoid dropping documentation found on the first line of a documentation comment that uses the single-line ("//") comment format.
+- Fixed the cppdoc-standard module to avoid leaving an unbalanced <a> tag in the member index when the display text of the tag includes a period.
+- Fixed the dialog-based version to respond to arguments on the command line even when no options (flags) are given.
+- Fixed to avoid allowing the project-name to be ".".
+- Fixed the "Direct Known Subclasses" section to include classes in other packages.
+- Fixed to add closing ">"s to some of the </TD> tags that were missing them.
+- Fixed to make module-loading error messages more informative, for both Linux and Windows versions.
+- Fixed the Linux version to avoid dynamic linking to a specific version of libstdc++.so.
+- Fixed a bug in the Linux version that prevented function pointers from being parsed correctly.
+- Fixed to avoid hanging when encountering an enum with members whose values are set to unresolved macro calls.
+- Fixed to avoid incorrect parsing of operator().
+- Fixed the cppdoc-standard module to correctly balance <i>, <b>, <u>, <a>, <a>, <pre>, <code>, <table> and <blockquote> tags in the first sentence of documentation that appears in the Method and Field summaries.
+- Fixed to get related files (the .cpp that corresponds to a .h, for example) based on actual class member definitions, rather than on similar filenames.  This also fixes missing references to source files when the header files had extensions that were not ".h".
+- Fixed to avoid processing a file twice.
+- Fixed to avoid generating (incorrect) documentation for declarations of the type:
+    template class A<T>;
+- Fixed to avoid incorrect parsing of externally-defined functions template classes, e.g.,
+    template< class T > int FooClass<T>::barFunc()
+- Fixed to parse preprocessor macro definitions, in the Preprocessor Definitions dialog and as command line options.
+- Fixed to avoid adding template<> specifications to externally-defined member functions for template classes.
+- Fixed to avoid failing to match externally-defined member functions of nested classes ("void A::B::foo()") with their declarations.
+- Fixed to avoid including containing classes in the return types for declarations of externally-defined member functions in nested classes (e.g., "int A::B:: foo()").
+- Fixed the cppdoc-standard module to generate active links for parent classes that are nested inside other classes.
+- Fixed to include namespaced classes in the overview tree.
+- Fixed a crash that could occur when parsing operator->, operator>>, or operator>.
+- Fixed the cppdoc-standard module to produce correct hyperlinks for @see and @link when referring to a class in the same namespace, without having to qualify the class name.
+- Fixed so that processing files more than once during a single dialog session does not result in hyperlinks being left out of member declarations.
+- Fixed errors that occurred when parsing the string "/**/".
+- Fixed to avoid some spurious "end of file while in quoted string" warnings.
+- Fixed problems parsing externally-defined static member variables.
+- Fixed the command-line "-D" option to avoid forcing the preprocessor symbol to be lowercase.
+- Fixed to correctly process struct initializers when the variable name is declared with "struct", e.g., "struct Struct x = { ... };".
+- Fixed the preprocessor to avoid losing space characters after replacing a non-macro symbol.
+- Fixed incorrect parsing of arrays of function pointers.
+- Fixed to avoid a hang that could occur when parsing lines containing more than 3000 characters.
+- Fixed to avoid a crash that occurred when a documentation comment appeared between the arguments of a constructor definition and is member initialization list.
+- Fixed to avoid getting confused by documentation comments that appear after a function's arguments but before its body.
+- Fixed to avoid confusing externally-defined static member variables with member functions (in the case where the variable definition includes a call to a non-default constructor).
+- Fixed to handle an access specifier (private, public, etc.) with extra tokens before the ":".
+- Fixed a sporadic crash in the Linux version.
+- Fixed all references to master index files ("index-A.html", "index-B.html", etc.) to use uppercase for the letter suffixes.
+- Fixed to correctly parse externally-defined nested classes, e.g.,
+    class A::B : public C
+    {
+    };
+- Fixed the preprocessor to avoid errors when resolving macros whose arguments contain quoted strings that contain comma characters.
+- Fixed to avoid leaving '\' characters on the end of multiline preprocessor definitions when they are followed by spaces before the end of the line.
+- Fixed to correctly parse multiline preprocessor definitions that contain multiline comments.
+
+
+Version 2.1.1       2002-01-23
+- Added a Save button and more options to the Generate Command Line dialog.
+- Fixed to ignore an anonymous enum unless it is defined in the return value for a function.
+- Fixed to avoid getting confused by unterminated documentation comments in the '//' format, e.g.,
+    ///
+    // This is an unterminated comment.
+    void func()
+    {
+    }
+
+
+Version 2.1.0       2002-01-21
+- Added an executable ("cppdoc_cmd") that does not bring up the dialog and which writes output to the command line.
+- Added the ability to customize the format of documentation comments.
+- Added the ability to map a directory name to a project name (using '=' at the end of the directory name).
+- Added the option of grouping the contents of a namespace into a view similar to the standard Class view.
+- Fixed to handle multiple inheritance.
+- Moved the "directory name" and "accept const" options to a new "Other Options" dialog.
+- Fixed to avoid overlooking code that is within a namespace block.
+- Fixed a potential instability in parsing documentation comments that include completely blank lines.
+- Fixed to avoid crashing when encountering a superfluous "enum" specification on the return type of a function.
+- Fixed to avoid ignoring the first line of a comment like the following:
+    /** Comment starts here.
+     *  This is the second line.
+     */
+
+
+Version 2.0.1       2001-12-19
+- Added options to the "cppdoc-standard" module for changing colors in the generated documentation.
+- Added a "Reset to Defaults" button in the Module Options dialog.
+- Fixed to prevent a hang/crash when processing classes or structs that follow a superfluous "typedef" keyword, e.g., "typedef struct X { int i; };".
+- Changed the icon.
+
+
+Version 2.0.0       2001-12-07
+- Fixed to prevent a startup crash that occurred when the user saved module options then came back and switched to a module that didn't support options.
+
+
+Version 2.0.0b3     2001-11-21
+- Fixed to prevent the preprocessor from eating the next token after a macro replacement.
+- Fixed to avoid getting confused by inline struct/class member definitions (e.g. struct X { int n; } y;}.
+- Fixed the preprocessor to replace #defined symbols on a line after macro expansion.
+- Fixed to avoid skipping class member variables declared with inline "struct" or "class" specification (e.g, "struct X y;").
+- Fixed to avoid nesting subsequent definitions in an incorrect class after encountering function pointer typedefs whose return value is marked with "class" or "struct" specifier, e.g., "typedef class SomeClass (*Func)();").
+- Fixed some cases where nested anchors '<a href="..."><a href="...' were being written.
+- Fixed to avoid getting foiled by parenthesized arguments in certain predefined macros such as DEFINE_GUID.
+- Fixed to ignore 'extern "C"'' at the beginning of a block.
+- Fixed to avoid getting confused by some member initializations that included braces ({}).
+- Added the "include const and static const variables" option.
+- Fixed #if to evaluate to true if it has a single argument that resolves to something other than zero.
+- Fixed to correctly identify the names of function pointers.
+- Fixed to space 'extern "C"' declarations correctly (i.e., 'extern "C"' instead of 'extern"C"').
+- Fixed to sort the list of classes in the project summary frame.
+- Fixed to treat function pointers as variables, not as methods.
+- Changed to prevent the user interface from freezing during heavy processing.
+- Fixed to avoid getting confused by some MFC macros like BEGIN_INTERFACE_PART.
+- Fixed to avoid getting confused by bitlength specifications (e.g., "int x : 1").
+- (build 5) Fixed the cppdoc-old module to avoid problems loading on some machines.
+
+
+Version 2.0.0b2     2001-11-15
+- Fixed to avoid broken links in the Deprecations page for documentation that includes the @link tag.
+- Added an Advanced button in the Output Customization section.
+- Changed to present fatal file-parsing errors at the end, instead of through a dialog box during processing.
+- Fixed some instances where error line numbers were incorrect.
+- Fixed the preprocessor to handle directives that are separated from the '#' sign (e.g., "# define").
+- Fixed the preprocessor to handle #if and #elif.
+- Fixed to ensure that the preprocessor operates to completion on files that contain single-line documentation comments.
+- Fixed to avoid producing incorrect output for inline struct/class typedefs with multiple definitions, e.g.,
+    typedef struct X { int n; } Y, *PY;
+- Fixed to avoid mixing up preprocessesor symbols when #undef was used.
+- Changed the cppdoc_standard module to avoid printing inner classes (etc.) in the index or tree.
+- (build 3) Fixed to allow '!' in #if preprocessor directives.
+
+
+Version 2.0.0b1     2001-10-30
+This is a rewrite, with new features and innumerable tweaks and bug fixes.  New features include:
+    - The ability to choose (and write) different documentation module DLLs for different output formatting.
+    - A module that produces output which is very similar to the output of Javadoc, including frames, overviews, tree hierarchies, a deprecation list, and a master index.  This module supports Javadoc tags, such as @see, @return, etc.
+    - The ability to set (or pass on the command line) preprocessor symbols.
+    - The ability to set (or pass on the command line) the list of file extensions to process (".h", ".cpp", etc.).
+
+
+Version 1.0.1       2001-05-23
+- Fixed a bug that prevented the Browse buttons from filling data into the edit boxes.
+- Fixed to avoid broken links to source code files.
+- Fixed to include the <BODY> tag in the default HTML index page header.
+- Fixed to avoid getting confused by preprocessor #warning, #line, #error, #input, #name, or #ident directives.
+- Fixed to avoid crashing when parsing files with lengths in multiples of 10240 bytes (counting CR/LF as one byte).
+- Fixed to avoid erroneous "Wrong number of arguments to macro" errors.
+- Fixed to strip trailing '/' or '\' characters on input directories.
+- Fixed to avoid getting confused by some template function declarations.
+- Fixed to avoid getting confused by a nested class function definition when it occurs outside of the class declaration (e.g. void A::B::func()).
+- Fixed to insert an HTML link for nested classes that appear in return types or function arguments.
+- Fixed to avoid getting confused by throw() declarations.
+- Fixed to avoid adding garbage characters to quoted default values for arguments to functions.
+- Fixed to ensure that the parent directory of the output HTML file exists.
+- Got rid of the "Missing '*'" messages that appeared when lines within documentation comments did not start with '*'.
+- Changed to allow either HTML fragments or file names in the "HTML Header", "HTML per item" and "HTML Footer" boxes.
+- Changed to make "Create directory for class details" checked by default.
+- Changed to roll up non-fatal warning messages into one dialog at the end of the process.
+- Changed the Close button to become Cancel during processing.
+- Added the ability to insert "<BR>" automatically for every line of documentation.
+- Added a basic update-checking feature.  Note that this is turned OFF by default.
+- Added a dialog that offers the option of saving the current settings if the user quits the program through the close box.
+- Made some minor UI changes.
+- Made some minor improvements/additions to the help file.
+
+    Known Bugs:
+        - Will get confused by function pointer typedefs whose return value is marked with "class" or "struct" specifier, e.g.,
+            typedef class SomeClass (*Func)();
+        - Will get confused by function pointer typedefs for non-static member functions, e.g.,
+            typedef void (SomeClass::*Func)();
+
+
+Version 1.0.0       1999-07-30
+- Sped up the preprocessor.
+- Fixed misreading of #ifdef as #ifndef.
+- Fixed to avoid #defining a symbol if within an #ifdef/#ifndef that evaluated to false.
+- Fixed the preprocessor to avoid erasing files that start with a quote-char.
+- Created a working Release configuration.
+
+
+Version 0.4.3       1998-12-07
+- Added the ability to parse global functions and variables.
+- Added an HTML file reference for each member function or variable.
+- Added a better C++ preprocessor, with support for #defines and #define-macros.
+- Added "Back to Index" link for individual class pages.
+- Fixed to properly document overloaded class members.
+- Fixed to properly connect function declarations within a class and function definitions outside the class.
+- Fixed to ignore "extern" declarations.
+- Fixed to avoid labelling some typedef definitions "Constructors".
+- Fixed the preprocessor to recognize #undef, #include, and #pragma.
+- Fixed to ignore "friend" function declarations.
+- Fixed to correctly parse negative numbers within enums.
+- Fixed HTML links for symbols within a typedef.
+- Fixed to ignore member variable initializations in constructors.
+
+
+Version 0.4.2       1998-12-04
+- Added code to make HTML links in class declarations to any recognized class names.
+- Added the ability to read member-function documentation found near a function body which is outside the class declaration.
+
+
+Version 0.4.1       1998-12-02
+- Fixed the "Classes" dir to be inside the directory of the HTML output.
+- Cleaned up the declaration-string for typedefs.
+- Added a "default" checkbox for the "HTML Source Dir" box.
+- Fixed the root-directory for source-code links.
+- Fixed to ignore friend class declarations.
+- Fixed to avoid stripping spaces from the beginning of each line of documentation.
+
+
+Version 0.4.0       1998-12-01
+- Added the ability to document member functions and variables.
+- Fixed parsing of nested classes, typedefs, etc.
+- Fixed to correctly parse enums, including anonymous enums as function arguments and return values.
+- Fixed processing of #if in the preprocessor.
+
+
+Version 0.3.0       1998-11-30
+- Changed to optionally accept a list of files instead of directories.
+- Added a Browse button for the file-list.
+- Added a C++-style preprocessor, to get rid of comments and #ifdefs, #defines, etc.
+- Changed to allow double-quotes around filenames (for filenames with spaces in them).
+- Changed to deal with Go, Close, and Cancel while processing is in progress.
+- Fixed to accept classes that are derived from specific instantiations of template classes (e.g. "class IntList : public list< int >").
+- Fixed to avoid choking on multiple inheritance and __stdcall, __cdecl, etc. specifiers.
+- Added code to create documentation for unions as well.
+- Fixed to avoid generating warnings for unexpected uses of 'class'.
+- Fixed to accept typedefs that include class, struct, or union definitions.
+- Fixed to avoid getting confused by quoted strings within comments.
+- Fixed to be smarter about parsing complex typedefs.
+- Fixed to recognize inheritance without an access-specifier ("public", etc.).
+- Fixed the line-counter.
+
+
+Version 0.2.0       1998-11-23
+- Added the ability to handle typedefs.
+- Added code to correctly identify nested classes and typedefs.
+- Added the ability to mark a file so that it is ignored ("/**NODOCUMENT**/").

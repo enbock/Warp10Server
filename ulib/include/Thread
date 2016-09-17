@@ -1,0 +1,188 @@
+/*
+* ThreadSystem
+*
+*  Created on: 05.04.2011
+*      Author: Endre Bock
+*/
+
+#ifndef THREAD_
+#define THREAD_
+
+#include <Object>
+#include <Callback>
+
+namespace u
+{
+
+/**
+ * Create a thread macro.
+ * @param function Refernce to the function.
+ * @example createThread(this, tObject::callMe);
+ */
+#define createThread(obj, function) Callback __cb__(obj, cb_cast(&function));ThreadSystem::create(&__cb__)
+
+	class Thread;
+
+	#ifndef MAXTHREADS
+	#define MAXTHREADS 200000
+	#endif
+
+	/**
+	* The main thread control system.
+	* <p>The thread system is a unique architecture in a program. It contains the
+	* list of running and comming thread. Also it can stop the thread prodruction
+	* to terminate a program.<br>
+	* </p>
+	*/
+	class ThreadSystem
+	{
+		protected:
+			friend class Thread;
+
+			/**
+			* List of the next thread after the run queue have space.
+			*/
+			static Vector<Thread*> _build;
+			/**
+			* List of running threads
+			*/
+			static Vector<Thread*> _run;
+			/**
+			* Mutex to synchronise the list access.
+			*/
+			static Mutex _access;
+		public:
+#ifndef NDEBUG
+			static int64 finish;
+			static int64 peakRun;
+#endif
+
+			/**
+			* Flag for terminating the thread system.
+			* <p>Is the flag to, then is it not possible to create more threads.</p>
+			*/
+			static bool isTerminating;
+
+			/**
+			* Maximum of running threads.
+			*/
+			static int64 threadLimit;
+
+			/**
+			* Initialize the thread system.
+			* <p>Before you can start any thread function you must initialize the
+			* system.</p>
+			*/
+			static void init();
+
+			/**
+			* Create a new thead.
+			* @param cb Function, object and arguments for the call.
+			* @return true means, the tream was created and is queued or started.
+			* false indicated a terminating of the thread system.
+			*/
+			static bool create(Callback *cb);
+
+			/**
+			* A ticker to main control the thread system.
+			* <p>This function is called only via the main program and controlls
+			* the speed of the thread system.</p>
+			*/
+			static void tick();
+
+			/**
+			* Calculate the amount of threads.
+			* @return Number of threads, which are running and queued.
+			*/
+			static int64 numThreads();
+
+			/**
+			* Calculate the amount of threads in queue.
+			* @return Number of threads, which are queued.
+			*/
+			static int64 numQueuedThreads();
+
+			/**
+			* Shutdown the system.
+			*/
+			static void shutdown();
+
+			/**
+			* Clean the lists.
+			*/
+			static void destroy();
+
+		protected:
+			/**
+			* Destroy a thread.
+			* <p>Remove a thread from the run queue.
+			*/
+			static void destroy(Thread *thread);
+
+			/**
+			* Remove a thread from the build queue and run it.
+			*/
+			static void run(int64 id);
+	};
+
+	/**
+	* A thread.
+	* <p>The thread is a running function on a other cpu core than the starter
+	* function. The thread share the same memory ranges. So the developer have
+	* to validate, that the memory access are synchronised via the Mutex lock
+	* machanism. Classes with safe (public) functions, which are locked the object
+	* or object attributes before using, named <i>Tread safe</i>.<br>
+	* A thread self is uncontrollable. It is impossible to stop or synchronise
+	* threads. A thread dies after the function is finished. So have a thread
+	* no return value. No other thread can wait for finishing neightbour thread.
+	* So have a program to wait for finishing all threads, before it can finished
+	* self. The ThreadSystem handle it.
+	* </p>
+	* @see Mutex
+	* @see ThreadSystem
+	*/
+	class Thread
+	{
+		protected:
+			friend class ThreadSystem;
+
+			/**
+			* Callback object.
+			*/
+			Callback _call;
+
+			/**
+			* Thread data of pthread api.
+			*/
+			pthread_t _thread;
+
+			/**
+			* Attributes for the pthread api.
+			*/
+			pthread_attr_t _attr;
+
+			/**
+			* Create a new thread object.
+			*/
+			Thread(Callback *cb);
+
+			/**
+			* Clean up the memory.
+			*/
+			~Thread();
+
+			/**
+			* Start the thread.
+			* <p>This function create a thread via the pthread api.</p>
+			*/
+			void run();
+
+			/**
+			* Execute the callback inside the thread.
+			* @param thread The thread object. It must be a Thread type.
+			*/
+			static void* execute(void *thread);
+	};
+}
+
+#endif /* THREAD_ */

@@ -1,0 +1,113 @@
+/*
+* Timeout
+*
+*  Created on: 04.01.2013
+*      Author: Endre Bock
+*/
+
+#ifndef TIMEOUT_
+#define TIMEOUT_
+
+#include <Object>
+#include <Callback>
+#include <time.h>
+
+namespace u
+{
+	/**
+	 * Call an function on an special moment.
+	 * <p>This class can be used to run functions (in a thread of course;) at an
+	 * special moment. After creating the object, you can stop it, via destroy
+	 * or stop function.
+	 * </p>
+	 */
+	class Timeout : public Object
+	{
+		protected:
+			/**
+			 * Callback pointer to call function on time.
+			 */
+			Callback* _function;
+
+			/**
+			 * Callback pointer for abort function.
+			 */
+			Callback* _abort;
+
+			/**
+			 * Moment of call.
+			 */
+			uint64 _time;
+
+			/**
+			 * Flag for running.
+			 */
+			bool _run;
+
+		public:
+			/**
+			 * Create the timout object without abort function call.
+			 * @param time Timout in milliseconds.
+			 * @param function Function, which called, after timeout is arrived.
+			 */
+			Timeout(uint64 time, Callback* function);
+
+			/**
+			 * Create the timeout object.
+			 * @param time Timout in milliseconds.
+			 * @param function Function, which called, after timeout is arrived.
+			 * @param abort Function, who called, then the timeout was stopped.
+			 */
+			Timeout(uint64 time, Callback* function, Callback* abort);
+
+			/**
+			 * Destructor.
+			 */
+			~Timeout();
+
+			/**
+			 * Delete function.
+			 */
+			virtual void destroy();
+
+			/**
+			 * Dump info data.
+			 */
+			virtual String toString();
+
+			/**
+			 * Name of that class.
+			 */
+			virtual String className();
+
+			/**
+			 * Stop the timeout and call the abort function.
+			 * <p>Note: Don't forget to delete the timeout object.
+			 * </p>
+			 */
+			virtual void stop();
+
+		private:
+			/**
+			 * Initialize the timeout object.
+			 * @param time Timout in milliseconds.
+			 * @param function Function, which called, after timeout is arrived.
+			 * @param abort Function, who called, then the timeout was stopped.
+			 */
+			void init(uint64 time, Callback* function, Callback* abort);
+
+		protected:
+			/**
+			 * Check, if the time arrived and call the function.
+			 */
+			virtual void tick(Object* arg);
+
+			/**
+			 * Get the current microtime.
+			 * @return Current time in milliseconds.
+			 */
+			virtual uint64 getCurrentTime();
+	};
+}
+
+#endif /* TIMEOUT_ */

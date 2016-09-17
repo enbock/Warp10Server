@@ -1,8 +1,14 @@
 *.so*
 *.o
+*.a
 .idea
 .vscode
-t*
 doc/EA
+doc/cppdoc
 warp10server/warp10server
 warp10server/warp10admin
+tDataBlock
+tDelete
+tEvent
+tObject
+tThread
