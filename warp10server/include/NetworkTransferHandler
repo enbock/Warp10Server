@@ -1,0 +1,110 @@
+/*
+* NetworkTransferHandler
+*
+*  Created on: 04.05.2013
+*      Author: Endre Bock
+*/
+
+#ifndef NETWORKTRANSFERHANDLER_
+#define NETWORKTRANSFERHANDLER_
+
+#include <NetworkConnection>
+#include <NetTransferEvent>
+#include <Datablock>
+
+namespace u
+{
+	/**
+	 * Handles a transfer of a data block on a network connection.
+	 * <p>Primary implement that object the network transfer procotol on
+	 * sender and receiver site.
+	 * ToDo: Check after its run, if something abtractable and could move into ulib.</p>
+	 */
+	class NetworkTransferHandler : public Object
+	{
+		protected:
+			/**
+			 * Id of next transfer.
+			 */
+			static uint64 nextTransferId;
+
+			/**
+			 * Mutex to access the next transfer id.
+			 */
+			static Mutex transferMutex;
+
+			/**
+			 * Data to send or receive.
+			 */
+			ByteArray _data;
+
+			/**
+			 * Connection on which will send/receive teh data.
+			 */
+			NetworkConnection* _con;
+
+			/**
+			 * Id of transfer.
+			 */
+			uint64 _id;
+
+			/**
+			 * Flag, if signal has bound or not.
+			 */
+			bool _isBound;
+
+		public:
+			/**
+			 * Constructor to send data.
+			 * <p>The data will be cloned.</p>
+			 */
+			NetworkTransferHandler(NetworkConnection* con, ByteArray* data);
+
+			/**
+			 * Destructor.
+			 */
+			~NetworkTransferHandler();
+
+			/**
+			 * Class name.
+			 * @return The class name as String.
+			 */
+			String className();
+
+			/**
+			 * Destroy this network signal object.
+			 */
+			void destroy();
+
+		protected:
+			/**
+			 * Ready for transfer.
+			 * <p>The connection signalized a ready to send. Let start the transfer.</p>
+			 * @param signal The signal object with the transfer id.
+			 */
+			virtual void onTransferReady(Object* signal);
+
+			/**
+			 * Bind needed signals.
+			 */
+			virtual void addEvents();
+
+			/**
+			 * Remove signal binding.
+			 */
+			virtual void removeEvents();
+
+			/**
+			 * The network conenction has been closed.
+			 * @param signal The signal object.
+			 */
+			virtual void onConnectionClosed(Object* signal);
+
+			/**
+			 * Send the next block of data to connection.
+			 */
+			virtual void sendNextBlock();
+	};
+}
+
+#endif /* NETWORKTRANSFERHANDLER_ */

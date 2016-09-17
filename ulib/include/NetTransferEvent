@@ -1,0 +1,112 @@
+/*
+* NetTransferEvent
+*
+*  Created on: 04.05.2013
+*      Author: Endre Bock
+*/
+
+#ifndef NETTRANSFERSIGNAL_
+#define NETTRANSFERSIGNAL_
+
+#include <Event>
+#include <ByteArray>
+
+namespace u
+{
+	/**
+	 * Event protocol for data transfer.
+	 * <p>This class contains all constants for the network transfer protocol in
+	 * high level.</p>
+	 */
+	class NetTransferEvent : public Event
+	{
+		protected:
+			/**
+			 * Id of transfer.
+			 */
+			uint64 _id;
+
+			/**
+			 * Datablock.
+			 */
+			ByteArray _data;
+
+		public:
+			/**
+			 * Begin of transfer.
+			 * <p>This signal starts the network transfer.</p>
+			 */
+			static const String INIT;
+
+			/**
+			 * Ready to start/receive transfer.
+			 * <p>The ready signal to receive the transfer. The receiver send
+			 * this signal and the sender receive it and begins after direct with
+			 * sending data.</p>
+			 */
+			static const String READY;
+
+			/**
+			 * Transfer data to network or receive data from network.
+			 * <p>This data signal put the data from the module to the network
+			 * connection(in the max size of connection can control).<br>
+			 * On receiver side is this signal the received data block and is sent
+			 * to handler/program.</p>
+			 */
+			static const String DATA;
+
+			/**
+			 * End of transfer.
+			 * <p>The sender side signal the finishing of the transfer. The receiver
+			 * inform the program about rthe finishing.<br>
+			 * This is the end of the transfer progress.</p>
+			 */
+			static const String EOT;
+
+			/**
+			 * Constructor to create the signal.
+			 * <p>The data object will be copied.</p>
+			 * @param type The type of signal.
+			 */
+			NetTransferEvent(String const& type, uint64 id = 0, ByteArray *data = null);
+
+			/**
+			 * Destructor.
+			 */
+			~NetTransferEvent();
+
+			/**
+			 * Class name.
+			 * @return The class name as String.
+			 */
+			String className();
+
+			/**
+			 * Destroy this network signal object.
+			 */
+			void destroy();
+
+			/**
+			 * Get the id of the transfer.
+			 * @return The transfer id.
+			 */
+			uint64 id();
+
+			/**
+			 * Clone this signal.
+			 */
+			Event* clone();
+
+			/**
+			 * Get the pointer of the datablock.
+			 */
+			ByteArray* data();
+
+			/**
+			* Info dumper.
+			*/
+			virtual String toString();
+	};
+}
+
+#endif /* NETTRANSFERSIGNAL_ */

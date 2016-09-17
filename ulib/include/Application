@@ -1,0 +1,109 @@
+/*
+* Application.
+* <p>The application is a code template for any main program which made with
+* universal libraries.
+*
+* Usage:
+* 	namespace u
+*		{
+*			void programExit();
+*
+*			class NameOfMainClass : public Object
+*			{
+*				public:
+*					NameOfMainClass(Vector<String> arg) : Object()
+*					{
+*						trace("Hello " + toString());
+*					}
+*
+*				String className() { return "u::NameOfMainClass"; }
+*			};
+*		}
+*
+* 	#define FPS 120
+* 	#define APPLICATION NameOfMainClass
+* 	#include <Application>
+*
+*	Note: The programExit() function shutdown the application after all threads
+*	      are done. Via ThreadSystem::isTerminating you can check, if the
+*	      program in exiting status.
+*
+*  Created on: 02.03.2011
+*      Author: Endre Bock
+*/
+
+#ifdef APPLICATION
+
+#include <Thread>
+
+#ifndef FPS
+#define FPS 90
+#endif
+
+namespace u
+{
+	bool __PROGRAMM_END__ = false;
+
+	/**
+	* Finished the program thread.
+	*/
+	void programExit()
+	{
+		if(ThreadSystem::isTerminating == true && ThreadSystem::numThreads() == 0)
+		{
+			__PROGRAMM_END__ = true;
+		}
+		//else trace(Object::int2string(ThreadSystem::numThreads())+ " left...wait.");
+		if(ThreadSystem::isTerminating == false)	ThreadSystem::shutdown();
+	}
+
+	/**
+	* This controlls the thread system and termination of the program.
+	*/
+	void mainLoop()
+	{
+		static int64 time = 1000000 / FPS;
+		while(__PROGRAMM_END__ == false)
+		{
+			ThreadSystem::tick();
+			if(ThreadSystem::isTerminating) programExit();
+			usleep(time);
+		}
+	}
+
+	/**
+	* The main object for global access.
+	* <p>Normalize is this object not necessary, but for handlers or other
+	* external routines exists possibly no other way. So long the program is
+	* runng, contain this pointer the address of the main object.
+	* </p>
+	*/
+	Object *__main__;
+}
+
+using namespace u;
+
+/**
+* Standard main application.
+*/
+int main(int argc, char ** argv)
+{
+	Vector<String> arg;
+	int64 i;
+	for(i=0; i<argc; i++)
+	{
+		arg.push_back(String(argv[i]));
+	}
+	ThreadSystem::init();
+
+	APPLICATION application(arg);
+	__main__ = &application;
+
+	mainLoop();
+	ThreadSystem::destroy();
+	__main__ = null;
+
+	return 0;
+}
+
+#endif

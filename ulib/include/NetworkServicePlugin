@@ -1,0 +1,120 @@
+/*
+ * NetworkServicePlugin
+ *
+ *  Created on: 16.07.2011
+ *      Author: User
+ */
+
+#ifndef NETWORKSERVICEPLUGIN_
+#define NETWORKSERVICEPLUGIN_
+
+#include <RoomClient>
+#include <NetworkService>
+
+namespace u
+{
+	/**
+	 * Network Service Plugin.
+	 * <p>A plugin for the network service implements a special network
+	 * connection type, like a control connection via unix sockets.<br>
+	 * A plugin knows all specifications and configuration for a listener or
+	 * client connection.<br>
+	 * The plugin get all information about the protocol (signal) room from the
+	 * service via functions and interact so this the service object.<br>
+	 * This class is a abstract class for a network service plugin implementation.
+	 * <br>The plugin register the GET_*_LISTENER and GET_*_CONNECTION. Over the
+	 * function <code>setNewListener()</code> and <code>setNewConnection</code>
+	 * give the plugin the created network objects to the service.
+	 * </p>
+	 */
+	class NetworkServicePlugin : public RoomClient
+	{
+		protected:
+			/**
+			 * Pointer to the network service object.
+			 */
+			NetworkService* _srv;
+		public:
+			/**
+			 * Constructor.
+			 */
+			NetworkServicePlugin();
+
+			/**
+			 * Destructor.
+			 */
+			~NetworkServicePlugin();
+
+			/**
+			 * Register the service object.
+			 * <p>When the plugin will register on a network service, then
+			 * call the service object this function to make a crosslink.<br>
+			 * If the plugin being remove, then set the service this value
+			 * to <code>null</code>.
+			 * </p>
+			 * @param value The network service object, which use the plugin or
+			 * <code>null</code> when the plugin has been removed.
+			 */
+			virtual void service(NetworkService* value);
+
+			/**
+			 * Default destroyer.
+			 */
+			virtual void destroy() = 0;
+
+			/**
+			 * Classname of this class.
+			 */
+			String className();
+
+			/**
+			 * Create a new listener.
+			 * <p>Over this abstract function implement the subclass the creation
+			 * if the network listener object of his type.</p>
+			 * @param address String of the address(socketfile, hostname, etc).
+			 * @param port Port for the connect, if necessary.
+			 * @return The pointer to the created listener object.
+			 */
+			virtual NetworkListener* createNetworkListener(String address,
+				int64 port = 0) = 0;
+
+			/**
+			 * Create a incoming connection object.
+			 * <p>Over this static function implement the subclass the creation of the
+			 * network object for incoming connections. It can be used as facate
+			 * or collection function and has no interaction with the network service.
+			 * <br><b>Tip;</b> Implement this function empty if you implement the
+			 * creation direct in the listener subclass.
+			 * </p>
+			 * @param socket Accepted socket connection to a client.
+			 * @return The new network connection object with all data and saved
+			 * socket pointer.
+			 */
+			static NetworkConnection* createIncomingConnection(Socket* socket);
+
+			/**
+			 * Create a outgoing connection object.
+			 * <p>Over this abstract function implement the subclass the creation
+			 * of a outgoing network connection. It is the decision of the
+			 * implementation if the network service API function
+			 * <code>setNewConnection()</code> will called or not.
+			 * </p>
+			 * @param address The address to the destination host/socket.
+			 * @param port Port number of the destination, if necessary.
+			 * @return The outgoing network connection or null if the connect was
+			 * unsuccessful.
+			 */
+			virtual NetworkConnection* createConnection(String address,
+				int64 port = 0) = 0;
+
+			/**
+			 * Give the pointer of the network service object.
+			 * @return The pointer to the network service object.
+			 */
+			NetworkService* service();
+
+		protected:
+	};
+}
+
+#endif /* NETWORKSERVICEPLUGIN_ */

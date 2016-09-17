@@ -1,0 +1,239 @@
+/*
+ * NetworkStandardDecoder
+ *
+ *  Created on: 10.06.2012
+ *      Author: Endre Bock
+ */
+
+#ifndef NETWORKSTANDARDDECODER_
+#define NETWORKSTANDARDDECODER_
+
+#include <NetworkDecoder>
+#include <Object>
+#include <ByteArray>
+
+/**
+ * Handshake datablock.
+ */
+#define TYPE_HANDSHAKE 0x01
+/**
+ * Handshake ACK datablock.
+ */
+#define TYPE_HACK 0x02
+/**
+ * Closing is confirmend.
+ */
+#define TYPE_CLOSE_CONFIRMED 0x06
+/**
+ * Closing connection.
+ */
+#define TYPE_CLOSE 0x05
+/**
+ * ACK
+ */
+#define TYPE_ACK 0x0A
+/**
+ * Transfer init
+ */
+#define TYPE_T_INIT 0x14
+/**
+ * Transfer ready
+ */
+#define TYPE_T_READY 0x15
+/**
+ * Transfer data
+ */
+#define TYPE_T_DATA 0x16
+/**
+ * Transfer end
+ */
+#define TYPE_T_EOT 0x17
+/**
+ * PING
+ */
+#define TYPE_T_PING 0x1E
+/**
+ * PONG
+ */
+#define TYPE_T_PONG 0x1F
+
+namespace u
+{
+	/**
+	 * Stardard network decoder.
+	 * The standard network decoder implement a universal ulib network protocoll,
+	 * which can use for diverses application.
+	 * The network format is native binary.
+	 */
+	class NetworkStandardDecoder : public NetworkDecoder
+	{
+		protected:
+			/**
+			 * Handshake is done and package sending is possible.
+			 */
+			bool _ready4Send;
+
+			/**
+			 * Package was send, wait for ack;
+			 */
+			bool _wait4Ack;
+
+			/**
+			 * Next id, which has to received.
+			 */
+			uint8 _nextId;
+
+		public:
+			/**
+			 * Create a standard decoder object.
+			 */
+			NetworkStandardDecoder();
+
+			/**
+			 * Empty pointers and destruct the object.
+			 */
+			~NetworkStandardDecoder();
+
+			/**
+			 * Destroy this object.
+			 */
+			void destroy();
+
+			/**
+			 * Simple debug output.
+			 */
+			String toString();
+
+			/**
+			 * Classname identifier of this class.
+			 */
+			String className();
+
+			/**
+			 * Start the handshake of an connection.
+			 * <p>Start this function in a thread.</p>
+			 * @param arg Unused.
+			 */
+			virtual void startHandshake(Object* arg);
+
+			/**
+			 * Ready 4 Send.
+			 * @return <code>true</code>, if handshake done.
+			 */
+			virtual bool isReady();
+
+			/**
+			 * Send the data package to close the connection.
+			 */
+			virtual void sendClose();
+
+			/**
+			 * Send the close confirmed package.
+			 */
+			virtual void sendCloseConfirmed();
+
+			/**
+			 * Send a init signal for transfer.
+			 * <p>This function start a transfer of a datablock.</p>
+			 * @param id The unique id to identify the transfer.
+			 */
+			virtual void sendInit(uint64 id);
+
+			/**
+			 * Send the ready for transfer signal to sender.
+			 * @param id The unique id to identify the transfer.
+			 */
+			virtual void sendTransferReady(uint64 id);
+
+			/**
+			 * Send the data block to sender.
+			 * @param id The unique id to identify the transfer.
+			 * @param data The datablock pointer to send.
+			 */
+			virtual void sendData(uint64 id, ByteArray* data);
+
+		protected:
+			/**
+			 * Decode incomming data.
+			 * <p>This function decode the data inside the buffer and call the
+			 * functions for data package.
+			 * It can be, that on call get more than one frame or is between the frames.
+			 * So the implementation function leaf the rest frame inside the buffer.
+			 * Important is, that all complete frame has to be read, because the
+			 * next call of decodeData is first after receiving more data happend.<br>
+			 * Also has the implementation class send the signals for the network
+			 * signal protocol.<br>
+			 * This function need to be called, when the decoder is locked.</p>
+			 * @param data Received raw data.
+			 */
+			virtual void decodeData(ByteArray *buffer);
+
+			/**
+			 * Check of correct frame ending.
+			 * <p>Read the next 2 bytes from the buffer and check if it the corrcet
+			 * end bytes. On success return the amount of read bytes, otherwise 0.</p>
+			 * @param buffer Read data from socket.
+			 * @return 2 on succes, otherwise 0.
+			 */
+			virtual int64 checkEndBytes(ByteArray* buffer);
+
+			/**
+			 * HACK: answer the handshake.
+			 * <p>This function checks the version number and send HACK, if all ok.</p>
+			 * @param version 2 bytes received version number.
+			 * @return True, if handshake successful.
+			 */
+			virtual bool doHandshake(uint16 version);
+
+			/**
+			 * Add the frame end data to the data.
+			 * @param data Data array.
+			 */
+			virtual void addEndBytes(ByteArray* data);
+
+			/**
+			 * Rotate the marke for next id.
+			 */
+			virtual void flipNextId();
+
+			/**
+			 * Add the current id to the command byte.
+			 * <p>The ad id code (0x00 or 0x80) to the byte.</p>
+			 * @paran command In/Out of command byte.
+			 */
+			void addIdToCommandByte(uint8& command);
+
+			/**
+			 * Abort the connection.
+			 * <p>This is the standard behavior on fatal network errors.</p>
+			 * @param data Data array.
+			 */
+			void abortConnection(ByteArray* buffer);
+
+			/**
+			 * Send a ACK package.
+			 */
+			void sendAck();
+
+			/**
+			 * Do activities on ACK command.
+			 * <p>The function detect, which ACK it is and start conguent actions.
+			 * </p>
+			 */
+			void progressAck();
+
+			/**
+			 * Close activity is timeouted.
+			 * @param arg Unused.
+			 */
+			void doCloseTimeout(Object* arg);
+
+			/**
+			 * Delete timeout from list.
+			 * @param word Word of timeout.
+			 */
+			void deleteTimeout(String word);
+	};
+}
+
+#endif /* NETWORKSTANDARDDECODER_ */

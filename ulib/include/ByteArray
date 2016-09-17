@@ -1,0 +1,331 @@
+/**
+* utils/ByteArray.
+* $Id: $
+*/
+#ifndef BYTEARRAY_
+#define BYTEARRAY_
+
+#include <DataArray>
+
+namespace u
+{
+	/**
+	* Value of a unsigned int value in ByteArray.
+	* <p><b>See also:</b><ul><li> <a href="ByteArray.html">ByteArray</a></ul></p>
+	*/
+	#define TYPE_UINT 0
+	/**
+	* Value of a negative int value in ByteArray.
+	* <p><b>See also:</b><ul><li> <a href="ByteArray.html">ByteArray</a></ul></p>
+	*/
+	#define TYPE_NEGATIVE_INT 2
+	/**
+	* Value of a positive int value in ByteArray.
+	* <p><b>See also:</b><ul><li> <a href="ByteArray.html">ByteArray</a></ul></p>
+	*/
+	#define TYPE_POSITIVE_INT 1
+
+	/**
+	* Size of a memory block.
+	* <p>ByteArray increase and decrease the internal memory block in this size.
+	* </p>
+	*/
+	#define BYTEARRAY_CHUNK 1024
+
+
+	/**
+	* Converter class between Object(Array???) and Binary data.
+	* <p>This class implement the data conversion between a array structure
+	* and binary structure.<br>
+	* For the binary structure description see
+	* <a href="http://server1.psy/wiki/index.php/Psyber/binarytransfer"
+	* >Psyber-Wiki:binarytransfer</a><br>
+	* <b>Info:</b> This class is not thread safe.</p>
+	*/
+	class ByteArray: public DataArray
+	{
+		protected:
+			/**
+			* Byte memory block.
+			*/
+			char* _buffer;
+
+			/**
+			* Create the memory block.
+			*/
+			void createMemory();
+
+			/**
+			* Copy the memory and all values from the source byte array.
+			*/
+			void cloneFrom(const ByteArray& value);
+
+			/**
+			* Position.
+			*/
+			uint64 _position;
+
+			/**
+			* Size of the buffer.
+			*/
+			uint64 _size;
+
+			/**
+			* Pseudo length of the memory block.
+			* <p>This size represent the real used amount of bytes and not the real memory size.</p>
+			*/
+			uint64 _length;
+
+		public:
+			/**
+			* Default constructor.
+			*/
+			ByteArray();
+
+			/**
+			* Destructor.
+			*/
+			~ByteArray();
+
+			/**
+			 * Name of the class.
+			 */
+			String className();
+
+			/**
+			* Copy constructor.
+			*/
+			ByteArray(const ByteArray&);
+
+			/**
+			* Copy over operator.
+			*/
+			const ByteArray& operator=(const ByteArray&);
+
+			/**
+			* Save other binary data at the actual position.
+			* <p>This function copies the new data into the memory.
+			* The original data can change after it without affecting
+			* the memory.
+			* </p>
+			* @param data Pointer to the binary data.
+			*/
+			void writeBinary(const ByteArray&);
+
+			/**
+			* Read a binary data block from the actual data and return it.
+			* </p>
+			* @param data Pointer to the destination memory.
+			*/
+			ByteArray readBinary();
+
+			/**
+			* Return the actual size.
+			* @return The size.
+			*/
+			uint64 size() const;
+
+			/**
+			* Write a int value into the buffer.
+			* @param value The value to write.
+			* @param min Minumum of used bytes in storage.
+			* @param noHeader If it true, then is the internal header not used.
+			* (Direct memory access)
+			*/
+			void writeInt(const int64 value, int64 min = 1, bool noHeader = false);
+
+			/**
+			* Write a uint value into the buffer.
+			* @param value The value to write.
+			* @param min Minumum of used bytes in storage.
+			* @param noHeader If it true, then is the internal header not used.
+			* (Direct memory access)
+			* @param type [internal] Type if value.
+			*/
+			void writeUInt(const uint64 value, int64 min = 1, bool noHeader = false, int8 type = TYPE_UINT);
+
+			/**
+			* Write one byte into the stream.
+			* @param value The byte.
+			*/
+			void writeByte(const unsigned char value);
+
+			/**
+			* Read byte.
+			* <p>
+			* <p>Attention:</b> If the end of the buffer reached and
+			* you continue reading bytes, to you get 0-bytes.
+			* </p>
+			* @return The read byte.
+			*/
+			unsigned char readByte();
+
+			/**
+			* Read a int or uint value.
+			* <p>This function read all 3 types if int:
+			* <ul><li> positive int
+			* <li> negative int
+			* <li> uint</ul>
+			* To detect, if it was a signed value, look in the type value.
+			* </p>
+			* @param min Size of bytes, which have to use(header is disabled, if min>0).
+			* @return The read value.
+			*/
+			uint64 readInt(int64 min = 0, int8* type = null);
+
+			/**
+			* Get the amount of availabe bytes.
+			* @return Number of bytes left.
+			*/
+			uint64 bytesAvailable() const;
+
+			/**
+			* Set a new size of the buffer.
+			* <p>On decreasing will the data, which are to much,
+			* deleted and the pointer changed, if he outside of
+			* the new size.<br>
+			* On increasing, the new bytes will filled with 0.
+			* </p>
+			* @param value New size.
+			*/
+			void size(uint64 value);
+
+			/**
+			* Set a new size of the byte array.
+			* @param value New size.
+			* @see setSize()
+			*/
+			void length(int64 value);
+
+			/**
+			* Write a string into the buffer.
+			* @param value The string to write.
+			*/
+			void writeString(const String& value);
+
+			/**
+			* Read a string from the buffer.
+			* @return A new <code>String</code> object with the read content.
+			*/
+			String readString();
+
+			/**
+			* Write a float value into the buffer.
+			* @param value The float value to write.
+			*/
+			void writeFloat(float value);
+
+			/**
+			* Read a float value from the buffer.
+			* @return The read float value.
+			*/
+			float readFloat();
+
+			/**
+			* Write a other memory into the buffer.
+			* @param bytes The memory block.
+			* @param length Number of bytes to read.
+			* @param offset Offset of the read memory block(is not the position).
+			*/
+			int64 writeBytes(const char* bytes, int64 length, int64 offset = 0);
+
+			/**
+			* Write a other memory into the buffer.
+			* @param value ByteArray with the data.
+			* @param offset Offset of the read memory block(is not the position of this. It's the position of value).
+			*/
+			int64 writeBytes(ByteArray& value, int64 length = 0);
+
+			/**
+			* Read bytes of the buffer and write it into the memory.
+			* <p>If the length bigger than the rest of the readable bytes,
+			* then will read only the rest bytes.</p>
+			* @param bytes Destination memory(in correct size!).
+			* @param length Number of bytes to read.
+			* @param offset Offset, at which postion will the read bytes written.
+			* @return Number of read bytes.
+			*/
+			int64 readBytes(char* bytes, int64 length, int64 offset = 0);
+
+			/**
+			* Read bytes of the byte array and store it into a other byte array.
+			* @param bytes Destination byte array object.
+			* @param length Number of bytes to read.
+			* @return Numer of read bytes.
+			*/
+			int64 readBytes(ByteArray* bytes, int64 length = 0);
+
+			/**
+			* Compress the buffer.
+			* <p>The buffer is after the compressing not usable solong
+			* <code>uncompress()</code> was not called.<br>
+			* Compress use the zlib compression library.
+			* </p>
+			*/
+			void compress();
+
+			/**
+			* Uncompress the buffer.
+			* <p>Decompress the zlib compressed data block.
+			* </p>
+			*/
+			void uncompress();
+
+			/**
+			* Dump the ByteArray
+			*/
+			String toString();
+
+			/**
+			* Delete me self.
+			*/
+			virtual void destroy()
+			{
+				delete (ByteArray*)this;
+			}
+
+			/**
+			* Implementation of the abstract function via writeBytes.
+			* <p>This function implement the unit writing by using of the
+			* writeBytes(ByteArray...) as default.</p>
+			*/
+			int64 writeData(DataArray& bytes, int64 length = 0);
+
+			/**
+			* Set the postion of the pointer.
+			* <p>If the value to big, it will set automatically to the end.</p>
+			* @param value New position of the pointer.
+			*/
+			virtual void position(int64 value);
+
+			/**
+			* Get the pointer position.
+			* @return The position.
+			*/
+			virtual int64 position() const;
+
+			/**
+			* Get the amount of availabe units.
+			* @return Number of units left.
+			*/
+			virtual int64 available() const;
+
+			/**
+			* Get the size of the buffer.
+			* @see size()
+			* @return Size of the buffer.
+			*/
+			virtual int64 length() const;
+
+			/**
+			 * Remove a part from the data.
+			 * <p>This can help to implement a buffer principle.</p>
+			 * @param offset Startposition of the deletement.
+			 * @param length Amount of data to be delete,
+			 * @return true, if the removing successfull.
+			 */
+			virtual bool splice(int64 offset, int64 length);
+	};
+};
+
+#endif

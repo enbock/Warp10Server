@@ -1,0 +1,99 @@
+/*
+* Event
+*
+*  Created on: 10.04.2011
+*      Author: Endre Bock
+*/
+
+#ifndef SIGNAL_
+#define SIGNAL_
+
+#include <Object>
+
+namespace u
+{
+
+	// forward declaration
+	class EventDispatcher;
+
+	/**
+	* Base signal.
+	* <p>A signal is a running/transporting message between object. This
+	* class is the base class of all signal.<br>
+	* A signal can have attributes. This attribute will be copyied while running
+	* of the signal.
+	* </p>
+	*/
+	class Event : public Object
+	{
+		protected: // attributes
+			friend class EventDispatcher;
+
+			/**
+			* Name of the signal.
+			*/
+			const String* _type;
+			/**
+			* Target of the object.
+			* <p>This will be set on the running moment.</p>
+			*/
+			EventDispatcher* _target;
+
+		public: // attributes and functions
+			/**
+			* Definition for a complete signal.
+			*/
+			static const String COMPLETE;
+
+			/**
+			* Definiton for a progress signal.
+			*/
+			static const String PROGRESS;
+
+			/**
+			* Constructor.
+			*/
+			Event(String const& type);
+
+			/**
+			* Destructor.
+			*/
+			~Event();
+
+			/**
+			* Target of this signal.
+			* @return Pointer to the target,
+			*/
+			EventDispatcher* target();
+
+			/**
+			* Name of the signal.
+			* @return A const reference of the name.
+			*/
+			const String* type();
+
+			/**
+			* Clone the signal.
+			* @return A with new created copy of this signal.
+			*/
+			virtual Event* clone();
+
+			/**
+			* Information about the signal.
+			* @return Info string.
+			*/
+			virtual String toString();
+
+			/**
+			* Destroy this object.
+			*/
+			virtual void destroy();
+
+			/**
+			* The class name.
+			* @return String with the class name.
+			*/
+			virtual String className();
+	};
+}
+#endif /* SIGNAL_ */

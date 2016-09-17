@@ -1,0 +1,92 @@
+/*
+* ServerNetEvent
+*
+*  Created on: 15.07.2011
+*      Author: Endre Bock
+*/
+
+#ifndef SERVERNETSIGNAL_
+#define SERVERNETSIGNAL_
+
+#include <NetEvent>
+#include <EventRoom>
+
+namespace u
+{
+	/**
+	* Warp10Server network protocol signals.
+	* <p>Via the signals of this class are the network basic protocols
+	* implemented.
+	* </p>
+	*/
+	class ServerNetEvent : public NetEvent
+	{
+		public:
+			/**
+			* Event to get a new server control connection.
+			* <p>Via this signal ask a program(eg. Server Admin) for a new network
+			* connection to the server to control the server.<br>
+			* The answer should be a NEW_CONNECTION signal.<br>
+			* A controll connection will etablished via unix sockets. So has the
+			* <code>address</code> to be the filenname of the socket.</p>
+			*/
+			static const String GET_CTRL_CONNECTION;
+
+			/**
+			* Event to receive a new server control network listener.
+			* <p>This signal requests a new server control network listener. If a
+			* network listener with the same address already listening, then will
+			* this signal ignored.<br>
+			* The attribute <code>address</code> contains the filename(and path) on
+			* this the new listener will created. This filename need the client to
+			* connect.<br>
+			* If a new listener was created, then is the answer receivable via
+			* <code>LISTENER</code>.</p>
+			*/
+			static const String GET_CTRL_LISTENER;
+
+			/**
+			* Constructor of a ServerNetEvent Object.
+			* <p>A network signal can used in many different situations. On a new
+			* connection or new listening of incomming connections transports via
+			* the room attribute the new signal room in that the protocol works.<br>
+			* The address and port is eg. necessary on requests for new connections.
+			* <br>If the  data attributes unused, to let them null or empty. When
+			* one of this attributes is necessary is defined by the protocols.
+			* </p>
+			* @see http://drive.ww/Architektur/EARoot/EA1/EA5.html EA/impl./_Protocols
+			* @param type Event type.
+			* @param adress Destination address(hostname, socket file, etc).
+			* @param port Connection port, if necessary.
+			* @param room Event room of protocol.
+			*/
+			ServerNetEvent(String const& type, String address = "", int64 port = 0
+				, EventRoom* room = null);
+
+			/**
+			* Destructor.
+			*/
+			~ServerNetEvent();
+
+			/**
+			* Class name.
+			* @return The class name as String.
+			*/
+			String className();
+
+			/**
+			* Destroy this network signal object.
+			*/
+			void destroy();
+
+			/**
+			* Clone the new signal.
+			* @return A with "new" created copy of this server signal.
+			*/
+			virtual Event* clone();
+
+	};
+}
+
+
+#endif /* SERVERNETSIGNAL_ */

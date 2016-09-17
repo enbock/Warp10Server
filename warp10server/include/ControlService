@@ -1,0 +1,129 @@
+/*
+ * Control Service
+ *
+ *  Created on: 28.10.2012
+ *      Author: Endre Bock
+ */
+
+#ifndef CONTROLSERVICE_
+#define CONTROLSERVICE_
+
+#include <RoomClient>
+#include <NetworkServiceControlPlugin>
+
+namespace u
+{
+	/**
+	 * Module: Service for control connections.
+	 * <p>That is the first module. It handle and implement the behavior for the
+	 * control connections between server and admin. This ist the server side.</p>
+	 * TODO: <p>The module could possibly load dynamically. Create a module base
+	 *       class and put all similar code between modules inside.</p>
+	 */
+	class ControlService : public RoomClient
+	{
+		protected:
+			/**
+			 * Listener room.
+			 */
+			EventRoom* _listenerRoom;
+
+			/**
+			 * Control plugin.
+			 */
+			NetworkServiceControlPlugin _plugin;
+
+		public:
+			/**
+			 * Constructor of service.
+			 */
+			ControlService();
+
+			/**
+			 * Destructor of service.
+			 */
+			~ControlService();
+
+			/**
+			 * Destroy with object.
+			 */
+			void destroy();
+
+			/**
+			 * Get the class name of this object.
+			 */
+			String className();
+
+			/**
+			 * Information about this object.
+			 */
+			String toString();
+
+			/**
+			* Enable the room listeners.
+			* <p>Add the listeners and send a plugin registration.</p>
+			*/
+			void addListeners();
+
+			/**
+			* Disable the room listeners.
+			* <p>Removed the listeners from the room.</p>
+			*/
+			void removeListeners();
+
+		protected:
+			/**
+			 * Event receiver for new listener.
+			 * <p>This function get the listener room and saved them for futrure
+			 * listener communication.</p>
+			 * @param arg The signal object.
+			 */
+			void onListener(Object *arg);
+
+			/**
+			 * Getting of ctrl listener failed.
+			 * @param arg The signal object.
+			 */
+			void onListenerFailed(Object *arg);
+
+			/**
+			 * Listener is gone.
+			 * @param arg The signal object.
+			 */
+			void onListenerClosed(Object *arg);
+
+			/**
+			 * Network is gone.
+			 * @param arg The signal object.
+			 */
+			void onNetworkClosed(Object *arg);
+
+			/**
+			 * Plugin was registered.
+			 * @param arg The signal object.
+			 */
+			void onPluginRegistered(Object *arg);
+
+			/**
+			 * A new connection is comming in.
+			 * @param arg The signal object
+			 */
+			void onNewConnection(Object *arg);
+
+			/**
+			 * A connection will close.
+			 * @param arg The signal object.
+			 */
+			void onConnectionClose(Object *arg);
+
+			/**
+			 * Remove a connection from service.
+			 * <p>This function cleans the events on a connection and will called
+			 * via the CLOSED event.</p>
+			 * @param arg The signal object.
+			 */
+			void onRemoveConnection(Object *arg);
+	};
+}
+
+#endif /* CONTROLSERVICE_ */

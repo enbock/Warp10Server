@@ -1,0 +1,178 @@
+/*
+ * NetworkService
+ *
+ *  Created on: 15.07.2011
+ *      Author: Endre Bock
+ */
+
+#ifndef NETWORKSERVICE_
+#define NETWORKSERVICE_
+
+#include <RoomClient>
+#include <NetworkListener>
+#include <NetworkConnection>
+#include <NetEvent>
+
+namespace u
+{
+	//forward declaration
+	class NetworkServicePlugin;
+
+	/**
+	 * The network service central.
+	 * <p>This call serv all known network object. It starts the listener or
+	 * connect protocol.<br>
+	 * Plugin known special services and create the listener or network
+	 * connection objects. The network service handle the listeners direct against
+	 * the connectes, which need to handle by other objects.<br>
+	 * <table>
+	 * <tr><th>Sending Event</th><th>Description</th></tr>
+	 * <tr><td><code>NetEvent::LISTENER</code></td>
+	 * <td>Send on the connected room after the plugin has been created a new
+	 * listener object.</td></tr>
+	 * <tr><td><code>NetEvent::NEW_CONNECTION</code></td>
+	 * <td>Send on the room after the plugin create a new outgoing connection.</td>
+	 * </tr></table>
+	 * </p>
+	 */
+	class NetworkService : public RoomClient
+	{
+		protected:
+			/**
+			 * List of active connections.
+			 */
+			Vector<NetworkListener*> _listeners;
+
+			/**
+			 * Registered plugins.
+			 */
+			Vector<NetworkServicePlugin*> _plugins;
+
+		public:
+			/**
+			 * Constructor.
+			 * <p>Create the network service object.<br>
+			 * For each signal room is only one network service possible. If you
+			 * set more than one network service in the same room, then you get
+			 * a multiplication of the GET*-protocols.<br>
+			 * <b>Note:</b> Remember, only one network service on a signal room.</p>
+			 */
+			NetworkService();
+
+			/**
+			 * Destructor.
+			 * <p>The destructor close all listener connections. Created network
+			 * connections are not saved on the network service and will still
+			 * alive.
+			 * </p>
+			 */
+			~NetworkService();
+
+			/**
+			 * Default destroyer function.
+			 */
+			void destroy();
+
+			/**
+			 * The name of this class.
+			 * @return The FQCN of this class as String.
+			 */
+			String className();
+
+			/**
+			 * Enable listener.
+			 * <p>This function will called via the <code>room(EventRoom*)</code>
+			 * function, when a new room was set.<br>
+			 * This function calls the a equivalent on the registered plugins.</p>
+			 */
+			void addListeners();
+
+			/**
+			 * Disable listener.
+			 * <p>This function will called via the <code>room(EventRoom*)</code>
+			 * function, when the room will removed.<br>
+			 * This function calls the a equivalent on the registered plugins.</p>
+			 */
+			void removeListeners();
+
+			/**
+			 * Set or remove the signal room.
+			 * @param value New signal room or <code>null</code> to remove.
+			 */
+			void room(EventRoom* value);
+
+			/**
+			 * Register a special network service plugin.
+			 * <p>Over this function fill the programmer the networt service with
+			 * special network functionalities. Each plugin type can only one time
+			 * registered. The detection is applied via the <code>className()</code>.
+			 * A double registration of the same plugin type will be ignored.
+			 * <br><b>Note:</b> All registered plugin will destroyed, whenn the
+			 * service object self is destroing. So the plugin must be a object
+			 * created with new.
+			 * </p>
+			 * @param plugin Network service plugin object, which will add to the
+			 * service.
+			 */
+			virtual void registerNetworkPlugin(NetworkServicePlugin* plugin);
+
+			/**
+			 * Remove a registered plugin object.
+			 * <p>Remove a plugin but let the possible created listeners alive.
+			 * A removing disable only that new connections or listeners can be
+			 * created. To remove the listeners apply the "Release Network
+			 * Listener" - protocol.<br>
+			 * If the plugin already removed, so will the call of this function
+			 * be ignored.
+			 * </p>
+			 * @param plugin Already registered plugin object to remove.
+			 */
+			virtual void removeNetworkPlugin(NetworkServicePlugin* plugin);
+
+			/**
+			 * Plugin API: new connection from plugin.
+			 * <p>This function will be called by a plugin, so that the service
+			 * can create a new connection object via call the plugin's create
+			 * function.
+			 * <br>If no one save the connection, the you get a memory leak.
+			 * </p>
+			 * @param signal The NetEvent object with the data.
+			 * @param plugin The plugin, which received the signal.
+			 */
+			virtual NetworkConnection* doGetConnection(NetEvent* signal,
+				NetworkServicePlugin* plugin);
+
+			/**
+			 * Plugin API: New listener signal from plugin.
+			 * <p>This function will called by a plugin, after it received the
+			 * <code>LISTENER</code> signal.
+			 * </p>
+			 * @param signal The NetEvent object with the data.
+			 * @param plugin The plugin, which received the signal.
+			 */
+			virtual void doGetListener(NetEvent *signal,
+				NetworkServicePlugin* plugin);
+
+		protected:
+
+			/**
+			 * Event API: A listener was destroyed.
+			 * <p>If a listner will destroy then send he a <code>CLOSED</code> signal
+			 * into the listener room.
+			 * </p>
+			 */
+			void onListenerDestroy(Object* arg);
+
+			/**
+			 * Forward destructor.
+			 */
+			void doDestruct();
+
+			/**
+			 * Shutting down the service self.
+			 */
+			void onClose(Object *arg);
+	};
+}
+
+#endif /* NETWORKSERVICE_ */

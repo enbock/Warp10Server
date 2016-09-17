@@ -1,0 +1,92 @@
+/*
+* BufferData
+*
+*  Created on: 28.03.2011
+*      Author: Endre Bock
+*/
+
+#ifndef DATAARRAY_
+#define DATAARRAY_
+
+#include <Object>
+
+namespace u
+{
+	/**
+	* The BufferData is a representation layer of data.
+	* <p>Main helps this class to implement different type of data
+	* for the buffer classes. The BufferData contains the minimum necessary
+	* function to use eg. ByteArray with ByteBuffer in the Stream. Also
+	* allowed this class to use other type of data (like DataBlock-units) in
+	* stream/buffer.</p>
+	*/
+	class DataArray: public Object
+	{
+		protected:
+		public:
+			/**
+			* Set the postion of the pointer.
+			* <p>If the value to big, it will set automatically to the end.</p>
+			* @param value New position of the pointer.
+			*/
+			virtual void position(int64 value) = 0;
+
+			/**
+			* Get the pointer position.
+			* @return The position.
+			*/
+			virtual int64 position() const = 0;
+
+			/**
+			* Get the amount of availabe units.
+			* @return Number of units left.
+			*/
+			virtual int64 available() const = 0;
+
+			/**
+			* Get the size of the buffer.
+			* @see size()
+			* @return Size of the buffer.
+			*/
+			virtual int64 length() const = 0;
+
+			/**
+			* Set a new size of the buffer data.
+			* @param value New size.
+			* @see setSize()
+			*/
+			virtual void length(int64 value) = 0;
+
+			/**
+			* Destroy this object.
+			*/
+			virtual void destroy() = 0;
+
+			/**
+			* Abstract function to write data into this data array.
+			* @param bytes Data object.
+			* @param length Number of data units to write.
+			* @return Number of written data units.
+			*/
+			virtual int64 writeData(DataArray& bytes, int64 length = 0) = 0;
+
+			/**
+			* Read data from this object into the destination data object.
+			* @param byte Destination data object.
+			* @param length Number of data units.
+			* @return Number of read data units.
+			*/
+			virtual int64 readData(DataArray* bytes, int64 length = 0);
+
+			/**
+			 * Remove a part from the data.
+			 * <p>This can help to implement a buffer principle.</p>
+			 * @param offset Startposition of the deletement.
+			 * @param length Amount of data to be delete,
+			 * @return true, if the removing successfull.
+			 */
+			virtual bool splice(int64 offset, int64 length) = 0;
+	};
+}
+
+#endif /* DATAARRAY_ */

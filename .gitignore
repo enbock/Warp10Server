@@ -1,0 +1,8 @@
+*.so*
+*.o
+.idea
+.vscode
+t*
+doc/EA
+warp10server/warp10server
+warp10server/warp10admin

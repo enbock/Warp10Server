@@ -1,0 +1,515 @@
+/*
+* Object.
+*
+*  Created on: 21.02.2011
+*      Author: Endre Bock
+*/
+
+#ifndef OBJECT_
+#define OBJECT_
+
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <vector>
+#include <ios>
+#include <sys/types.h>
+#include <assert.h>
+#include <Mutex>
+#include <string>
+#include <unistd.h>
+
+/**
+* Universal namespace.
+* This namespace contains all classes and structures
+* of the universal libraries(ulibs).
+*/
+namespace u
+{
+#ifndef NDEBUG
+#define trace(text) std::cout << "\033[1m" << (#text?text:"") << "\033[0m" \
+<< std::endl
+#define error(text) std::cerr << "\033[31;1m" << (#text?text:"") << "\033[0m" \
+<< std::endl
+#else
+#define trace(text)
+#define error(text)
+#endif
+	/**
+	* A NULL value.
+	*/
+	#define null NULL
+	/**
+	* Integer 8-bit value.
+	*/
+	typedef int8_t int8;
+	/**
+	* Integer 16-bit value.
+	*/
+	typedef int16_t int16;
+	/**
+	* Integer 32-bit value.
+	*/
+	typedef int32_t int32;
+	/**
+	* Integer 64-bit value.
+	*/
+	typedef int64_t int64;
+
+	/**
+	* Unsigned integer 8-bit value.
+	*/
+	typedef u_int8_t uint8;
+	/**
+	* Unsigned integer 16-bit value.
+	*/
+	typedef u_int16_t uint16;
+	/**
+	* Unsigned integer 32-bit value.
+	*/
+	typedef u_int32_t uint32;
+	/**
+	* Unsigned integer 64-bit value.
+	*/
+	typedef u_int64_t uint64;
+
+	#define MAXINT8		0x7F
+	#define MAXUINT8	0xFF
+	#define MAXINT16	0x7FFF
+	#define MAXUINT16	0xFFFF
+	#define MAXINT32	0x7FFFFFFF
+	#define MAXUINT32	0xFFFFFFFF
+	#define MAXINT64	0x7FFFFFFFFFFFFFFF
+	#define MAXUINT64	0xFFFFFFFFFFFFFFFF
+
+	#define TRIMSPACES " \t\r\n"
+
+	class String;
+
+	/**
+	 * A list of existing objects.
+	 */
+	static std::vector<void*>* __Object_validObjects;
+	/**
+	 * Access mutex for valid objects list.
+	 */
+	static Mutex* __Object_mx_validObjects;
+
+	/**
+	* Object base class.
+	* <p>This class represent the base class of ulibs.
+	* All classes in ulibs have (indirect or direct)
+	* to extend from this class.</&p>
+	*/
+	class Object : public Mutex
+	{
+		public:
+
+			/**
+			* Convert int values to string.
+			* @param value Integer value.
+			* @return String text.
+			*/
+			static String int2string(int);
+
+			/**
+			* Convert a Object pointer to string.
+			* @param value Object pointer.
+			* @return The string text(Pointer is displayed as a number like 0xabc000).
+			*/
+			static String ptr2string(Object*);
+
+			/**
+			* Convert a function pointer to string.
+			* @param value Object pointer.
+			* @return The string text(Pointer is displayed as a number like 0xabc000).
+			*/
+			static String ptr2string(void(Object::*func)(Object*));
+
+			/**
+			* Convert a void pointer to string.
+			* @param value void pointer.
+			* @return The string text(Pointer is displayed as a number like 0xabc000).
+			*/
+			static String ptr2string(void*);
+
+			/**
+			* Default constructor.
+			*/
+			Object();
+
+			/**
+			* Destructor.
+			* <p>Use destroy() to delete a ulib object.</p>
+			*/
+			~Object();
+
+			/**
+			* Default copy constructor.
+			* @param value Source object for copy.
+			*/
+			Object(Object&);
+
+			/**
+			* Default destroyer.
+			* <p>This function has to be implemented in each subclass.</p>
+			*/
+			virtual void destroy();
+
+			/**
+			* Info dumper.
+			*/
+			virtual String toString();
+
+			/**
+			* Name of the class.
+			*/
+			virtual String className();
+
+			/**
+			 * Validate the object, if it still exists or not.
+			 * @param ptr Pointer to object.
+			 * @return True, when object is alive.
+			 */
+			static bool valid(void* ptr);
+
+		protected:
+	};
+
+	/**
+	* Stringclass.
+	* <p>Implemented in Object, because we have name problems with "String"
+	* as file.</p>
+	*/
+	class String : public Object, public std::string
+	{
+		public:
+
+			/**
+			* Default constructor.
+			*/
+			String();
+
+			/**
+			* Constructor for const char values.
+			*/
+			String(const char*);
+
+			/**
+			* Create a copy of the String pointer.
+			*/
+			String(String&);
+
+			/**
+			* Constructor for std::string values.
+			*/
+			String(std::string);
+
+			/**
+			* Constructor for size_t values.
+			* <p>The value will convert to text and not more for arithmetic operations useable.</p>
+			*/
+			String(size_t);
+
+			/**
+			* Constructor for int values.
+			* @see String(size_t);
+			*/
+			String(int);
+
+			/**
+			* Copy constructor.
+			* <p>Create a copy of the values. The Object-part will new created and is not a bit copy.</p>
+			*/
+			String(const String&);
+
+			/**
+			* Constructor for object pointer.
+			* <p>The Object-part of this new string is new created and not a copy from the pointer.</p>
+			*/
+			String(Object*);
+
+			/**
+			* The destructor.
+			* <p>In moment, he makes nothing ;)</p>
+			*/
+			//~String();
+
+			/**
+			* Give a (hope so) copy of this object.
+			* @return Copy of this object.
+			*/
+			virtual String toString();
+
+			/**
+			* Get the length of the text.
+			* @return Length of bytes.
+			*/
+			size_t length() const;
+
+			/**
+			* Save operator to copy a other String into.
+			*/
+			String& operator=(const String&);
+
+			/**
+			* Index operator to acces the text.
+			* @param pos Position of the text character.
+			* @return The character.
+			*/
+			const char& operator[] ( size_t pos ) const;
+
+			/**
+			* Index operator to acces the text.
+			* @param pos Position of the text character.
+			* @return The character.
+			*/
+      char& operator[] ( size_t pos );
+
+			/**
+			* Search in the string for the last position of val.
+			* @param val Search string.
+			*/
+			int64 lastIndexOf(String val, int64 startIndex = MAXINT64);
+
+			/**
+			* Extract a part of the string.
+			* @param startIndex Number of first extracting character.
+			*/
+			String substr(int64 startIndex = 0, int64 len = MAXINT64);
+
+			/**
+			* Remove letters from right.
+			* <p>The default space letters are
+			* <ul><li> Space " "
+			* <li> Tabulator "\t"
+			* <li> Carrige return "\r"
+			* <li> New line "\n"
+			* </ul></p>
+			* @param t Letter(s) for trim.
+			*/
+			String trimRight (const std::string & t = TRIMSPACES);
+
+			/**
+			* Remove letters from left.
+			* <p>The default space letters are
+			* <ul><li> Space " "
+			* <li> Tabulator "\t"
+			* <li> Carrige return "\r"
+			* <li> New line "\n"
+			* </ul></p>
+			* @param t Letter(s) for trim.
+			*/
+			String trimLeft (const std::string & t = TRIMSPACES);
+
+			/**
+			* Remove letters from both sides.
+			* <p>The default space letters are
+			* <ul><li> Space " "
+			* <li> Tabulator "\t"
+			* <li> Carrige return "\r"
+			* <li> New line "\n"
+			* </ul></p>
+			* @param t Letter(s) for trim.
+			*/
+			String trim (const std::string & t = TRIMSPACES);
+
+			/**
+			* Search for a string and replace it.
+			* @param search String for search.
+			* @param replace Replace with that string.
+			*/
+			void replace(String search, String replace);
+
+			/**
+			* Default destroyer.
+			*/
+			virtual void destroy();
+
+			/**
+			* Name of the class.
+			*/
+			virtual String className();
+
+			/**
+			 * Convert string to lower case.
+			 * <p>The original string will not change.</p>
+			 * @return Lower cased string.
+			 */
+			virtual String lowerCase();
+
+			/**
+			 * Convert string to upper case.
+			 * <p>The original string will not change.</p>
+			 * @return Upper cased string.
+			 */
+			virtual String upperCase();
+
+
+		protected:
+			/**
+			* Replace the string object of *this object.
+			* <p>This function save the string in the std::string super class object.</p>
+			* @param value New string.
+			*/
+			void replaceThisString(std::string);
+
+	};
+
+	/**
+	* Vector class.
+	* <p>This class is a template to merge <code>std::vector&lt;T></code>
+	* and <code>Object</code>. Here are no new functionalities.<br>
+	* This class in implement in the Object file to with the same reason of
+	* String.
+	* </p>
+	* @see String
+	*/
+	template<class T>
+	class Vector : public std::vector<T>, public Object
+	{
+		public:
+			/**
+			* Override of scalar operator.
+			*/
+			T operator[](int64 __n)
+			{
+				return this->at(__n);
+			};
+
+			/**
+			* Remove a element from the vector.
+			* @param value Position of element for delete.
+			*/
+			void erase(int64 value)
+			{
+				((std::vector<T>*)this)->erase(this->begin()+value);
+			};
+
+			/**
+			* Remove a element from the vector.
+			* <p>If the element not is the list, this function will do nothing.
+			* If the element multiply times exists, it will delete only the first
+			* one.</p>
+			* @param element The element to delete.
+			* @return Index position at this the element was found. -1 for not found.
+			*/
+			int64 erase(T value)
+			{
+				int64 i,l;
+				l = ((std::vector<T>*)this)->size();
+				for(i=0; i<l; i++)
+				{
+					if(((std::vector<T>*)this)->at(i) == value)
+					{
+						erase(i);
+						return i;
+					}
+				}
+				return -1;
+			}
+
+			/**
+			* Return informations.
+			*/
+			virtual String toString()
+			{
+				String str = "["+className()+"<T>";
+				int64 l;
+
+				l = this->size();
+				str += " length=" + int2string(l);
+				str += "]";
+				return str;
+			};
+
+			/**
+			* Search of a element.
+			* @param value Searching element.
+			* @return Index or -1 if not found.
+			*/
+			int64 indexOf(T value)
+			{
+				int64 l, i;
+				l = this->size();
+				for(i=0; i<l; i++)
+				{
+					if(this->at(i) == value) return i;
+				}
+				return -1;
+			};
+
+			/**
+			* Delete me self.
+			*/
+			virtual void destroy()
+			{
+				delete (Vector<T>*)this;
+			}
+
+			/**
+			* Name of the class.
+			*/
+			virtual String className()
+			{
+				return "u::Vector";
+			}
+
+			/**
+			* Ammount of entries.
+			* @return Number of entries in the vector.
+			*/
+			int64 length()
+			{
+				return this->size();
+			}
+
+			/**
+			* Add a element on the end of the vector.
+			* @param value Element to add.
+			*/
+			void push(T value)
+			{
+				this->push_back(value);
+			}
+
+			/**
+			* Removes the last element and return it.
+			* @return The removed element.
+			*/
+			T pop()
+			{
+				T value = this->back();
+				this->pop_back();
+				return value;
+			}
+
+			/**
+			* Removes the first element end return it.
+			* @return The removed element.
+			*/
+			T shift()
+			{
+				T value = this->front();
+				((std::vector<T>*)this)->erase(this->begin());
+				return value;
+			}
+
+			/**
+			* Add a element on the begin.
+			* @param value Element to add.
+			*/
+			void unshift(T value)
+			{
+				this->insert(0, value);
+			}
+
+	};
+
+}
+
+std::ostream& operator<<(std::ostream& os, u::Object& o);
+
+#endif /* OBJECT_ */

@@ -1,0 +1,108 @@
+/*
+ * NetworkServiceControlPlugin
+ *
+ *  Created on: 18.07.2011
+ *      Author: Endre Bock
+ */
+
+#ifndef NETWORKSERVICECONTROLPLUGIN_
+#define NETWORKSERVICECONTROLPLUGIN_
+
+#include <NetworkServicePlugin>
+
+namespace u
+{
+	/**
+	 * Network Control Plugin.
+	 * <p>This class is the implementation for the control connection via
+	 * UNIX sockets.
+	 * </p>
+	 */
+	class NetworkServiceControlPlugin : public NetworkServicePlugin
+	{
+		public:
+			/**
+			 * Create a control plugin object.
+			 */
+			NetworkServiceControlPlugin();
+
+			/**
+			 * Destructor.
+			 */
+			~NetworkServiceControlPlugin();
+
+			/**
+			 * The class name of this plugin.
+			 * @return String with this class name.
+			 */
+			String className();
+
+			/**
+			 * Standard destructor.
+			 */
+			void destroy();
+
+			/**
+			 * Create a new listener.
+			 * <p>This function implement the creation
+			 * of the network listener object of this type.</p>
+			 * @param address String of the address(socketfile, hostname, etc).
+			 * @param port Port for the connect, if necessary.
+			 * @return The pointer to the created listener object.
+			 */
+			virtual NetworkListener* createNetworkListener(String address,
+				int64 port = 0);
+
+			/**
+			 * Create a incoming connection object.
+			 * <p>This function create a new network connection object for incoming
+			 * connections. This function is static and can be called without
+			 * as object. So is this implementation unique.
+			 * </p>
+			 * @param socket Accepted socket connection to a client.
+			 * @return The new network connection object with all data and saved
+			 * socket pointer.
+			 */
+			static NetworkConnection* createIncomingConnection(Socket* socket);
+
+			/**
+			 * Create a outgoing connection object.
+			 * <p>This function create a new connection to the control server.
+			 * Over the network service API function
+			 * <code>setNewConnection()</code> informs the plugin the service object.
+			 * </p>
+			 * @param address The address to the destination host/socket.
+			 * @param port This value is not used.
+			 * @return The outgoing network connection or null if the connect was
+			 * unsuccessful.
+			 */
+			NetworkConnection* createConnection(String address, int64 port = 0);
+
+			/**
+			 * Enable the room listeners.
+			 * <p>Each time, if a new room was set, will this function be called.</p>
+			 */
+			void addListeners();
+
+			/**
+			 * Disable the room listeners.
+			 * <p>Each time, if a new room will set or remove, will this function be
+			 * called.</p>
+			 */
+			void removeListeners();
+		protected:
+			/**
+			 * Incoming signal for a new control connection.
+			 * @param arg The ServiceNetEvent object which was received.
+			 */
+			void onGetCtrlConnection(Object *arg);
+
+			/**
+			 * Incomming signal for a new lsietener object.
+			 * @param arg The ServiceNetEvent object.
+			 */
+			void onGetCtrlListener(Object *arg);
+	};
+}
+
+#endif /* NETWORKSERVICECONTROLPLUGIN_ */

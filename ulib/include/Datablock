@@ -1,0 +1,202 @@
+/*
+ * Datablock
+ *
+ *  Created on: 02.03.2011
+ *      Author: endre
+ */
+
+#ifndef DATABLOCK_
+#define DATABLOCK_
+
+#include <Callback>
+
+namespace u
+{
+
+	/**
+	* Datablock to save data.
+	* <p>The datablock handle dynamic data objects. The key can defined in runtime.
+	* So you don't need to define an espacially data object to save structured
+	* data.<br>
+	* Realize, that this need more performance. Please think first about, if an
+	* defined database not better for your work.<br>
+	* Use this class, on dynamic data, like hirachies or similar.
+	* </p>
+	* An Example:
+	* <pre>
+	* 	Datablock db;
+	*		db["hello"] = new String("Hello Datablock!");
+	*		db[0] = new String("Save via int index.");
+	*		trace(db.toString());
+	*
+	*		Datablock db2 = db;
+	*		trace(">>"+*(String*)db2["0"]);
+	*		trace(db2.toString());
+	*	</pre>
+	*/
+	class Datablock : public Object
+	{
+		protected:
+			/**
+			* Structure to save the data objects.
+			* <p>This structure helps to save and synchronise the data.<br>
+			* The reference vector save all databojecz, which use the attribute.
+			* So is it possible to detect, when the last user remove this attribute.
+			* In this moment destroys the attribute the contained data and hisself.</p>
+			*/
+			class _attribute
+			{
+				protected:
+					/**
+					 * Flag to not self delete.
+					 */
+					bool _noDelete;
+				public:
+					/**
+					* Name of the attribute.
+					*/
+					String name;
+					/**
+					* Pointer to the data.
+					*/
+					void* value;
+					/**
+					* Flag to mark a u::Object.
+					* <p>Is this flag false, then will the object destroyed as int64
+					* value.</p>
+					*/
+					bool isObject;
+					/**
+					* Reference to the using datablocks.
+					*/
+					Vector<Datablock*> ref;
+					/**
+					* Convert the pointer to a u::Object pointer and return it.
+					*/
+					operator Object*();
+					/**
+					* Convert the pointer to a u::String pointer and return it.
+					*/
+					operator String*();
+					/**
+					* Convert the pointer to a u::Datablock pointer and return it.
+					*/
+					operator Datablock*();
+					/**
+					* Convert the pointer to a int64 value.
+					* <p>The value will be copied and has no relation to the pointer.</p>
+					*/
+					operator int64();
+					/**
+					* Save the u::Object pointer.
+					*/
+					Object* operator=(Object* value);
+					/**
+					* Create a copy of the value and save it inside.
+					*/
+					int64 operator=(int64 value);
+					/**
+					* Destroy the attribute and the data if the last reference removed.
+					* <p>If any pointer in the reference vector, then will do this
+					* function nothing.</p>
+					*/
+					void destroy();
+
+					/**
+					 * Constructor.
+					 * @param keyName Name of attribute.
+					 */
+					_attribute(String keyName);
+
+					/**
+					 * Delete the attribute from all datablocks.
+					 */
+					~_attribute();
+
+				protected:
+					/**
+					* Destroy the value;
+					*/
+					void destroyValue();
+			};
+			/**
+			* List of saved data.
+			*/
+			Vector<_attribute*> _list;
+
+		public:
+			/**
+			* Create a datablock.
+			*/
+			Datablock();
+
+			/**
+			* Create a new datablock and copy the data from value.
+			*/
+			Datablock(Datablock& value);
+
+			/**
+			* Destroy the datablock.
+			*/
+			~Datablock();
+
+			/**
+			* Copy a other datablock data into me.
+			*/
+			Datablock& operator=(Datablock& value);
+
+			/**
+			* Return the name of this class.
+			*/
+			virtual String className();
+
+			/**
+			* Return information about this object.
+			*/
+			virtual String toString();
+
+			/**
+			* Scalar operator to save and read attributes.
+			*/
+			_attribute& operator[](String name);
+
+			/**
+			* Destroy this object.
+			*/
+			virtual void destroy();
+
+			/**
+			 * Get the list of keys.
+			 * @return The key list.
+			 * /
+			Vector<String> getKeys();
+			*/
+
+			/**
+			 * Search, if an key exists.
+			 * @param key Search key.
+			 */
+			virtual bool hasKey(String key);
+
+		protected:
+			/**
+			* Save a attribute in the list.
+			* <p>The function add also this object into the attribute's
+			* reference list.</p>
+			*/
+			void saveAttribute(_attribute *entry);
+
+			/**
+			* Remove a attribute from the list.
+			* <p>Also remove the function the this pointer from the reference lsit.</p>
+			*/
+			void deleteAttribute(_attribute *entry);
+
+			/**
+			* Remove and destroy all attributes.
+			*/
+			void deleteAttributes();
+	};
+}
+
+#endif /* DATABLOCK_ */

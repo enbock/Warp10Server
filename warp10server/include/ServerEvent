@@ -1,0 +1,70 @@
+/*
+* ServerEvent
+*
+*  Created on: 13.06.2011
+*      Author: Endre Bock
+*/
+
+#ifndef SERVERSIGNAL_
+#define SERVERSIGNAL_
+
+#include <Event>
+
+namespace u
+{
+	class ServerEvent : public Event
+	{
+		public:
+			/**
+			 * Pointer to transport/share via the event.
+			 */
+			Object *data;
+
+			/**
+			* Event name for shutdown the server.
+			*/
+			static const String SHUTDOWN;
+
+			/**
+			 * Event name for new network setup.
+			 * <p>On this signal must the data pointer filled with the
+			 * network service plugin object.</p>
+			 */
+			static const String REGISTER_NETWORK_PLUGIN;
+
+			/**
+			 * Event: Network plugin is registered.
+			 */
+			static const String NETWORK_PLUGIN_REGISTERED;
+
+			/**
+			* Constructor of a ServerEvent Object.
+			*/
+			ServerEvent(String const& type);
+
+			/**
+			* Destructor.
+			*/
+			~ServerEvent();
+
+			/**
+			* Class name.
+			* @return The class name as String.
+			*/
+			String className();
+
+			/**
+			* Destroy this server signal object.
+			*/
+			void destroy();
+
+			/**
+			* Clone the server signal.
+			* @return A with "new" created copy of this server signal.
+			*/
+			virtual Event* clone();
+
+	};
+}
+
+#endif /* SERVERSIGNAL_ */

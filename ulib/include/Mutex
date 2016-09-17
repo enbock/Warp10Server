@@ -1,0 +1,91 @@
+/*
+* Mutex.
+* $Id: $
+*/
+
+#ifndef MUTEX_
+#define MUTEX_
+
+#define _MULTI_THREADED
+#include <pthread.h>
+
+namespace u
+{
+	class String;
+
+	/**
+	* Multiple acces unit.
+	* <p>The mutex can be used to serialize a access on a object between
+	* different threads. Only one thread can have a lock of a mutex. All
+	* other thread are stucking solong the mutex isn't unlocked.<br>
+	* With mutex you can get real easy deadlocks. A thread can lock a mutex only
+	* one time. By a second lock without unlocking before you get 100% a
+	* deadlock and the program stuck for ever.
+	* The mutex functionality is a essantial functionality and implement in all
+	* classes which extends direct or indirect from Object.
+	* </p>
+	*/
+	class Mutex
+	{
+		protected:
+			/**
+			* Pthread mutex object.
+			*/
+			pthread_mutex_t _mutex;
+
+			/**
+			* Marker, if locked or not.
+			*/
+			bool _isLocked;
+		public:
+			/**
+			* Default constructor.
+			*/
+			Mutex();
+			/**
+			* Default destructor.
+			*/
+			~Mutex();
+			/**
+			* Default destroyer.
+			*/
+			virtual void destroy();
+
+			/**
+			* Ask and get the lock.
+			*/
+			bool lock();
+
+			/**
+			* Ask and get the lock.
+			* <p>In compare with lock(), didn't wait this function.</p>
+			* @return true indicated a successful locking.
+			*/
+			bool tryLock();
+
+			/**
+			* Release the lock.
+			*/
+			void unlock();
+
+			/**
+			* Name of this class.
+			*/
+			virtual String className();
+
+		protected:
+			/**
+			 * Forward destructor.
+			 * <p>For the situation, that classes in the destroy progress need to
+			 * class virtual implementations of subclasses, they HAVE TO use
+			 * this function as destructor.<br>
+			 * <b>Attantion:</b> If a class use the forward destructor, all follow
+			 * subclass HAS TO use the forward destructor to.</p>
+			 */
+			virtual void doDestruct();
+
+	};
+}
+
+
+#endif /* MUTEX_ */

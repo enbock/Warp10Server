@@ -1,0 +1,110 @@
+/*
+* RoomClient
+*
+*  Created on: 15.07.2011
+*      Author: Endre Bock
+*/
+
+#ifndef ROOMCLIENT_
+#define ROOMCLIENT_
+
+#include <Object>
+#include <EventRoom>
+
+namespace u
+{
+	/**
+	* Client of a signal room.
+	* <p>This class represent a object, who is a client of a signal room.<br>
+	* A client is a to signal room connected object. Connected means, that the
+	* client object known the signal room(saved pointer). A subclass can now add
+	* signal observer(listeners) to this room.<br>
+	* This class is a abstract class. By implementing of <code>addListeners()</code>
+	* and <code>removeListeners</code> make you the room client workable.
+	* <br>
+	* <b>Note:</b> This class is not thread safe.
+	* </p>
+	*/
+	class RoomClient : public Object
+	{
+		protected:
+			/**
+			* Current signal room.
+			* <p>This is the pointer to the current signal room. If no room
+			* was set, then is this pointer <code>null</code>.
+			* </p>
+			*/
+			EventRoom *_room;
+		public:
+			/**
+			* Constructor.
+			* <p>Create a new signal room client. The room need to be set from
+			* outside via
+			*/
+			RoomClient();
+
+			/**
+			* Destructor.
+			* <p>Remove the signal room pointer.</p>
+			*/
+			~RoomClient();
+
+			/**
+			* Copy constructor.
+			* <p>Create a new signal room client object and set the room from
+			* the others one.</p>
+			* @param value Other(or source) signal room client object.
+			*/
+			RoomClient(RoomClient &value);
+
+			/**
+			* Default destroyer.
+			* <p>Destroy this signal room client object.</p>
+			*/
+			void destroy();
+
+			/**
+			* Classname of this object.
+			* @return The FQCN in a string object.
+			*/
+			String className();
+			/**
+			* Copy operator.
+			* <p>Replaces the current room with the others one.</p>
+			* @param value Other room client object.
+			* @return Reference to the current room client.
+			*/
+			RoomClient& operator=(RoomClient& value);
+
+			/**
+			* Set a new signal room.
+			* <p>Sets the current room.</p>
+			* @param value A new signal room pointer or <code>null</code> to
+			* remove the current one.
+			*/
+			virtual void room(EventRoom* value);
+
+			/**
+			* Enable the room listeners.
+			* <p>Each time, if a new room was set, will this function be called.<br>
+			* <b>Note:</b> This function is abstract.</p>
+			*/
+			virtual void addListeners() = 0;
+
+			/**
+			* Disable the room listeners.
+			* <p>Each time, if a new room will set or remove, will this function be
+			* called.<br>
+			* <b>Note:</b> This function is abstract.</p>
+			*/
+			virtual void removeListeners() = 0;
+
+		protected:
+			/**
+			 * Forward destructor.
+			 */
+			void doDestruct();
+	};
+}
+
+#endif /* ROOMCLIENT_ */

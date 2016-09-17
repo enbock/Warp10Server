@@ -1,0 +1,108 @@
+/*
+ * Callback
+ *
+ *  Created on: 02.03.2011
+ *      Author: Endre Bock
+ */
+
+#ifndef CALLBACK_
+#define CALLBACK_
+
+#include <Object>
+
+namespace u
+{
+
+	#define cb_cast(func) static_cast<void (Object::*)(Object*)>(func)
+
+	/**
+	* A call of a function with a object.
+	* <p>The function table and the object are seperated in the memory.<br>
+	* This class allow to call a function and connect the object to the this
+	* pointer.<br>
+	* <b>Note:</b> Never call a function with a incorrect object. ;)
+	* </p>
+	*/
+	class Callback : public Object
+	{
+		public:
+			/**
+			* Target object.
+			* <p>The object has to have the same class then the function.</p>
+			*/
+			Object* target;
+
+			/**
+			* Pointer of the function to call.
+			* <p>The function must be defined in a class, which are inherited of
+			* u::Object.</p>
+			*/
+			void(Object::*function)(Object*);
+
+			/**
+			* Data for the fucntion.
+			* <p>A callback function have exact one argument. This argument is this
+			* object. Is this pointer null, receive the called function a null pointer
+			* in his argument.</p>
+			*/
+			Object* arg;
+
+			/**
+			* Create a new callback object.
+			* @param obj The target object, which serv the function.
+			* @param func The function, which will be called.
+			* @param argument A optinaly argument to transport to the called function.
+			*/
+			Callback(Object* obj, void(Object::*func)(Object*)
+					, Object *argument = null);
+
+			/**
+			* Create a empty callback object.
+			*/
+			Callback();
+
+			/**
+			* Copy operator.
+			*/
+			//Callback& operator=(Callback& value);
+
+			/**
+			* Copy constructor.
+			*/
+			Callback(const Callback& value);
+
+			/**
+			* Excecute the all.
+			* @return Return pointer from the called function.
+			*/
+			void call(void);
+
+			/**
+			* Compare with a other callback object.
+			* <p>Sometimes is it needed to copy a callback object. A compare of pointer
+			* is not more possible. So we compare the values of this and the other
+			* Callback.
+			* If they all equal, then return this operator a true.
+			* </p>
+			* @return <code>true</code> if all 3 pointer equal.
+			*/
+			bool operator==(const Callback& other) const;
+
+			/**
+			* Default destroyer.
+			*/
+			virtual void destroy();
+
+			/**
+			* Infos about this object.
+			*/
+			virtual String toString();
+
+			/**
+			* Classname.
+			*/
+			virtual String className();
+	};
+}
+
+#endif /* CALLBACK_ */

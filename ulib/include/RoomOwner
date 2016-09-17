@@ -1,0 +1,78 @@
+/*
+* RoomOwner
+*
+*  Created on: 13.06.2011
+*      Author: Endre Bock
+*/
+
+#ifndef ROOMOWNER_
+#define ROOMOWNER_
+
+#include <EventRoom>
+
+namespace u
+{
+	/**
+	* Owner of a signal room.
+	* <p>
+	* This class creates and owns a signal room. The room will create direct
+	* on instanciating of the class.
+	* </p>
+	*/
+	class RoomOwner : public Object
+	{
+		protected:
+			/**
+			* The signal room object self.
+			*/
+			EventRoom _room;
+
+		public:
+			/**
+			* Constructor.
+			* <p>Create the signal owner object.</p>
+			*/
+			RoomOwner();
+			/**
+			* Destructor.
+			* <p>
+			* Destroy the signal owner and signal room object.
+			* </p>
+			*/
+			~RoomOwner();
+			/**
+			* The copy constructor.
+			* <p>Creates and duplicate a RoomOwner.</p>
+			* @value The source object.
+			*/
+			RoomOwner(RoomOwner& value);
+			/**
+			* Copy operator.
+			* <p>Copy the other object into this one.</p>
+			* @value The source object.
+			* @return A reference to this object.
+			*/
+			RoomOwner& operator=(RoomOwner& value);
+			/**
+			* Return the name of this class.
+			* @return The class name as String.
+			*/
+			String className();
+			/**
+			* Destroy this object.
+			*/
+			void destroy();
+			/**
+			* The signal room object.
+			* @return A pointer to the signal room.
+			*/
+			EventRoom* room();
+			/**
+			* Dump some informations about this object.
+			* @return A String with informations.
+			*/
+			String toString();
+	};
+}
+
+#endif /* ROOMOWNER_ */

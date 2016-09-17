@@ -1,0 +1,306 @@
+/*
+* EventDispatcher.cpp
+*
+*  Created on: 10.04.2011
+*      Author: Endre Bock
+*/
+
+#include <EventDispatcher>
+
+using namespace u;
+
+EventDispatcher::_signalVector::_signalVector()
+{
+	type = null;
+}
+
+EventDispatcher::_signalVector::_signalVector(const _signalVector& value)
+{
+	type = value.type;
+	list = value.list;
+}
+
+
+EventDispatcher::EventDispatcher() : Object()
+{
+
+}
+
+EventDispatcher::EventDispatcher(EventDispatcher& value) : Object()
+{
+	operator = (value);
+}
+
+u::EventDispatcher::~EventDispatcher()
+{
+	int8 c = 0;
+	lock();
+	/*
+	 * Be so long alive, so long any bindings exists.
+	 * DO A CLEAN PROGRMMING!
+	 */
+	while(hasEventListener())
+	{
+#ifndef NDEBUG
+		if(c == 0)
+			trace(className()+": Has "+int2string(_signalList.length())+" binder types.");
+#endif
+		int64 i,l;
+		for(i=0, l=_signalList.length(); i<l; i++)
+		{
+			_signalVector* vec = &_signalList.at(i);
+#ifndef NDEBUG
+			if(c == 0)
+			{
+				String out = className() + ": Bind type " + int2string(i) + " is "
+					+ (*vec->type) + " with "	+ int2string(vec->list.length())
+					+ " binder" + (vec->list.length() > 1 ? "s" : "")
+					+ " on target";
+#endif
+			  int64 vl, vi;
+			  for(vi=0, vl = vec->list.length(); vi < vl; vi++)
+			  {
+			  	// autoremove on invalid target
+			  	if(!valid(vec->list.at(vi).target))
+			  	{
+#ifndef NDEBUG
+			  		trace(
+			  			className() + "::~EventDispatcher: Remove target "
+			  			+ ptr2string(vec->list.at(vi).target) + " from list "
+			  			+ (*vec->type)
+						);
+#endif
+			  		vec->list.erase(vi);
+			  		vl = vec->list.length();
+			  		vi--;
+			  		if(vec->list.empty())
+			  		{
+			  			delEventVector(vec->type);
+			  			l = _signalList.length();
+			  			i--;
+			  			break;
+			  		}
+			  	}
+#ifndef NDEBUG
+			  	else
+			  	{
+			  		out += " "+int2string(vi)+": "+vec->list.at(vi).target->toString();
+				  	if(vi+1 != vl) out += " and";
+			  	}
+#endif
+			  }
+#ifndef NDEBUG
+			  trace(out+".");
+#endif
+			}
+		}
+		unlock();
+#ifndef NDEBUG
+		c++;
+		if(c>=90) c=0;
+#endif
+		usleep(1000000/90);
+		lock();
+	}
+	unlock();
+}
+
+EventDispatcher& EventDispatcher::operator=(EventDispatcher& value)
+{
+	int64 i, l, j, m;
+	_signalVector *src;
+	Vector<Callback> *dst;
+
+	value.lock();
+	lock();
+
+	l = value._signalList.size();
+	for(i=0; i<l; i++)
+	{
+		src = &value._signalList.at(i);
+		dst = getEventVector(src->type);
+		if(dst == null)
+		{
+			dst = addEventVector(src->type);
+		}
+		m = src->list.size();
+		for(j=0; j<m; j++)
+		{
+			dst->push_back(src->list.at(j));
+		}
+	}
+
+	unlock();
+	value.unlock();
+	return *this;
+}
+
+void EventDispatcher::addEventListener(const String& type
+		, Callback callback)
+{
+	int i, l;
+	Vector<Callback>* vec;
+
+	lock();
+
+	vec = getEventVector(&type);
+	if(vec == null)
+	{
+		vec = addEventVector(&type);
+	}
+
+	l = vec->size();
+
+	for(i=0; i<l; i++)
+	{
+		if(vec->at(i) == callback)
+		{
+			unlock();
+			return;
+		}
+	}
+
+	Callback tmp = callback;
+	vec->push_back(callback);
+	unlock();
+}
+
+void EventDispatcher::removeEventListener(const String& type
+		, Callback callback)
+{
+	int i, l;
+	Vector<Callback>* vec;
+
+	//if(hasEventListener(type) == false) return;
+
+	lock();
+
+	vec = getEventVector(&type);
+	if(vec == null)
+	{
+		unlock();
+		return;
+	}
+
+	l = vec->size();
+
+	for(i=0; i<l; i++)
+	{
+		if(vec->at(i) == callback)
+		{
+			vec->erase(i);
+			break;
+		}
+	}
+
+	if(vec->empty()) delEventVector(&type);
+
+	unlock();
+}
+
+bool EventDispatcher::hasEventListener(const String& type)
+{
+	lock();
+	bool ret = getEventVector(&type) != null;
+	unlock();
+
+	return ret;
+}
+
+Event* EventDispatcher::dispatchEvent(Event *signal)
+{
+	lock();
+	trace("DispatchEvent: "+*(signal->_type));
+
+	Vector<Callback>* pVec = getEventVector(signal->_type);
+	if(pVec != null)
+	{
+		Vector<Callback> vec = *pVec;
+		unlock();
+
+		int64 i=0, l = vec.size();
+		for(i=0; i<l; i++)
+		{
+			Callback cb = vec.at(i);
+			Event* ev = signal->clone();
+			ev->_target = this;
+			cb.arg = ev;
+
+			if(ThreadSystem::create(&cb) == false)
+			{
+				// thread system is terminating
+				ev->destroy();
+			}
+		}
+
+		return signal;
+	}
+	else
+	{
+		//trace("\033[32mno listener for "+*signal->type());
+	}
+	unlock();
+	return signal;
+}
+
+Vector<Callback>* EventDispatcher::getEventVector(const String* type)
+{
+	int64 i, l;
+
+	l = _signalList.size();
+	for(i=0; i<l; i++)
+	{
+		_signalVector* entry = &_signalList.at(i);
+		if(entry->type == type) return &(entry->list);
+	}
+	return null;
+}
+
+Vector<Callback>* EventDispatcher::addEventVector(const String* type)
+{
+	_signalVector vec;
+	int64 i;
+
+	vec.type = type;
+	i = _signalList.size();
+	_signalList.push_back(vec);
+	return &(_signalList.at(i).list);
+}
+
+bool u::EventDispatcher::hasEventListener()
+{
+	return _signalList.length() > 0;
+}
+
+void EventDispatcher::delEventVector(const String* type)
+{
+	int64 i, l;
+
+	l = _signalList.size();
+	for(i=0; i<l; i++)
+	{
+		_signalVector* entry = &_signalList.at(i);
+		if(entry->type == type)
+		{
+			_signalList.erase(i);
+			return;
+		}
+	}
+}
+
+String EventDispatcher::className()
+{
+	return "u::EventDispatcher";
+}
+
+String EventDispatcher::toString()
+{
+	String str = "[" + className();
+	str += "]";
+	return str;
+}
+
+void EventDispatcher::destroy()
+{
+	delete (EventDispatcher*)this;
+}

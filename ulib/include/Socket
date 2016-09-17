@@ -1,0 +1,430 @@
+/*
+* Socket
+*
+*  Created on: 13.07.2011
+*      Author: Endre Bock
+*/
+
+#ifndef SOCKET_
+#define SOCKET_
+
+#ifndef SOCKET_MAX_CLIENTS
+/**
+* Default value of maximum waiting clients while listening.
+*/
+#define SOCKET_MAX_CLIENTS 50000
+#endif
+
+#ifndef SOCKET_RECV_BUFFER
+/**
+* Default value of the size for the receiving buffer.
+*/
+#define SOCKET_RECV_BUFFER 1024
+#endif
+
+#undef __FD_SETSIZE
+#define	__FD_SETSIZE		102400
+
+#include <ByteArray>
+#include <sys/socket.h>
+#include <sys/poll.h>
+
+namespace u
+{
+	/**
+	* Network sockets.
+	* <p>This class represent a facate class design for socket implementations.
+	* All socket functions are collected in this class. The Socket class isn't
+	* thread safe. For a normal using is a project implementation necessary.<br>
+	* The goal of this class is to serv all socket functionality so easy than
+	* possible.<br>
+	* With this socket class you can serv connection or connect to a server. So
+	* use this for client and server implementations.<br>
+	* The datatransport goes via byte arrays.<br>
+	* <br>
+	* In follow examples for client and server basics:<br>
+	* <b>Example 1</b>; Download of a webpage:
+	* <pre>Socket *_s;
+	trace("Create a socket to a webserver");
+	_s = new Socket(AF_INET, "itbock.de", 80);
+
+	trace("Create send message");
+	ByteArray *ar = new ByteArray();
+	String msg("GET / HTTP/1.1\nConnection: close\nHost: www.itbock.de\n\n");
+	ar->writeBytes(msg.c_str(),msg.length());
+	trace(ar->toString());
+
+	trace("Connect");
+	if(_s->connect()) trace("Connected to "+_s->hostip()); else error("Failed.");
+	ar->position(0);
+
+	trace("send");
+	trace(int2string(_s->send(ar))+" sent.");
+
+	// cleanup
+	ar->destroy();
+	ar = new ByteArray();
+
+	trace("read");
+	while(_s->read(ar)) {}
+	ar->position(0);
+	char *buffer = new char[ar->bytesAvailable()+1];
+	buffer[ar->bytesAvailable()] = 0;
+	ar->readBytes(buffer, ar->bytesAvailable());
+	trace(buffer);
+	delete[] buffer;
+
+	_s->destroy();
+	ar->destroy();</pre>
+	* The next example is a little server, who answer the first connection and
+	* close after them:
+	* <pre>Socket *_s;
+	trace("Create socket");
+	_s = new Socket(AF_INET, "0.0.0.0", 80);
+	if(_s->listen()) trace("Bind + Listen ok."); else error("Listen error");
+
+	Socket *in;
+
+	//while(true)
+	{
+		in = _s->accept();
+		if(in)
+		{
+			trace("Client connected. "+in->hostip());
+
+			ByteArray read;
+			while(!read.length())
+			{
+				while(in->read(&read));
+			}
+
+			char *buffer;
+			read.position(0);
+			buffer = new char[read.length()+1];
+			buffer[read.length()] = 0;
+			read.readBytes(buffer, read.length());
+			trace("Received: "+String(buffer));
+
+			ByteArray send;
+			String msg("HTTP/1.1\nContent-Type: text/plain\nConnection: close\n\nThis is a Test server.\nYou send follow text:\n"+String(buffer));
+			delete[] buffer;
+			send.writeBytes(msg.c_str(), msg.length());
+			send.position(0);
+			while(send.bytesAvailable()) in->send(&send);
+			trace("Answer sent.");
+
+			in->close();
+			in->destroy();
+		}
+		else
+		{
+			error("Error on listening.");
+		}
+	}
+
+	_s->destroy();
+	* </pre>
+	* </p>
+	*/
+	class Socket : public Object
+	{
+		protected:
+			/**
+			* Descriptor of the socket.
+			* <p>If this value -1, then the socket wasn't created sucessfully.</p>
+			*/
+			int32 _descriptor;
+
+			/**
+			* Domain.
+			*/
+			int32 _domain;
+
+			/**
+			* Protocol.
+			*/
+			int32 _protocol;
+
+			/**
+			* Type.
+			*/
+			int32 _type;
+
+			/**
+			* Connection data.
+			*/
+			void *_addr;
+
+			/**
+			* Size of address description.
+			*/
+			socklen_t _addrLen;
+
+			/**
+			* Connection descriptor.
+			*/
+			int32 _con;
+
+			/**
+			* Hostname.
+			*/
+			String _hostname;
+
+			/**
+			*´Port.
+			*/
+			int64 _port;
+
+			/**
+			* A flag, for close cleanup.
+			* <p>Each time, if a new socket onject created, create it a socket
+			* file descriptor. If the socket never used, like listen or
+			* connect, then helps this flag the destructore to detect this.</p>
+			*/
+			bool _neverUsed;
+
+			/**
+			 * Flag for sending in progress.
+			 */
+			bool _isSending;
+
+		public:
+			/**
+			* Number of clients on a listen queue.
+			* <p>When the socket is used as server(listen) socket, then
+			* define this value the amount of clients in the connect
+			* queue.<br>
+			* The default value is defined by <code>SOCKET_MAX_CLIENTS</code>.</p>
+			*/
+			int32 maxWaitingClients;
+
+			/**
+			* Receiving buffer size.
+			* <p>When the socket is reading data it need to buffer the data before
+			* it can be saved in a byte array. This value define, how big the
+			* buffe will be on each read progress.<br>
+			* The default value is defined by <code>SOCKET_RECV_BUFFER</code>.</p>
+			*/
+			int64 receiveBufferSize;
+
+
+			/**
+			* Default constructor.
+			* <p>The constructore create a internal socket descriptor as facate to
+			* the Unix socket library.<br>
+			* The agruments using values direct from the library. The domain specfied
+			* the kind of socket(local, internet, etc). The type set the semantic
+			* of the communication. The last parameter defnes the procotol which will
+			* used. Use <code>getProtocolByName()</code> to get the wanted number or
+			* use 0 for <b>ip</b>(internet protocol).<br>
+			* In follow a short table for domain and type value.
+			* <table border=1>
+			* 	<tr>
+			* 		<th>domain</th><th>Description</th>
+			* <td>AF_UNIX, AF_LOCAL</td><td>Local communication</td>
+			* <td>AF_INET</td><td>IPv4 Internet protocols</td>
+			* <td>AF_INET6</td><td>IPv6 Internet protocols</td>
+			* <td>AF_PACKET</td><td>Low level packet interface</td>
+			* 		<th>type</th><th>Description</th>
+			* <td>SOCK_STREAM</td><td>Provides sequenced, reliable, two-way,
+			* connection-based byte streams. An out-of-band data transmission
+			* mechanism may be supported.</td>
+			* <td>SOCK_DGRAM</td><td>Supports datagrams (connectionless, unreliable
+			* messages of a fixed maximum length).</td>
+			* <td>SOCK_RAW</td><td>Provides raw network protocol access.</td>
+			* 	</tr>
+			* </table>
+			* Sockets support more values. See <a
+			* href="http://www.linuxhowtos.org/manpages/2/socket.htm">socket man
+			* pages</a> for more informations.
+			* </p>
+			* @param domain Socket domain(local, internet, etc).
+			* @param hostname String with name hostname or other host description.
+			* @param port Port, which is used for connection/listening.
+			* @param type Transport type.
+			* @param protocol Protocol, which use the socket.
+			* @see http://www.linuxhowtos.org/manpages/2/socket.htm
+			*/
+			Socket(
+				int32 domain = PF_LOCAL
+				, String hostname = "localhost"
+				, int64 port = 0
+				, int32 type = SOCK_STREAM
+				, int32 protocol = 0
+			);
+
+			/**
+			* Default destructor.
+			*/
+			~Socket();
+
+			/**
+			* Copy constructor.
+			*/
+			Socket(Socket&);
+
+			/**
+			* Copy operator.
+			*/
+			Socket& operator=(Socket&);
+
+			/**
+			* Return the class name of Socket.
+			* @return FQCN as string.
+			*/
+			String className();
+
+			/**
+			* Destroyer.
+			* <p>Destroys this object.</b>
+			*/
+			void destroy();
+
+			/**
+			* Get the protocol number by name.
+			* <p>This function acquire the protocol number
+			* for the protocol name.</p>
+			* @see /etc/protocols
+			* @see http://www.linuxhowtos.org/manpages/3/getprotoent.htm
+			*/
+			static int32 getProtocolByName(String name);
+
+			/**
+			* Connect the socket to a host.
+			* <p>The connect function has diffent connect mechanism. The election
+			* of the connect mechanism will be via the type while creating this
+			* socket object.<br>
+			* On internet connection (AF_INET and AF_INET6) resolv this function
+			* the hostname and connect to the first working IP.<br>
+			* On local connection(AF_UNIX or AF_LOCAL) conains the hostname the
+			* path to the socket file.
+			* </p>
+			* @return <code>true</code> if the connection success.
+			*/
+			bool connect();
+
+			/**
+			* Connection flag.
+			* <p>This flag returns <code>true</code> when the socket is
+			* connected. Otherwise <code>false</code>.
+			* </p>
+			* @return <code>true</code> on connection.
+			*/
+			bool isConnected();
+
+			/**
+			* Close the current connection.
+			* <p>When the socket is connected or bound then close/release
+			* this function the connection.<br>
+			* A close() call on a already closed socket will ignored.
+			* </p>
+			*/
+			void close();
+
+			/**
+			* Start the listening on the socket.
+			* <p>This function bind the socket and start the listening. A
+			* listening socket is marked as connected. You can use a socket
+			* only for listing or for contections.
+			* </p>
+			*/
+			bool listen();
+
+			/**
+			* Send byte data on the socket.
+			* <p>This function send the data from the byte array on the socket.<br>
+			* It is possible, that the socket don't send the complete data. The
+			* ammount of sent data return this function. Also set the pointer of
+			* the byte array to the position behind the last sent byte.<br>
+			* Send or receiving of data is only on connected sockets possible. Sending
+			* on a listen socket create unprecomputeable effects.
+			* </p>
+			* @param data ByteArray object with the data for send.
+			* @return Ammount of send data or -1 on error.
+			*/
+			int64 send(ByteArray *data);
+
+			/**
+			* Read data from the socket.
+			* <p>This function read the next incoming data from the socket.<br>
+			* The received data will saved in the byte array.<br>
+			* You can only on connected sockets receive data. On listing socket
+			* create this function unprecomputable effects.
+			* </p>
+			* @param data ByteArray object to save the received data.
+			* @return Ammount of read data or -1 on error.
+			*/
+			int64 read(ByteArray *data);
+
+			/**
+			* Hostname.
+			*/
+			String hostname();
+
+			/**
+			* Host ip.
+			*/
+			String hostip();
+
+			/**
+			* Port.
+			*/
+			int64 port();
+
+			/**
+			* Accept the next client connection.
+			* <p>This function can only used on a listening socket. By default
+			* wait this function for the first incomming client. So don't call
+			* this in the main thread ;).<br>
+			* The incomming connection will be connected to a new socket. The
+			* new socket will returned.
+			* </p>
+			* @return Socket object on incomming connection or null on error or
+			* empty client queue, if the socket don't wait for accept.
+			*/
+			Socket* accept();
+
+			/**
+			 * Copy of description value.
+			 * @return current descriptor value.
+			 */
+			int32 descriptor();
+
+		private:
+			/**
+			 * Initializer.
+			 *
+			 * @param domain Socket domain(local, internet, etc).
+			 * @param hostname String with name hostname or other host description.
+			 * @param port Port, which is used for connection/listening.
+			 * @param type Transport type.
+			 * @param protocol Protocol, which use the socket.
+			 */
+			void init(
+				int32 domain
+				, String hostname
+				, int64 port
+				, int32 type
+				, int32 protocol
+			);
+
+		protected:
+			/**
+			* Destructor implementation.
+			* <p>This function implement the cleanup for the destruction. This means
+			* that the socket will closed and all data structure delete.
+			* </p>
+			*/
+			void destructor();
+
+			/**
+			* Check for incomming data.
+			* <p>This little function check on a connected socket if any
+			* data in the incoming queue.<p>
+			* @return <code>true</code> on data, otherwise <code>false</code>
+			*/
+			bool hasIncomingData();
+	};
+}
+
+#endif /* SOCKET_ */

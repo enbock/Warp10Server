@@ -1,0 +1,60 @@
+/*
+* EventRoom
+*
+*  Created on: 13.06.2011
+*      Author: Endre Bock
+*/
+
+#ifndef SIGNALROOM_
+#define SIGNALROOM_
+
+#include <EventDispatcher>
+
+namespace u
+{
+	/**
+	* A signal room.
+	* <p>
+	* The signal room is a communication connection point. Object can observ
+	* signal on the room or can dispatch signals into the room. Inside a signal
+	* room is it possible to use multiple types of signal protocols. The signal
+	* protocol is the definitions how to react on signals. So can be implement
+	* a data transfer without that the sender and receiver has references
+	* from each others. Also is it imaginatable that a protocol is implement
+	* via more than 2 objects with dynamic object switching, like it is defined
+	* in the protocol.<br/>
+	* If a sender will known, if a receiver object exists, so he can call the
+	* <code>hasEventListener()</code> function with the protocol start event.
+	* If a sender has to check or not, is depend of the implementation situation.
+	* </p>
+	* @see EventDispatcher::hasEventListener()
+	*/
+	class EventRoom : public EventDispatcher
+	{
+		public:
+			/**
+			* Create a signal room object.
+			* @see EventDispatcher::EventDispatcher()
+			*/
+			EventRoom();
+			/**
+			* Destroy the signal room object.
+			*/
+			~EventRoom();
+			/**
+			* Destroy a dynamic signal room object.
+			*/
+			void destroy();
+			/**
+			* Class name.
+			* @return The class name as String.
+			*/
+			String className();
+			/**
+			 * Dump object
+			 */
+			String toString();
+	};
+}
+
+#endif /* SIGNALROOM_ */
