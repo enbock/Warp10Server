@@ -12,6 +12,10 @@
 #include <NetworkService>
 #include <NetworkTransferHandler>
 
+#ifndef FPS
+#define FPS 90
+#endif
+
 namespace u
 {
 	void programExit();
@@ -19,9 +23,9 @@ namespace u
 
 	/**
 	 * Event handler.
-	 * <p>This function handles the signal from the operating system and calls
+	 * <p>This function handles the event from the operating system and calls
 	 * specified events.<br>
-	 * In follow the list of activies for the signals:
+	 * In follow the list of activies for the events:
 	 * <ul>
 	 * 	<li> SIGINT - Terminate the program and abort all connection.</li>
 	 * </ul>
@@ -115,7 +119,7 @@ namespace u
 
 			/**
 			 * Server closed the connection.
-			 * @param arg The signal object.
+			 * @param arg The event object.
 			 */
 			void onServerClose(Object* arg);
 

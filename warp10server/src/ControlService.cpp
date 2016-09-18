@@ -14,8 +14,8 @@ using namespace u;
 
 void u::ControlService::onListener(Object* arg)
 {
-	NetEvent* signal = (NetEvent*)arg;
-	EventRoom* room = signal->room();
+	NetEvent* event = (NetEvent*)arg;
+	EventRoom* room = event->room();
 
 	lock();
 	_listenerRoom = room;
@@ -31,7 +31,7 @@ void u::ControlService::onListener(Object* arg)
 		, Callback(this, cb_cast(&ControlService::onNewConnection))
 	);
 
-	signal->destroy();
+	event->destroy();
 }
 
 void u::ControlService::onListenerClosed(Object* arg)
@@ -88,9 +88,9 @@ void u::ControlService::addListeners()
 		, Callback(this, cb_cast(&ControlService::onNetworkClosed))
 	);
 
-	ServerEvent signal(ServerEvent::REGISTER_NETWORK_PLUGIN);
-	signal.data = &_plugin;
-	_room->dispatchEvent(&signal);
+	ServerEvent event(ServerEvent::REGISTER_NETWORK_PLUGIN);
+	event.data = &_plugin;
+	_room->dispatchEvent(&event);
 }
 
 void u::ControlService::removeListeners()
@@ -164,40 +164,40 @@ void u::ControlService::onListenerFailed(Object* arg)
 
 void u::ControlService::onNewConnection(Object *arg)
 {
-	NetEvent* signal = (NetEvent *) arg;
-	// Its possible, that connection is already deleted. (To slow signal...)
-	if(valid(signal->room()))
+	NetEvent* event = (NetEvent *) arg;
+	// Its possible, that connection is already deleted. (To slow event...)
+	if(valid(event->room()))
 	{
-		signal->room()->addEventListener(
+		event->room()->addEventListener(
 			NetEvent::CLOSE_REQUIRED
 			, Callback(this, cb_cast(&ControlService::onConnectionClose))
 		);
 
-		signal->room()->addEventListener(
+		event->room()->addEventListener(
 			NetEvent::CLOSED
 			, Callback(this, cb_cast(&ControlService::onRemoveConnection))
 		);
 	}
-	signal->destroy();
+	event->destroy();
 }
 
 void u::ControlService::onConnectionClose(Object* arg)
 {
-	NetEvent* signal = (NetEvent *) arg;
+	NetEvent* event = (NetEvent *) arg;
 
 	//Todo: Something to clean?
 
-	signal->room()->dispatchEvent(
+	event->room()->dispatchEvent(
 		new NetEvent(NetEvent::CLOSE_CONFIRMED)
 	)->destroy();
 
-	signal->destroy();
+	event->destroy();
 }
 
 void u::ControlService::onRemoveConnection(Object* arg)
 {
-	NetEvent* signal = (NetEvent *) arg;
-	EventRoom* room  = signal->room();
+	NetEvent* event = (NetEvent *) arg;
+	EventRoom* room  = event->room();
 	room->removeEventListener(
 		NetEvent::CLOSE_REQUIRED
 		, Callback(this, cb_cast(&ControlService::onConnectionClose))
@@ -206,5 +206,5 @@ void u::ControlService::onRemoveConnection(Object* arg)
 		NetEvent::CLOSED
 		, Callback(this, cb_cast(&ControlService::onRemoveConnection))
 	);
-	signal->destroy();
+	event->destroy();
 }

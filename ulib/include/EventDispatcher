@@ -15,17 +15,17 @@ namespace u
 {
 	/**
 	* Event dispatcher.
-	* <p>This class is the core of the signal handling. Events are running messages
+	* <p>This class is the core of the event handling. Events are running messages
 	* which create a thread to call the added functions.<br>
-	* A signal object contains also data. Which kind of data define the signal call
-	* self. The dispatcher manager the register und calling of signal.<br>
-	* In the classical way collect the project all signal calling for the next
-	* frame and start it then. In this system call the functions of the signals
+	* A event object contains also data. Which kind of data define the event call
+	* self. The dispatcher manager the register und calling of event.<br>
+	* In the classical way collect the project all event calling for the next
+	* frame and start it then. In this system call the functions of the events
 	* imitially in the actual thread. Is the dispatcEvent() function finished, so
-	* exists already the threads with the call of the add signal function. Never
-	* initialize objects for listening signal functions after you dispatch a signal.
+	* exists already the threads with the call of the add event function. Never
+	* initialize objects for listening event functions after you dispatch a event.
 	* <br/><br/>
-	* A function which is the callback for a signal has to be in follow syntax:
+	* A function which is the callback for a event has to be in follow syntax:
 	* <pre>void &lt;NAME_OF_FUNCION>(Object *arg);</pre>
 	* To add or remove a function you need to use the Callback class:
 	* <pre>addEventListener(Event::PROGRESS,
@@ -35,8 +35,8 @@ namespace u
 	* get memory leaks.
 	* <pre>void &lt;U_CLASS>::&lt;NAME_OF_FUNCION>(Object *arg)
 	* {
-	* 	Event *signal = (Event*)arg;
-	* 	signal->destroy();
+	* 	Event *event = (Event*)arg;
+	* 	event->destroy();
 	* }</pre>
 	* </p>
 	* <b>Note:</b> This class is thread safe.
@@ -46,9 +46,9 @@ namespace u
 	{
 		protected: // attributes
 			/**
-			* Callback's for a signal.
+			* Callback's for a event.
 			*/
-			struct _signalVector
+			struct _eventVector
 			{
 				public:
 					/**
@@ -62,18 +62,18 @@ namespace u
 					/**
 					* Constructor.
 					*/
-					_signalVector();
+					_eventVector();
 					/**
 					* Copy const constructor.
 					* <p>The const copy is used by the Vector.</p>
 					*/
-					_signalVector(const _signalVector& value);
+					_eventVector(const _eventVector& value);
 			};
 
 			/**
 			* Add listening functions.
 			*/
-			Vector<_signalVector> _signalList;
+			Vector<_eventVector> _eventList;
 
 		public: // attributes and functions
 			/**
@@ -104,31 +104,31 @@ namespace u
 			~EventDispatcher();
 
 			/**
-			* Add a listing function for a signal.
+			* Add a listing function for a event.
 			* <p>A double adding of a function is not possible. A second call with
 			* identical parameters will be ignored.<br>
 			* The callback will be copyied internally. So is it not necessary to save
 			* the callback object anywhere outside. The argument of teh callback will
-			* later filled with the signal object. So don't put anything in the
+			* later filled with the event object. So don't put anything in the
 			* <code>arg</code> attribute of the callback object.
 			* </p>
-			* @param type Name of the signal.
+			* @param type Name of the event.
 			* @param callback Object and function which will called on dispatch the
-			*                 signal.
+			*                 event.
 			*/
 			void addEventListener(const String& type, Callback callback);
 
 			/**
-			* Remove a listing function for a signal.
+			* Remove a listing function for a event.
 			* <p>If the added listening not found, ignore this the function.
 			* </p>
-			* @param type Name of the signal.
+			* @param type Name of the event.
 			* @param callback Object and function which are added.
 			*/
 			void removeEventListener(const String& type, Callback callback);
 
 			/**
-			* Check, if a signal have listening functions on this object.
+			* Check, if a event have listening functions on this object.
 			* @return <code>true</code> for listening function otherwise <code>false</code>.
 			*/
 			bool hasEventListener(const String& type);
@@ -140,10 +140,10 @@ namespace u
 			bool hasEventListener();
 
 			/**
-			* Call a listening function for the signal.
-			* @param signal Pointer to the signal object.
+			* Call a listening function for the event.
+			* @param event Pointer to the event object.
 			*/
-			Event* dispatchEvent(Event *signal);
+			Event* dispatchEvent(Event *event);
 
 			/**
 			* Name of this class.
@@ -164,22 +164,22 @@ namespace u
 
 		protected: //functions
 			/**
-			* Search the callback vector for a signal.
-			* @param type Pointer of the signal name.
+			* Search the callback vector for a event.
+			* @param type Pointer of the event name.
 			* @return Vector or null if not found.
 			*/
 			Vector<Callback>* getEventVector(const String* type);
 
 			/**
-			* Create a new signal vector and add him to the signal list.
-			* @param type Pointer of the signal name.
+			* Create a new event vector and add him to the event list.
+			* @param type Pointer of the event name.
 			* @return Added vector.
 			*/
 			Vector<Callback>* addEventVector(const String* type);
 
 			/**
-			* Remove a signal vector from the list.
-			* @param type Pointer of the signal name.
+			* Remove a event vector from the list.
+			* @param type Pointer of the event name.
 			*/
 			void delEventVector(const String* type);
 

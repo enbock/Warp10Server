@@ -52,10 +52,10 @@ namespace u
 			/**
 			 * Constructor.
 			 * <p>Create the network service object.<br>
-			 * For each signal room is only one network service possible. If you
+			 * For each event room is only one network service possible. If you
 			 * set more than one network service in the same room, then you get
 			 * a multiplication of the GET*-protocols.<br>
-			 * <b>Note:</b> Remember, only one network service on a signal room.</p>
+			 * <b>Note:</b> Remember, only one network service on a event room.</p>
 			 */
 			NetworkService();
 
@@ -96,8 +96,8 @@ namespace u
 			void removeListeners();
 
 			/**
-			 * Set or remove the signal room.
-			 * @param value New signal room or <code>null</code> to remove.
+			 * Set or remove the event room.
+			 * @param value New event room or <code>null</code> to remove.
 			 */
 			void room(EventRoom* value);
 
@@ -136,28 +136,28 @@ namespace u
 			 * function.
 			 * <br>If no one save the connection, the you get a memory leak.
 			 * </p>
-			 * @param signal The NetEvent object with the data.
-			 * @param plugin The plugin, which received the signal.
+			 * @param event The NetEvent object with the data.
+			 * @param plugin The plugin, which received the event.
 			 */
-			virtual NetworkConnection* doGetConnection(NetEvent* signal,
+			virtual NetworkConnection* doGetConnection(NetEvent* event,
 				NetworkServicePlugin* plugin);
 
 			/**
-			 * Plugin API: New listener signal from plugin.
+			 * Plugin API: New listener event from plugin.
 			 * <p>This function will called by a plugin, after it received the
-			 * <code>LISTENER</code> signal.
+			 * <code>LISTENER</code> event.
 			 * </p>
-			 * @param signal The NetEvent object with the data.
-			 * @param plugin The plugin, which received the signal.
+			 * @param event The NetEvent object with the data.
+			 * @param plugin The plugin, which received the event.
 			 */
-			virtual void doGetListener(NetEvent *signal,
+			virtual void doGetListener(NetEvent *event,
 				NetworkServicePlugin* plugin);
 
 		protected:
 
 			/**
 			 * Event API: A listener was destroyed.
-			 * <p>If a listner will destroy then send he a <code>CLOSED</code> signal
+			 * <p>If a listner will destroy then send he a <code>CLOSED</code> event
 			 * into the listener room.
 			 * </p>
 			 */

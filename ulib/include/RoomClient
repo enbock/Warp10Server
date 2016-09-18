@@ -14,11 +14,11 @@
 namespace u
 {
 	/**
-	* Client of a signal room.
-	* <p>This class represent a object, who is a client of a signal room.<br>
-	* A client is a to signal room connected object. Connected means, that the
-	* client object known the signal room(saved pointer). A subclass can now add
-	* signal observer(listeners) to this room.<br>
+	* Client of a event room.
+	* <p>This class represent a object, who is a client of a event room.<br>
+	* A client is a to event room connected object. Connected means, that the
+	* client object known the event room(saved pointer). A subclass can now add
+	* event observer(listeners) to this room.<br>
 	* This class is a abstract class. By implementing of <code>addListeners()</code>
 	* and <code>removeListeners</code> make you the room client workable.
 	* <br>
@@ -29,8 +29,8 @@ namespace u
 	{
 		protected:
 			/**
-			* Current signal room.
-			* <p>This is the pointer to the current signal room. If no room
+			* Current event room.
+			* <p>This is the pointer to the current event room. If no room
 			* was set, then is this pointer <code>null</code>.
 			* </p>
 			*/
@@ -38,28 +38,28 @@ namespace u
 		public:
 			/**
 			* Constructor.
-			* <p>Create a new signal room client. The room need to be set from
+			* <p>Create a new event room client. The room need to be set from
 			* outside via
 			*/
 			RoomClient();
 
 			/**
 			* Destructor.
-			* <p>Remove the signal room pointer.</p>
+			* <p>Remove the event room pointer.</p>
 			*/
 			~RoomClient();
 
 			/**
 			* Copy constructor.
-			* <p>Create a new signal room client object and set the room from
+			* <p>Create a new event room client object and set the room from
 			* the others one.</p>
-			* @param value Other(or source) signal room client object.
+			* @param value Other(or source) event room client object.
 			*/
 			RoomClient(RoomClient &value);
 
 			/**
 			* Default destroyer.
-			* <p>Destroy this signal room client object.</p>
+			* <p>Destroy this event room client object.</p>
 			*/
 			void destroy();
 
@@ -77,9 +77,9 @@ namespace u
 			RoomClient& operator=(RoomClient& value);
 
 			/**
-			* Set a new signal room.
+			* Set a new event room.
 			* <p>Sets the current room.</p>
-			* @param value A new signal room pointer or <code>null</code> to
+			* @param value A new event room pointer or <code>null</code> to
 			* remove the current one.
 			*/
 			virtual void room(EventRoom* value);

@@ -19,7 +19,7 @@ namespace u
 	 * connection type, like a control connection via unix sockets.<br>
 	 * A plugin knows all specifications and configuration for a listener or
 	 * client connection.<br>
-	 * The plugin get all information about the protocol (signal) room from the
+	 * The plugin get all information about the protocol (event) room from the
 	 * service via functions and interact so this the service object.<br>
 	 * This class is a abstract class for a network service plugin implementation.
 	 * <br>The plugin register the GET_*_LISTENER and GET_*_CONNECTION. Over the

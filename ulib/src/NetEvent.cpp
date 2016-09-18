@@ -66,10 +66,10 @@ void u::NetEvent::destroy()
 
 Event* u::NetEvent::clone()
 {
-	NetEvent* signal = new NetEvent(*_type, _addr, _port, _room);
-	signal->closee = this->closee;
-	signal->_con = this->_con;
-	return signal;
+	NetEvent* event = new NetEvent(*_type, _addr, _port, _room);
+	event->closee = this->closee;
+	event->_con = this->_con;
+	return event;
 }
 
 EventRoom* u::NetEvent::room()

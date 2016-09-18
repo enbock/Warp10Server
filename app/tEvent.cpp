@@ -33,9 +33,9 @@ namespace u
 
 			void onEvent(Object *arg)
 			{
-				Event *signal = (Event*)arg;
-				//trace("onEvent="+signal->toString());
-				signal->destroy();
+				Event *event = (Event*)arg;
+				//trace("onEvent="+event->toString());
+				event->destroy();
 
 				static int64 cnt = 0;
 				static Mutex cntMutex;
@@ -66,9 +66,9 @@ namespace u
 
 			void onEvent2(Object *arg)
 			{
-				Event *signal = (Event*)arg;
-				//trace("onEvent2="+signal->toString());
-				signal->destroy();
+				Event *event = (Event*)arg;
+				//trace("onEvent2="+event->toString());
+				event->destroy();
 				dispatchEvent(new Event(Event::COMPLETE))->destroy();
 				dispatchEvent(new Event(Event::PROGRESS))->destroy();
 				dispatchEvent(new Event(Event::COMPLETE))->destroy();

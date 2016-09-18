@@ -85,11 +85,11 @@ void u::NetworkTransferHandler::destroy()
 }
 
 
-void u::NetworkTransferHandler::onTransferReady(Object *signal)
+void u::NetworkTransferHandler::onTransferReady(Object *event)
 {
 	trace(className()+":onTransferReady");
-	uint64 id = ((NetTransferEvent*)signal)->id();
-	signal->destroy();
+	uint64 id = ((NetTransferEvent*)event)->id();
+	event->destroy();
 
 	if(id != _id) return; // not for me
 
@@ -98,26 +98,26 @@ void u::NetworkTransferHandler::onTransferReady(Object *signal)
 	unlock();
 }
 
-void u::NetworkTransferHandler::onConnectionClosed(Object* signal)
+void u::NetworkTransferHandler::onConnectionClosed(Object* event)
 {
-	signal->destroy();
+	event->destroy();
 	removeEvents();
 }
 
 void u::NetworkTransferHandler::sendNextBlock()
 {
-	NetTransferEvent* signal;
+	NetTransferEvent* event;
 	if(_data.available() > 0)
 	{
 		// especially send to control data. Not blocking needed.
-		signal = new NetTransferEvent(NetTransferEvent::DATA, _id, &_data);
+		event = new NetTransferEvent(NetTransferEvent::DATA, _id, &_data);
 		_data.position(_data.length());
 	}
 	else
 	{
-		signal = new NetTransferEvent(NetTransferEvent::EOT, _id);
+		event = new NetTransferEvent(NetTransferEvent::EOT, _id);
 	}
 
-	_con->room()->dispatchEvent(signal);
-	signal->destroy();
+	_con->room()->dispatchEvent(event);
+	event->destroy();
 }

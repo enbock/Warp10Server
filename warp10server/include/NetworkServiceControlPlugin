@@ -92,13 +92,13 @@ namespace u
 			void removeListeners();
 		protected:
 			/**
-			 * Incoming signal for a new control connection.
+			 * Incoming event for a new control connection.
 			 * @param arg The ServiceNetEvent object which was received.
 			 */
 			void onGetCtrlConnection(Object *arg);
 
 			/**
-			 * Incomming signal for a new lsietener object.
+			 * Incomming event for a new lsietener object.
 			 * @param arg The ServiceNetEvent object.
 			 */
 			void onGetCtrlListener(Object *arg);

@@ -13,9 +13,9 @@
 namespace u
 {
 	/**
-	* Owner of a signal room.
+	* Owner of a event room.
 	* <p>
-	* This class creates and owns a signal room. The room will create direct
+	* This class creates and owns a event room. The room will create direct
 	* on instanciating of the class.
 	* </p>
 	*/
@@ -23,20 +23,20 @@ namespace u
 	{
 		protected:
 			/**
-			* The signal room object self.
+			* The event room object self.
 			*/
 			EventRoom _room;
 
 		public:
 			/**
 			* Constructor.
-			* <p>Create the signal owner object.</p>
+			* <p>Create the event owner object.</p>
 			*/
 			RoomOwner();
 			/**
 			* Destructor.
 			* <p>
-			* Destroy the signal owner and signal room object.
+			* Destroy the event owner and event room object.
 			* </p>
 			*/
 			~RoomOwner();
@@ -63,8 +63,8 @@ namespace u
 			*/
 			void destroy();
 			/**
-			* The signal room object.
-			* @return A pointer to the signal room.
+			* The event room object.
+			* @return A pointer to the event room.
 			*/
 			EventRoom* room();
 			/**

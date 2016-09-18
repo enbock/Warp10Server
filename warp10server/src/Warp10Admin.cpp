@@ -38,7 +38,7 @@ u::Warp10Admin::Warp10Admin(Vector<String> arg)
 	_room.dispatchEvent(
 		new ServerNetEvent(
 			ServerNetEvent::GET_CTRL_CONNECTION
-			, "/tmp/w10s_socket"
+			, arg.length() > 1 ? arg[1] : "/tmp/w10s_socket"
 		)
 	)->destroy();
 }
@@ -64,8 +64,8 @@ u::Warp10Admin::~Warp10Admin()
 
 void u::Warp10Admin::onConnection(Object* arg)
 {
-	NetEvent* signal = (NetEvent*) arg;
-	NetworkConnection* con = signal->connection();
+	NetEvent* event = (NetEvent*) arg;
+	NetworkConnection* con = event->connection();
 	_connection = con;
 
 	con->room()->addEventListener(
@@ -83,7 +83,7 @@ void u::Warp10Admin::onConnection(Object* arg)
 		, Callback(this, cb_cast(&Warp10Admin::onServerClose))
 	);
 
-	signal->destroy();
+	event->destroy();
 
 	lock();
 	//if(_connectionIsReady == false)
@@ -97,16 +97,16 @@ void u::Warp10Admin::onConnection(Object* arg)
 
 void u::Warp10Admin::onClosed(Object* arg)
 {
-	NetEvent* signal = (NetEvent*)arg;
+	NetEvent* event = (NetEvent*)arg;
 
-	if(signal->closee == null)
+	if(event->closee == null)
 	{
-		error(className()+":onClose(): No closee in signal.");
+		error(className()+":onClose(): No closee in event.");
 		return;
 	}
 
 	lock();
-	EventRoom* ncRoom = ((NetworkConnection*)signal->closee)->room();
+	EventRoom* ncRoom = ((NetworkConnection*)event->closee)->room();
 	ncRoom->removeEventListener(
 		NetEvent::CLOSED
 		, Callback(this, cb_cast(&Warp10Admin::onClosed))
@@ -122,13 +122,13 @@ void u::Warp10Admin::onClosed(Object* arg)
 	_connection->destroy();
 	_connection = null;
 
-	signal->destroy();
+	event->destroy();
 
 	unlock();
 	while(ThreadSystem::numThreads()> 1)
 	{
 		trace("Waiting for threads: "+int2string(ThreadSystem::numThreads()));
-		usleep(1000000);
+		usleep(1000000/(FPS*10));
 	}
 	programExit();
 }
@@ -194,9 +194,9 @@ void u::Warp10Admin::onConnectionFailed(Object* arg)
 
 void u::Warp10Admin::onReadyConnection(Object* arg)
 {
-	NetEvent* signal = (NetEvent*) arg;
-	EventRoom* room = signal->connection()->room();
-	signal->destroy();
+	NetEvent* event = (NetEvent*) arg;
+	EventRoom* room = event->connection()->room();
+	event->destroy();
 	lock();
 	if(_connectionIsReady == true) {
 		// double
@@ -217,15 +217,15 @@ void u::Warp10Admin::onReadyConnection(Object* arg)
 
 void u::Warp10Admin::onServerClose(Object *arg)
 {
-	NetEvent* signal = (NetEvent*) arg;
+	NetEvent* event = (NetEvent*) arg;
 
 	// Some close actions?
 
-	signal->room()->dispatchEvent(
+	event->room()->dispatchEvent(
 		new NetEvent(NetEvent::CLOSE_CONFIRMED)
 	)->destroy();
 
-	signal->destroy();
+	event->destroy();
 }
 
 void u::Warp10Admin::startCLI()

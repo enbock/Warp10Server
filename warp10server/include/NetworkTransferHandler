@@ -49,7 +49,7 @@ namespace u
 			uint64 _id;
 
 			/**
-			 * Flag, if signal has bound or not.
+			 * Flag, if event has bound or not.
 			 */
 			bool _isBound;
 
@@ -72,33 +72,33 @@ namespace u
 			String className();
 
 			/**
-			 * Destroy this network signal object.
+			 * Destroy this network event object.
 			 */
 			void destroy();
 
 		protected:
 			/**
 			 * Ready for transfer.
-			 * <p>The connection signalized a ready to send. Let start the transfer.</p>
-			 * @param signal The signal object with the transfer id.
+			 * <p>The connection eventized a ready to send. Let start the transfer.</p>
+			 * @param event The event object with the transfer id.
 			 */
-			virtual void onTransferReady(Object* signal);
+			virtual void onTransferReady(Object* event);
 
 			/**
-			 * Bind needed signals.
+			 * Bind needed events.
 			 */
 			virtual void addEvents();
 
 			/**
-			 * Remove signal binding.
+			 * Remove event binding.
 			 */
 			virtual void removeEvents();
 
 			/**
 			 * The network conenction has been closed.
-			 * @param signal The signal object.
+			 * @param event The event object.
 			 */
-			virtual void onConnectionClosed(Object* signal);
+			virtual void onConnectionClosed(Object* event);
 
 			/**
 			 * Send the next block of data to connection.

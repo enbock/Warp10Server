@@ -17,11 +17,11 @@ namespace u
 	class EventDispatcher;
 
 	/**
-	* Base signal.
-	* <p>A signal is a running/transporting message between object. This
-	* class is the base class of all signal.<br>
-	* A signal can have attributes. This attribute will be copyied while running
-	* of the signal.
+	* Base event.
+	* <p>A event is a running/transporting message between object. This
+	* class is the base class of all event.<br>
+	* A event can have attributes. This attribute will be copyied while running
+	* of the event.
 	* </p>
 	*/
 	class Event : public Object
@@ -30,7 +30,7 @@ namespace u
 			friend class EventDispatcher;
 
 			/**
-			* Name of the signal.
+			* Name of the event.
 			*/
 			const String* _type;
 			/**
@@ -41,12 +41,12 @@ namespace u
 
 		public: // attributes and functions
 			/**
-			* Definition for a complete signal.
+			* Definition for a complete event.
 			*/
 			static const String COMPLETE;
 
 			/**
-			* Definiton for a progress signal.
+			* Definiton for a progress event.
 			*/
 			static const String PROGRESS;
 
@@ -61,25 +61,25 @@ namespace u
 			~Event();
 
 			/**
-			* Target of this signal.
+			* Target of this event.
 			* @return Pointer to the target,
 			*/
 			EventDispatcher* target();
 
 			/**
-			* Name of the signal.
+			* Name of the event.
 			* @return A const reference of the name.
 			*/
 			const String* type();
 
 			/**
-			* Clone the signal.
-			* @return A with new created copy of this signal.
+			* Clone the event.
+			* @return A with new created copy of this event.
 			*/
 			virtual Event* clone();
 
 			/**
-			* Information about the signal.
+			* Information about the event.
 			* @return Info string.
 			*/
 			virtual String toString();

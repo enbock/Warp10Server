@@ -14,8 +14,8 @@
 namespace u
 {
 	/**
-	* Warp10Server network protocol signals.
-	* <p>Via the signals of this class are the network basic protocols
+	* Warp10Server network protocol events.
+	* <p>Via the events of this class are the network basic protocols
 	* implemented.
 	* </p>
 	*/
@@ -24,9 +24,9 @@ namespace u
 		public:
 			/**
 			* Event to get a new server control connection.
-			* <p>Via this signal ask a program(eg. Server Admin) for a new network
+			* <p>Via this event ask a program(eg. Server Admin) for a new network
 			* connection to the server to control the server.<br>
-			* The answer should be a NEW_CONNECTION signal.<br>
+			* The answer should be a NEW_CONNECTION event.<br>
 			* A controll connection will etablished via unix sockets. So has the
 			* <code>address</code> to be the filenname of the socket.</p>
 			*/
@@ -34,9 +34,9 @@ namespace u
 
 			/**
 			* Event to receive a new server control network listener.
-			* <p>This signal requests a new server control network listener. If a
+			* <p>This event requests a new server control network listener. If a
 			* network listener with the same address already listening, then will
-			* this signal ignored.<br>
+			* this event ignored.<br>
 			* The attribute <code>address</code> contains the filename(and path) on
 			* this the new listener will created. This filename need the client to
 			* connect.<br>
@@ -47,9 +47,9 @@ namespace u
 
 			/**
 			* Constructor of a ServerNetEvent Object.
-			* <p>A network signal can used in many different situations. On a new
+			* <p>A network event can used in many different situations. On a new
 			* connection or new listening of incomming connections transports via
-			* the room attribute the new signal room in that the protocol works.<br>
+			* the room attribute the new event room in that the protocol works.<br>
 			* The address and port is eg. necessary on requests for new connections.
 			* <br>If the  data attributes unused, to let them null or empty. When
 			* one of this attributes is necessary is defined by the protocols.
@@ -75,13 +75,13 @@ namespace u
 			String className();
 
 			/**
-			* Destroy this network signal object.
+			* Destroy this network event object.
 			*/
 			void destroy();
 
 			/**
-			* Clone the new signal.
-			* @return A with "new" created copy of this server signal.
+			* Clone the new event.
+			* @return A with "new" created copy of this server event.
 			*/
 			virtual Event* clone();
 

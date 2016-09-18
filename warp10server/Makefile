@@ -1,10 +1,10 @@
 
 ifndef TYPE
-TYPE=dynamic
-#TYPE=static
+#TYPE=dynamic
+TYPE=static
 endif
 
-MAKEFLAGS += -s --no-print-directory
+MAKEFLAGS += -s --no-print-directory -j 16
 BASEDIR = .
 SRCDIR = $(BASEDIR)/src
 APPDIR = $(BASEDIR)/app
@@ -24,7 +24,7 @@ endif
 CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
 
 ifeq ($(TYPE),static)
-	LFLAGS=-static -static-libgcc
+	LFLAGS=-static -static-libgcc 
 	LDLIBS = $(ULIBDIR)/$(ULIB) \
 	`g++ -print-file-name=libz.a` `g++ -print-file-name=libpthread.a` 
 

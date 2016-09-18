@@ -60,9 +60,9 @@ int64 u::NetworkConnection::port()
 	return _socket->port();
 }
 
-void u::NetworkConnection::onClose(Object* signal)
+void u::NetworkConnection::onClose(Object* event)
 {
-	signal->destroy();
+	event->destroy();
 	lock();
 	_room.removeEventListener(
 		NetEvent::CLOSE
@@ -74,10 +74,10 @@ void u::NetworkConnection::onClose(Object* signal)
 
 void u::NetworkConnection::doClosed()
 {
-	NetEvent *signal = new NetEvent(
+	NetEvent *event = new NetEvent(
 		NetEvent::CLOSED, address(), port(), room()
 	);
-	signal->closee = this;
+	event->closee = this;
 	lock();
 	_isClose = true;
 	bool send = true;
@@ -97,9 +97,9 @@ void u::NetworkConnection::doClosed()
 	}
 	else
 		send = false;
-	if(send == true) _room.dispatchEvent(signal);
+	if(send == true) _room.dispatchEvent(event);
 	unlock();
-	signal->destroy();
+	event->destroy();
 }
 
 String u::NetworkConnection::className()

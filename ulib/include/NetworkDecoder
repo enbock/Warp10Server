@@ -102,7 +102,7 @@ namespace u
 		protected:
 			/**
 			 * Data receiving.
-			 * <p>This function observ the socket and send via signal new data into
+			 * <p>This function observ the socket and send via event new data into
 			 * the room.<br/>
 			 * This function is an single class linear function. A second call
 			 * of this function has no effect.</p>
@@ -118,8 +118,8 @@ namespace u
 			 * So the implementation function leaf the rest frame inside the buffer.
 			 * Important is, that all complete frame has to be read, because the
 			 * next call of decodeData is first after receiving more data happend.<br>
-			 * Also has the implementation class send the signals for the network
-			 * signal protocol.<br>
+			 * Also has the implementation class send the events for the network
+			 * event protocol.<br>
 			 * This function need to be called, when the decoder is locked.</p>
 			 * @param data Received raw data.
 			 */

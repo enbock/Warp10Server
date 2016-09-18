@@ -30,9 +30,9 @@ u::ServerEvent::~ServerEvent()
 
 Event *u::ServerEvent::clone()
 {
-	ServerEvent* signal = new ServerEvent(*_type);
-	signal->data = data;
-	return signal;
+	ServerEvent* event = new ServerEvent(*_type);
+	event->data = data;
+	return event;
 }
 
 

@@ -71,9 +71,9 @@ String u::NetworkControlConnection::className()
 }
 
 
-void u::NetworkControlConnection::onClose(Object* signal)
+void u::NetworkControlConnection::onClose(Object* event)
 {
-	NetworkConnection::onClose(signal);
+	NetworkConnection::onClose(event);
 	lock();
 	if(valid(_decoder)) ((NetworkStandardDecoder*)_decoder)->sendClose();
 	unlock();
@@ -95,20 +95,20 @@ void u::NetworkControlConnection::doCloseRequired()
 	)->destroy();
 }
 
-void u::NetworkControlConnection::onCloseConfirmed(Object* signal)
+void u::NetworkControlConnection::onCloseConfirmed(Object* event)
 {
 	lock();
 	bool canSend = _isClose != false;
 	unlock();
 	if(canSend) ((NetworkStandardDecoder*)_decoder)->sendCloseConfirmed();
 
-	signal->destroy();
+	event->destroy();
 }
 
-void u::NetworkControlConnection::onTransferInit(Object* signal)
+void u::NetworkControlConnection::onTransferInit(Object* event)
 {
-	int64 id = ((NetTransferEvent *)signal)->id();
-	signal->destroy();
+	int64 id = ((NetTransferEvent *)event)->id();
+	event->destroy();
 	lock();
 	((NetworkStandardDecoder*)_decoder)->sendInit(id);
 	unlock();
@@ -130,9 +130,9 @@ void u::NetworkControlConnection::doTransferInit(uint64 id)
 	)->destroy();
 }
 
-void u::NetworkControlConnection::onTransferReady(Object* signal)
+void u::NetworkControlConnection::onTransferReady(Object* event)
 {
-	NetTransferEvent* netEvent = ((NetTransferEvent*)signal);
+	NetTransferEvent* netEvent = ((NetTransferEvent*)event);
 	uint64 id = netEvent->id();
 	netEvent->destroy();
 
@@ -146,18 +146,18 @@ void u::NetworkControlConnection::onTransferReady(Object* signal)
 
 void u::NetworkControlConnection::doTransfer(uint64 id)
 {
-	NetTransferEvent signal(NetTransferEvent::READY, id);
-	_room.dispatchEvent(&signal);
+	NetTransferEvent event(NetTransferEvent::READY, id);
+	_room.dispatchEvent(&event);
 }
 
-void u::NetworkControlConnection::onSendDataRequest(Object* signal)
+void u::NetworkControlConnection::onSendDataRequest(Object* event)
 {
 	// TODO Remove step.
 }
 
-void u::NetworkControlConnection::onSendData(Object* signal)
+void u::NetworkControlConnection::onSendData(Object* event)
 {
-	NetTransferEvent* netEvent = ((NetTransferEvent*)signal);
+	NetTransferEvent* netEvent = ((NetTransferEvent*)event);
 	uint64 id = netEvent->id();
 
 	lock();
@@ -171,19 +171,19 @@ void u::NetworkControlConnection::onSendData(Object* signal)
 
 void u::NetworkControlConnection::doReceivedData(uint64 id, ByteArray* data)
 {
-	NetTransferEvent signal(NetTransferEvent::DATA, id, data);
-	room()->dispatchEvent(&signal);
+	NetTransferEvent event(NetTransferEvent::DATA, id, data);
+	room()->dispatchEvent(&event);
 }
 
-void u::NetworkControlConnection::onGetDataRequest(Object* signal)
+void u::NetworkControlConnection::onGetDataRequest(Object* event)
 {
 }
 
-void u::NetworkControlConnection::onDataComplete(Object signal)
+void u::NetworkControlConnection::onDataComplete(Object event)
 {
 }
 
-void u::NetworkControlConnection::onEOT(Object* signal)
+void u::NetworkControlConnection::onEOT(Object* event)
 {
 }
 
@@ -202,9 +202,9 @@ void u::NetworkControlConnection::doReady()
 	unlock();
 }
 
-void u::NetworkControlConnection::onReadyCheck(Object *signal)
+void u::NetworkControlConnection::onReadyCheck(Object *event)
 {
-	signal->destroy();
+	event->destroy();
 
 	// try to avoid, that connection is already deleted, while onReadyCheck
 	// thread starts.

@@ -100,15 +100,15 @@ void u::NetworkServiceControlPlugin::removeListeners()
 
 void u::NetworkServiceControlPlugin::onGetCtrlConnection(Object* arg)
 {
-	ServerNetEvent * signal = (ServerNetEvent*) arg;
-	_srv->doGetConnection(signal, this);
-	signal->destroy();
+	ServerNetEvent * event = (ServerNetEvent*) arg;
+	_srv->doGetConnection(event, this);
+	event->destroy();
 }
 
 void u::NetworkServiceControlPlugin::onGetCtrlListener(Object* arg)
 {
-	ServerNetEvent * signal = (ServerNetEvent*) arg;
-	_srv->doGetListener(signal, this);
-	signal->destroy();
+	ServerNetEvent * event = (ServerNetEvent*) arg;
+	_srv->doGetListener(event, this);
+	event->destroy();
 }
 

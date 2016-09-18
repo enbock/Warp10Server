@@ -133,14 +133,14 @@ namespace u
 			virtual void sendCloseConfirmed();
 
 			/**
-			 * Send a init signal for transfer.
+			 * Send a init event for transfer.
 			 * <p>This function start a transfer of a datablock.</p>
 			 * @param id The unique id to identify the transfer.
 			 */
 			virtual void sendInit(uint64 id);
 
 			/**
-			 * Send the ready for transfer signal to sender.
+			 * Send the ready for transfer event to sender.
 			 * @param id The unique id to identify the transfer.
 			 */
 			virtual void sendTransferReady(uint64 id);
@@ -161,8 +161,8 @@ namespace u
 			 * So the implementation function leaf the rest frame inside the buffer.
 			 * Important is, that all complete frame has to be read, because the
 			 * next call of decodeData is first after receiving more data happend.<br>
-			 * Also has the implementation class send the signals for the network
-			 * signal protocol.<br>
+			 * Also has the implementation class send the events for the network
+			 * event protocol.<br>
 			 * This function need to be called, when the decoder is locked.</p>
 			 * @param data Received raw data.
 			 */

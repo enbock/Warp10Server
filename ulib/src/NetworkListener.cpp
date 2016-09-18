@@ -73,11 +73,11 @@ void u::NetworkListener::onClose(Object* arg)
 		lock();
 	}
 
-	// send CLOSED signal
-	NetEvent* signal = new NetEvent(NetEvent::CLOSED);
-	signal->closee = this;
-	_room.dispatchEvent(signal);
-	signal->destroy();
+	// send CLOSED event
+	NetEvent* event = new NetEvent(NetEvent::CLOSED);
+	event->closee = this;
+	_room.dispatchEvent(event);
+	event->destroy();
 
 	unlock();
 }
@@ -152,8 +152,8 @@ String u::NetworkListener::className()
 
 void u::NetworkListener::onConnectionDestroy(Object* arg)
 {
-	NetEvent *signal = (NetEvent*)arg;
-	NetworkConnection *nc = (NetworkConnection*)signal->closee;
+	NetEvent *event = (NetEvent*)arg;
+	NetworkConnection *nc = (NetworkConnection*)event->closee;
 
 	nc->room()->removeEventListener(NetEvent::CLOSED
 		, Callback(this, cb_cast( &NetworkListener::onConnectionDestroy))
@@ -162,7 +162,7 @@ void u::NetworkListener::onConnectionDestroy(Object* arg)
 	lock();
 	_connections.erase(nc);
 	unlock();
-	signal->destroy();
+	event->destroy();
 
 	nc->destroy();
 }

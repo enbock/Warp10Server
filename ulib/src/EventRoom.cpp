@@ -37,14 +37,14 @@ String u::EventRoom::toString()
 {
 	String out="["+className()+"<"+ptr2string(this)+"> Listeners:";
 	int64 i,l;
-	for(i=0, l=_signalList.length(); i < l; i++)
+	for(i=0, l=_eventList.length(); i < l; i++)
 	{
-		out+=" "+*(_signalList.at(i).type)+"(";
+		out+=" "+*(_eventList.at(i).type)+"(";
 		int64 vi, vl;
-		for(vi=0, vl=_signalList.at(i).list.length(); vi < vl; vi++)
+		for(vi=0, vl=_eventList.at(i).list.length(); vi < vl; vi++)
 		{
-			out+=_signalList.at(i).list.at(vi).target->className();
-			out+="<"+ptr2string(_signalList.at(i).list.at(vi).target)+">";
+			out+=_eventList.at(i).list.at(vi).target->className();
+			out+="<"+ptr2string(_eventList.at(i).list.at(vi).target)+">";
 			if(vi+1 != vl) out+=" and ";
 		}
 		out+=")";

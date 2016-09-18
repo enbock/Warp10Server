@@ -9,12 +9,12 @@
 
 using namespace u;
 
-EventDispatcher::_signalVector::_signalVector()
+EventDispatcher::_eventVector::_eventVector()
 {
 	type = null;
 }
 
-EventDispatcher::_signalVector::_signalVector(const _signalVector& value)
+EventDispatcher::_eventVector::_eventVector(const _eventVector& value)
 {
 	type = value.type;
 	list = value.list;
@@ -43,12 +43,12 @@ u::EventDispatcher::~EventDispatcher()
 	{
 #ifndef NDEBUG
 		if(c == 0)
-			trace(className()+": Has "+int2string(_signalList.length())+" binder types.");
+			trace(className()+": Has "+int2string(_eventList.length())+" binder types.");
 #endif
 		int64 i,l;
-		for(i=0, l=_signalList.length(); i<l; i++)
+		for(i=0, l=_eventList.length(); i<l; i++)
 		{
-			_signalVector* vec = &_signalList.at(i);
+			_eventVector* vec = &_eventList.at(i);
 #ifndef NDEBUG
 			if(c == 0)
 			{
@@ -76,7 +76,7 @@ u::EventDispatcher::~EventDispatcher()
 			  		if(vec->list.empty())
 			  		{
 			  			delEventVector(vec->type);
-			  			l = _signalList.length();
+			  			l = _eventList.length();
 			  			i--;
 			  			break;
 			  		}
@@ -108,16 +108,16 @@ u::EventDispatcher::~EventDispatcher()
 EventDispatcher& EventDispatcher::operator=(EventDispatcher& value)
 {
 	int64 i, l, j, m;
-	_signalVector *src;
+	_eventVector *src;
 	Vector<Callback> *dst;
 
 	value.lock();
 	lock();
 
-	l = value._signalList.size();
+	l = value._eventList.size();
 	for(i=0; i<l; i++)
 	{
-		src = &value._signalList.at(i);
+		src = &value._eventList.at(i);
 		dst = getEventVector(src->type);
 		if(dst == null)
 		{
@@ -207,12 +207,12 @@ bool EventDispatcher::hasEventListener(const String& type)
 	return ret;
 }
 
-Event* EventDispatcher::dispatchEvent(Event *signal)
+Event* EventDispatcher::dispatchEvent(Event *event)
 {
 	lock();
-	trace("DispatchEvent: "+*(signal->_type));
+	trace("DispatchEvent: "+*(event->_type));
 
-	Vector<Callback>* pVec = getEventVector(signal->_type);
+	Vector<Callback>* pVec = getEventVector(event->_type);
 	if(pVec != null)
 	{
 		Vector<Callback> vec = *pVec;
@@ -222,7 +222,7 @@ Event* EventDispatcher::dispatchEvent(Event *signal)
 		for(i=0; i<l; i++)
 		{
 			Callback cb = vec.at(i);
-			Event* ev = signal->clone();
+			Event* ev = event->clone();
 			ev->_target = this;
 			cb.arg = ev;
 
@@ -233,24 +233,24 @@ Event* EventDispatcher::dispatchEvent(Event *signal)
 			}
 		}
 
-		return signal;
+		return event;
 	}
 	else
 	{
-		//trace("\033[32mno listener for "+*signal->type());
+		//trace("\033[32mno listener for "+*event->type());
 	}
 	unlock();
-	return signal;
+	return event;
 }
 
 Vector<Callback>* EventDispatcher::getEventVector(const String* type)
 {
 	int64 i, l;
 
-	l = _signalList.size();
+	l = _eventList.size();
 	for(i=0; i<l; i++)
 	{
-		_signalVector* entry = &_signalList.at(i);
+		_eventVector* entry = &_eventList.at(i);
 		if(entry->type == type) return &(entry->list);
 	}
 	return null;
@@ -258,31 +258,31 @@ Vector<Callback>* EventDispatcher::getEventVector(const String* type)
 
 Vector<Callback>* EventDispatcher::addEventVector(const String* type)
 {
-	_signalVector vec;
+	_eventVector vec;
 	int64 i;
 
 	vec.type = type;
-	i = _signalList.size();
-	_signalList.push_back(vec);
-	return &(_signalList.at(i).list);
+	i = _eventList.size();
+	_eventList.push_back(vec);
+	return &(_eventList.at(i).list);
 }
 
 bool u::EventDispatcher::hasEventListener()
 {
-	return _signalList.length() > 0;
+	return _eventList.length() > 0;
 }
 
 void EventDispatcher::delEventVector(const String* type)
 {
 	int64 i, l;
 
-	l = _signalList.size();
+	l = _eventList.size();
 	for(i=0; i<l; i++)
 	{
-		_signalVector* entry = &_signalList.at(i);
+		_eventVector* entry = &_eventList.at(i);
 		if(entry->type == type)
 		{
-			_signalList.erase(i);
+			_eventList.erase(i);
 			return;
 		}
 	}

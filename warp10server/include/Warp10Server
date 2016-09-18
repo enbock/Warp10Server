@@ -14,6 +14,10 @@
 #include <Socket>
 #include <NetworkService>
 
+#ifndef FPS
+#define FPS 90
+#endif
+
 namespace u
 {
 	void programExit();
@@ -21,9 +25,9 @@ namespace u
 
 	/**
 	 * Event handler.
-	 * <p>This function handles the signal from the operating system and calls
+	 * <p>This function handles the event from the operating system and calls
 	 * specified events.<br>
-	 * In follow the list of activies for the signals:
+	 * In follow the list of activies for the events:
 	 * <ul>
 	 * 	<li> SIGINT - send EventServer::SHUTDOWN </li>
 	 * </ul>
@@ -34,7 +38,7 @@ namespace u
 	/**
 	 * Server main program.
 	 * <p>This class is the main program of the W10S. The protocol "Shutdown
-	 * Server" and the creating of the main signal room, the control service
+	 * Server" and the creating of the main event room, the control service
 	 * and the network service object is implemented here.
 	 * </p>
 	 * @see http://drive.ww/Architektur/EARoot/EA1/EA3/EA46.html Server structure
@@ -57,7 +61,7 @@ namespace u
 			 * Constructor.
 			 * <p>This function create the server application instance. Also
 			 * it create the subobjects: control service and network service.<br/>
-			 * The constructor add also the signal listening for the shutdown
+			 * The constructor add also the event listening for the shutdown
 			 * protocol.</p>
 			 * @param arg List of argument from the command line.
 			 */

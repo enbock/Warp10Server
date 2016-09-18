@@ -122,11 +122,11 @@ void u::NetworkService::removeNetworkPlugin(NetworkServicePlugin* plugin)
 	}
 }
 
-void u::NetworkService::doGetListener(NetEvent *signal,
+void u::NetworkService::doGetListener(NetEvent *event,
 	NetworkServicePlugin* plugin)
 {
-	NetworkListener* listener = plugin->createNetworkListener(signal->address(),
-		signal->port());
+	NetworkListener* listener = plugin->createNetworkListener(event->address(),
+		event->port());
 
 	lock();
 	_listeners.push(listener);
@@ -154,8 +154,8 @@ void u::NetworkService::doGetListener(NetEvent *signal,
 
 void u::NetworkService::onListenerDestroy(Object* arg)
 {
-	NetEvent *signal = (NetEvent*) arg;
-	NetworkListener* listener = (NetworkListener*) signal->closee;
+	NetEvent *event = (NetEvent*) arg;
+	NetworkListener* listener = (NetworkListener*) event->closee;
 	lock();
 	_listeners.erase(listener);
 	unlock();
@@ -164,16 +164,16 @@ void u::NetworkService::onListenerDestroy(Object* arg)
 	listener->room()->removeEventListener(NetEvent::CLOSED,
 		Callback(this, cb_cast(&NetworkService::onListenerDestroy))
 	);
-	signal->destroy();
+	event->destroy();
 	listener->destroy();
 }
 
 NetworkConnection*
-u::NetworkService::doGetConnection(NetEvent* signal,
+u::NetworkService::doGetConnection(NetEvent* event,
 	NetworkServicePlugin* plugin)
 {
-	NetworkConnection* con = plugin->createConnection(signal->address(),
-		signal->port());
+	NetworkConnection* con = plugin->createConnection(event->address(),
+		event->port());
 
 	if (con != null) _room->dispatchEvent(
 			new NetEvent(NetEvent::NEW_CONNECTION, con)
@@ -207,8 +207,8 @@ void u::NetworkService::onClose(Object* arg)
 	}
 	unlock();
 
-	NetEvent* signal = new NetEvent(NetEvent::CLOSED);
-	signal->closee = this;
-	_room->dispatchEvent(signal);
-	signal->destroy();
+	NetEvent* event = new NetEvent(NetEvent::CLOSED);
+	event->closee = this;
+	_room->dispatchEvent(event);
+	event->destroy();
 }

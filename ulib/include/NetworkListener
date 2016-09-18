@@ -20,7 +20,7 @@ namespace u
 	* <br>
 	* This means, the listener bind a port(or equivalent) and listen for
 	* incomming connections. If a client connection detect, he create a network
-	* copnnection and inform via signal the listener room about it. The connection
+	* copnnection and inform via event the listener room about it. The connection
 	* self will be saved solong its not close or the listener alive.<br>
 	* With destroing of the listener, will close/interrupt all connection, who
 	* create the listener.<br>
@@ -54,7 +54,7 @@ namespace u
 			/**
 			* Constructor.
 			* <p>Create the listener object and observ for the
-			* <code>NetEvent::CLOSE</code> signal.
+			* <code>NetEvent::CLOSE</code> event.
 			* </p>
 			*/
 			NetworkListener();
@@ -63,7 +63,7 @@ namespace u
 			* Destructor.
 			* <p>The destructor close all active network connection while destroying.
 			* <br>As last action before the object is complete destroyed send this
-			* function a <code>CLOSED</code> signal with a pointer of hisself in
+			* function a <code>CLOSED</code> event with a pointer of hisself in
 			* the <code>closee</code> attribute.
 			* </p>
 			*/
@@ -104,10 +104,10 @@ namespace u
 		protected:
 			/**
 			* Event API: CLOSE.
-			* <p>On incoming signal <code>CLOSE</code> on the own signal room,
+			* <p>On incoming event <code>CLOSE</code> on the own event room,
 			* calls this function.
 			* </p>
-			* @param signal Copy of incoming signal object.
+			* @param event Copy of incoming event object.
 			*/
 			virtual void onClose(Object* arg);
 
@@ -145,7 +145,7 @@ namespace u
 
 			/**
 			* Event API: Contection closed/destroyed.
-			* <p>The <code>CLOSED</code> signal inform the listener about a
+			* <p>The <code>CLOSED</code> event inform the listener about a
 			* destroyed connection. This function remove the pointer from the
 			* connection list.
 			* </p>

@@ -27,7 +27,7 @@ namespace u
 
 			/**
 			 * Event name for new network setup.
-			 * <p>On this signal must the data pointer filled with the
+			 * <p>On this event must the data pointer filled with the
 			 * network service plugin object.</p>
 			 */
 			static const String REGISTER_NETWORK_PLUGIN;
@@ -54,13 +54,13 @@ namespace u
 			String className();
 
 			/**
-			* Destroy this server signal object.
+			* Destroy this server event object.
 			*/
 			void destroy();
 
 			/**
-			* Clone the server signal.
-			* @return A with "new" created copy of this server signal.
+			* Clone the server event.
+			* @return A with "new" created copy of this server event.
 			*/
 			virtual Event* clone();
 

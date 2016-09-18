@@ -15,9 +15,9 @@
 namespace u
 {
 	/**
-	 * Basic network protocol signals.
-	 * <p>This class contains the signals for the network protocols. The request
-	 * signals will implemented via special project subclasses.</p>
+	 * Basic network protocol events.
+	 * <p>This class contains the events for the network protocols. The request
+	 * events will implemented via special project subclasses.</p>
 	 */
 	class NetEvent : public Event
 	{
@@ -42,11 +42,11 @@ namespace u
 		public:
 			/**
 			 * Event of a new etablished connection.
-			 * <p>If a new network connection was etablished then is sent this signal.
+			 * <p>If a new network connection was etablished then is sent this event.
 			 * This can be while a connection request or via a listeners on the
 			 * server side.<br>
 			 * The <code>address</code> and <code>port</code> contains the data about
-			 * the other side. The <code>room</code> contains a pointer to the signal
+			 * the other side. The <code>room</code> contains a pointer to the event
 			 * room in them the tranfer protocol will applied.<br>
 			 * <b>Note:</b> It is a good practise to add the listeners to the room,
 			 * but not to save the room self.</p>
@@ -61,7 +61,7 @@ namespace u
 			/**
 			 * A new listener was created.
 			 * <p>Any time, a new listener was created(after send of GET_*_LISTENER)
-			 * send this signal the information about the new listener.<br>
+			 * send this event the information about the new listener.<br>
 			 * The attribute <b>room</b> contains the pointer to the room, in them
 			 * the connection protocol will applied.<br>
 			 * <b>Note:</b> It is a good practise to add the listeners to the room,
@@ -76,16 +76,16 @@ namespace u
 
 			/**
 			 * Close and destroy a listner or initialize the close of a connection.
-			 * <p>This signal has multiple interpretations in depent on which room
-			 * this signal will send.<br>
-			 * If the signal will send on a listener room, so close/interrupt the
+			 * <p>This event has multiple interpretations in depent on which room
+			 * this event will send.<br>
+			 * If the event will send on a listener room, so close/interrupt the
 			 * listener all active connections, destroy them and destroy them self.<br>
 			 * A sending on a connection room initiate the closing protocol for the
 			 * current connection.<br>
-			 * When this signal was sent on a connection room, so send the local
+			 * When this event was sent on a connection room, so send the local
 			 * side a close request package via the network. By a successs accepting
-			 * will send the <code>CLOSED</code> signal to the room.<br>
-			 * This signal doesn't transport data.
+			 * will send the <code>CLOSED</code> event to the room.<br>
+			 * This event doesn't transport data.
 			 * </p>
 			 */
 			static const String CLOSE;
@@ -107,7 +107,7 @@ namespace u
 
 			/**
 			 * Pointer of closed and destroyed connection or listener.
-			 * <p>This attribute will set only on the CLOSED signal and contains
+			 * <p>This attribute will set only on the CLOSED event and contains
 			 * the pointer of the destroyed network connection or network listener.<br>
 			 * Only over this attribute is it save possible, that the service or
 			 * the listener can removed the destroyed object from whose lists.
@@ -116,18 +116,18 @@ namespace u
 			void* closee;
 
 			/**
-			 * Connection was closed signal.
-			 * <p>This signal is the answer of a close request. The close request
-			 * was send to the outer side and the other side send a accept signal
+			 * Connection was closed event.
+			 * <p>This event is the answer of a close request. The close request
+			 * was send to the outer side and the other side send a accept event
 			 * back(unaccaptable is not possible).<br>
-			 * The closee attribute is filled for that signal type.
+			 * The closee attribute is filled for that event type.
 			 * </p>
 			 */
 			static const String CLOSED;
 
 			/**
-			 * Close requeired signal.
-			 * <p>This signal will send to the connection room, if a close package
+			 * Close requeired event.
+			 * <p>This event will send to the connection room, if a close package
 			 * was received. The controller object(the program code) has now time
 			 * to make cleanup work and has to answer with <code>CLOSE_CONFIRMED</code>.
 			 * </p>
@@ -136,19 +136,19 @@ namespace u
 
 			/**
 			 * Close was acceppted and is confirmed.
-			 * <p>This is the last signal from the program as answer for
+			 * <p>This is the last event from the program as answer for
 			 * <code>CLOSE_REQUIRED</code>. After sending of the answer package will
 			 * the connection beeing closed and destroyed. The <code>CLOSED</code>
-			 * signal will send after the close answer package was sent successfully.
+			 * event will send after the close answer package was sent successfully.
 			 * </p>
 			 */
 			static const String CLOSE_CONFIRMED;
 
 			/**
 			 * Constructor of a NetEvent Object.
-			 * <p>A network signal can used in many different situations. On a new
+			 * <p>A network event can used in many different situations. On a new
 			 * connection or new listening of incomming connections.
-			 * The room attribute trabsports the new signal room in that the protocol
+			 * The room attribute trabsports the new event room in that the protocol
 			 * works.<br>
 			 * The address and port is eg. necessary on requests for new connections.
 			 * <br>If the attributes unused, so let them null or empty. When
@@ -165,9 +165,9 @@ namespace u
 
 			/**
 			 * Constructor of a NetSigal object.
-			 * <p>The signal NEW_CONNECTION can is also used to transport the
+			 * <p>The event NEW_CONNECTION can is also used to transport the
 			 * new connection object to the requester object by the NetworkService.
-			 * <br>In this case the signal saves just the connection object and
+			 * <br>In this case the event saves just the connection object and
 			 * fill the address and port from that connection object.</p>
 			 * @param type Event type.
 			 * @param con  The network connection object.
@@ -186,13 +186,13 @@ namespace u
 			String className();
 
 			/**
-			 * Destroy this network signal object.
+			 * Destroy this network event object.
 			 */
 			void destroy();
 
 			/**
-			 * Clone the new signal.
-			 * @return A with "new" created copy of this server signal.
+			 * Clone the new event.
+			 * @return A with "new" created copy of this server event.
 			 */
 			Event* clone();
 

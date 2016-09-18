@@ -1,9 +1,9 @@
 
 ifndef TYPE
-TYPE=dynamic
+TYPE=static
 endif
 
-MAKEFLAGS += -s --no-print-directory
+MAKEFLAGS += -s --no-print-directory -j 16
 BASEDIR = .
 SRCDIR = $(BASEDIR)/app
 ULIBDIR=$(BASEDIR)/ulib
