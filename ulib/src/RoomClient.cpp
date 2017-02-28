@@ -56,6 +56,5 @@ void u::RoomClient::room(EventRoom* value)
 
 void u::RoomClient::doDestruct()
 {
-	//Object::doDestruct();
 	room(null);
 }

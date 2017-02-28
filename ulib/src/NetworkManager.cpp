@@ -63,7 +63,7 @@ void u::NetworkManager::addListeners()
 
 void u::NetworkManager::removeListeners()
 {
-	//trace(className()+": removeListeners()");
+	//trace(className()+": removeListeners()"+ptr2string(_room));
 	_room->removeEventListener(
 		NetEvent::CLOSE
 		, Callback(this, cb_cast(&NetworkManager::onClose))

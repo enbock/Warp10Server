@@ -64,8 +64,6 @@ u::Warp10Server::~Warp10Server()
 		module->destroy();
 	}
 
-	_network.room(null);
-
 	trace(className() + ": Server is down.");
 }
 

@@ -4,7 +4,8 @@ ifndef TYPE
 TYPE=static
 endif
 
-MAKEFLAGS += -s --no-print-directory -j 16
+MAKEFLAGS += -s --no-print-directory
+# -j 16
 BASEDIR = .
 SRCDIR = $(BASEDIR)/src
 APPDIR = $(BASEDIR)/app

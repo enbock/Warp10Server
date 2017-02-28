@@ -266,7 +266,7 @@ namespace u
 			* @param pos Position of the text character.
 			* @return The character.
 			*/
-      char& operator[] ( size_t pos );
+      		char& operator[] ( size_t pos );
 
 			/**
 			* Search in the string for the last position of val.
