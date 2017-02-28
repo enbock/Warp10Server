@@ -17,6 +17,9 @@ u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
 {
 	// connect Ctrl+C with shutdown
 	signal((int)SIGINT, OSEventHandler);
+	signal((int)SIGKILL, OSEventHandler);
+	signal((int)SIGABRT, OSEventHandler);
+	signal((int)SIGTERM, OSEventHandler);
 
 	_room.addEventListener(ServerEvent::SHUTDOWN, Callback(this, cb_cast(&Warp10Server::onShutdown)));
 
@@ -105,14 +108,14 @@ String u::Warp10Server::toString()
 
 void u::OSEventHandler(int signalNumber)
 {
-	switch (signalNumber)
+	/*switch (signalNumber)
 	{
 		case SIGINT:
-		{
+		{*/
 			((Warp10Server *)__main__)->shutdown();
-		}
+		/*}
 		break;
-	}
+	}*/
 }
 
 void u::Warp10Server::onRegisterNetworkPlugin(Object *arg)
