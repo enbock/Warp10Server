@@ -97,7 +97,7 @@ void u::ControlService::addListeners()
 void u::ControlService::removeListeners()
 {
 	if(_plugin.service()) {
-		NetworkService* srv = _plugin.service();
+		NetworkManager* srv = _plugin.service();
 		srv->lock();
 		srv->removeNetworkPlugin(&_plugin);
 		srv->unlock();
@@ -223,7 +223,9 @@ void u::ControlService::onNewData(Object* arg)
 	NetTransferEvent* event = (NetTransferEvent *) arg;
 	if(event->data()->readString() == "shutdown")
 	{
-		_room->dispatchEvent(new ServerEvent(ServerEvent::SHUTDOWN));
+		_room->dispatchEvent(
+			new ServerEvent(ServerEvent::SHUTDOWN)
+		)->destroy();
 	}
 	event->destroy();
 }

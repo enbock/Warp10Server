@@ -1,12 +1,12 @@
 /*
- * NetworkService
+ * NetworkManager
  *
  *  Created on: 15.07.2011
  *      Author: Endre Bock
  */
 
-#ifndef NETWORKSERVICE_
-#define NETWORKSERVICE_
+#ifndef NETWORKMANAGER_
+#define NETWORKMANAGER_
 
 #include <RoomClient>
 #include <NetworkListener>
@@ -19,7 +19,7 @@ namespace u
 	class NetworkServicePlugin;
 
 	/**
-	 * The network service central.
+	 * The network central.
 	 * <p>This call serv all known network object. It starts the listener or
 	 * connect protocol.<br>
 	 * Plugin known special services and create the listener or network
@@ -35,7 +35,7 @@ namespace u
 	 * </tr></table>
 	 * </p>
 	 */
-	class NetworkService : public RoomClient
+	class NetworkManager : public RoomClient
 	{
 		protected:
 			/**
@@ -57,7 +57,7 @@ namespace u
 			 * a multiplication of the GET*-protocols.<br>
 			 * <b>Note:</b> Remember, only one network service on a event room.</p>
 			 */
-			NetworkService();
+			NetworkManager();
 
 			/**
 			 * Destructor.
@@ -66,7 +66,7 @@ namespace u
 			 * alive.
 			 * </p>
 			 */
-			~NetworkService();
+			~NetworkManager();
 
 			/**
 			 * Default destroyer function.
@@ -175,4 +175,4 @@ namespace u
 	};
 }
 
-#endif /* NETWORKSERVICE_ */
+#endif /* NETWORKMANAGER_ */

@@ -9,7 +9,7 @@
 #define NETWORKSERVICEPLUGIN_
 
 #include <RoomClient>
-#include <NetworkService>
+#include <NetworkManager>
 
 namespace u
 {
@@ -33,7 +33,7 @@ namespace u
 			/**
 			 * Pointer to the network service object.
 			 */
-			NetworkService* _srv;
+			NetworkManager* _srv;
 		public:
 			/**
 			 * Constructor.
@@ -55,7 +55,7 @@ namespace u
 			 * @param value The network service object, which use the plugin or
 			 * <code>null</code> when the plugin has been removed.
 			 */
-			virtual void service(NetworkService* value);
+			virtual void service(NetworkManager* value);
 
 			/**
 			 * Default destroyer.
@@ -111,7 +111,7 @@ namespace u
 			 * Give the pointer of the network service object.
 			 * @return The pointer to the network service object.
 			 */
-			NetworkService* service();
+			NetworkManager* service();
 
 		protected:
 	};

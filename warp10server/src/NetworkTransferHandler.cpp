@@ -45,10 +45,12 @@ void u::NetworkTransferHandler::addEvents()
 		return;
 	}
 	_con->room()->addEventListener(
-		NetTransferEvent::READY, Callback(this, cb_cast(&NetworkTransferHandler::onTransferReady))
+		NetTransferEvent::READY,
+		Callback(this, cb_cast(&NetworkTransferHandler::onTransferReady))
 	);
 	_con->room()->addEventListener(
-		NetEvent::CLOSED, Callback(this, cb_cast(&NetworkTransferHandler::onConnectionClosed))
+		NetEvent::CLOSED, 
+		Callback(this, cb_cast(&NetworkTransferHandler::onConnectionClosed))
 	);
 	_isBound = true;
 	unlock();
@@ -63,10 +65,12 @@ void u::NetworkTransferHandler::removeEvents()
 		return;
 	}
 	_con->room()->removeEventListener(
-		NetTransferEvent::READY, Callback(this, cb_cast(&NetworkTransferHandler::onTransferReady))
+		NetTransferEvent::READY,
+		Callback(this, cb_cast(&NetworkTransferHandler::onTransferReady))
 	);
 	_con->room()->removeEventListener(
-		NetEvent::CLOSED, Callback(this, cb_cast(&NetworkTransferHandler::onConnectionClosed))
+		NetEvent::CLOSED,
+		Callback(this, cb_cast(&NetworkTransferHandler::onConnectionClosed))
 	);
 	_isBound = false;
 	unlock();
@@ -109,7 +113,7 @@ void u::NetworkTransferHandler::sendNextBlock()
 	NetTransferEvent* event;
 	if(_data.available() > 0)
 	{
-		// especially send to control data. Not blocking needed.
+		// especially send to control data. No chunking needed.
 		event = new NetTransferEvent(NetTransferEvent::DATA, _id, &_data);
 		_data.position(_data.length());
 	}

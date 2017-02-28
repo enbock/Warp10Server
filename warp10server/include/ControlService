@@ -16,9 +16,8 @@ namespace u
 	/**
 	 * Module: Service for control connections.
 	 * <p>That is the first module. It handle and implement the behavior for the
-	 * control connections between server and admin. This ist the server side.</p>
-	 * TODO: <p>The module could possibly load dynamically. Create a module base
-	 *       class and put all similar code between modules inside.</p>
+	 * control connections between server and admin. This is the server side.
+	 * </p>
 	 */
 	class ControlService : public RoomClient
 	{

@@ -9,7 +9,7 @@
 #define WARP10ADMIN_
 
 #include <Object>
-#include <NetworkService>
+#include <NetworkManager>
 #include <NetworkTransferHandler>
 
 #ifndef FPS
@@ -42,7 +42,7 @@ namespace u
 			/**
 			 * Network service object.
 			 */
-			NetworkService _network;
+			NetworkManager _network;
 
 			/**
 			 * Connections of the server.

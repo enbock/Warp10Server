@@ -1,11 +1,11 @@
 /*
- * NetworkService.cpp
+ * NetworkManager.cpp
  *
  *  Created on: 15.07.2011
  *      Author: Endre Bock
  */
 
-#include <NetworkService>
+#include <NetworkManager>
 #include <NetworkServicePlugin>
 #include <NetEvent>
 
@@ -15,18 +15,18 @@
 
 using namespace u;
 
-u::NetworkService::NetworkService()
+u::NetworkManager::NetworkManager()
 		: RoomClient()
 {
 
 }
 
-u::NetworkService::~NetworkService()
+u::NetworkManager::~NetworkManager()
 {
 	doDestruct();
 }
 
-void u::NetworkService::doDestruct()
+void u::NetworkManager::doDestruct()
 {
 	lock();
 
@@ -42,35 +42,35 @@ void u::NetworkService::doDestruct()
 
 }
 
-void u::NetworkService::destroy()
+void u::NetworkManager::destroy()
 {
-	delete (NetworkService*) this;
+	delete (NetworkManager*) this;
 }
 
-String u::NetworkService::className()
+String u::NetworkManager::className()
 {
-	return "u::NetworkService";
+	return "u::NetworkManager";
 }
 
-void u::NetworkService::addListeners()
+void u::NetworkManager::addListeners()
 {
 	//trace(className()+": addListeners()");
 	_room->addEventListener(
 		NetEvent::CLOSE
-		, Callback(this, cb_cast(&NetworkService::onClose))
+		, Callback(this, cb_cast(&NetworkManager::onClose))
 	);
 }
 
-void u::NetworkService::removeListeners()
+void u::NetworkManager::removeListeners()
 {
 	//trace(className()+": removeListeners()");
 	_room->removeEventListener(
 		NetEvent::CLOSE
-		, Callback(this, cb_cast(&NetworkService::onClose))
+		, Callback(this, cb_cast(&NetworkManager::onClose))
 	);
 }
 
-void u::NetworkService::room(EventRoom* value)
+void u::NetworkManager::room(EventRoom* value)
 {
 	int64 i, l;
 
@@ -82,7 +82,7 @@ void u::NetworkService::room(EventRoom* value)
 
 }
 
-void u::NetworkService::registerNetworkPlugin(NetworkServicePlugin* plugin)
+void u::NetworkManager::registerNetworkPlugin(NetworkServicePlugin* plugin)
 {
 	int64 i, l;
 
@@ -103,7 +103,7 @@ void u::NetworkService::registerNetworkPlugin(NetworkServicePlugin* plugin)
 	plugin->room(_room);
 }
 
-void u::NetworkService::removeNetworkPlugin(NetworkServicePlugin* plugin)
+void u::NetworkManager::removeNetworkPlugin(NetworkServicePlugin* plugin)
 {
 	int64 i, l;
 
@@ -122,7 +122,7 @@ void u::NetworkService::removeNetworkPlugin(NetworkServicePlugin* plugin)
 	}
 }
 
-void u::NetworkService::doGetListener(NetEvent *event,
+void u::NetworkManager::doGetListener(NetEvent *event,
 	NetworkServicePlugin* plugin)
 {
 	NetworkListener* listener = plugin->createNetworkListener(event->address(),
@@ -131,7 +131,7 @@ void u::NetworkService::doGetListener(NetEvent *event,
 	lock();
 	_listeners.push(listener);
 	listener->room()->addEventListener(NetEvent::CLOSED,
-		Callback(this, cb_cast(&NetworkService::onListenerDestroy))
+		Callback(this, cb_cast(&NetworkManager::onListenerDestroy))
 	);
 	unlock();
 
@@ -152,7 +152,7 @@ void u::NetworkService::doGetListener(NetEvent *event,
 
 }
 
-void u::NetworkService::onListenerDestroy(Object* arg)
+void u::NetworkManager::onListenerDestroy(Object* arg)
 {
 	NetEvent *event = (NetEvent*) arg;
 	NetworkListener* listener = (NetworkListener*) event->closee;
@@ -162,14 +162,14 @@ void u::NetworkService::onListenerDestroy(Object* arg)
 
 
 	listener->room()->removeEventListener(NetEvent::CLOSED,
-		Callback(this, cb_cast(&NetworkService::onListenerDestroy))
+		Callback(this, cb_cast(&NetworkManager::onListenerDestroy))
 	);
 	event->destroy();
 	listener->destroy();
 }
 
 NetworkConnection*
-u::NetworkService::doGetConnection(NetEvent* event,
+u::NetworkManager::doGetConnection(NetEvent* event,
 	NetworkServicePlugin* plugin)
 {
 	NetworkConnection* con = plugin->createConnection(event->address(),
@@ -186,7 +186,7 @@ u::NetworkService::doGetConnection(NetEvent* event,
 	return con;
 }
 
-void u::NetworkService::onClose(Object* arg)
+void u::NetworkManager::onClose(Object* arg)
 {
 	int64 i,l;
 	arg->destroy();

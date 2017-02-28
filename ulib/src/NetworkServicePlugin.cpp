@@ -24,7 +24,7 @@ String u::NetworkServicePlugin::className()
 	return "u::NetworkServicePlugin";
 }
 
-void u::NetworkServicePlugin::service(NetworkService* value)
+void u::NetworkServicePlugin::service(NetworkManager* value)
 {
 	_srv = value;
 }
@@ -40,7 +40,7 @@ NetworkConnection* u::NetworkServicePlugin::createIncomingConnection(
 	return null;
 }
 
-NetworkService* u::NetworkServicePlugin::service()
+NetworkManager* u::NetworkServicePlugin::service()
 {
 	return _srv;
 }

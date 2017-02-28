@@ -21,9 +21,15 @@ u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
 	signal((int)SIGABRT, OSEventHandler);
 	signal((int)SIGTERM, OSEventHandler);
 
-	_room.addEventListener(ServerEvent::SHUTDOWN, Callback(this, cb_cast(&Warp10Server::onShutdown)));
+	_room.addEventListener(
+		ServerEvent::SHUTDOWN, 
+		Callback(this, cb_cast(&Warp10Server::onShutdown))
+	);
 
-	_room.addEventListener(ServerEvent::REGISTER_NETWORK_PLUGIN, Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin)));
+	_room.addEventListener(
+		ServerEvent::REGISTER_NETWORK_PLUGIN, 
+		Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin))
+	);
 
 	// network setup
 	_network.room(room());
@@ -41,9 +47,15 @@ u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
 
 u::Warp10Server::~Warp10Server()
 {
-	_room.removeEventListener(ServerEvent::SHUTDOWN, Callback(this, cb_cast(&Warp10Server::onShutdown)));
+	_room.removeEventListener(
+		ServerEvent::SHUTDOWN, 
+		Callback(this, cb_cast(&Warp10Server::onShutdown))
+	);
 
-	_room.removeEventListener(ServerEvent::REGISTER_NETWORK_PLUGIN, Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin)));
+	_room.removeEventListener(
+		ServerEvent::REGISTER_NETWORK_PLUGIN, 
+		Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin))
+	);
 
 	while(_modules.length())
 	{
@@ -61,15 +73,18 @@ void u::Warp10Server::shutdown()
 {
 	// tell the network for shutdown
 	_room.dispatchEvent(
-			new ServerEvent(ServerEvent::SHUTDOWN))
-	->destroy();
+		new ServerEvent(ServerEvent::SHUTDOWN)
+	)->destroy();
 }
 
 void u::Warp10Server::onShutdown(Object *arg)
 {
 	arg->destroy();
 
-	_room.removeEventListener(ServerEvent::SHUTDOWN, Callback(this, cb_cast(&Warp10Server::onShutdown)));
+	_room.removeEventListener(
+		ServerEvent::SHUTDOWN,
+		Callback(this, cb_cast(&Warp10Server::onShutdown))
+	);
 
 	trace(className() + ": Server shutting down.");
 	_room.dispatchEvent(

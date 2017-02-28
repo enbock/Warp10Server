@@ -166,7 +166,7 @@ namespace u
 			/**
 			 * Constructor of a NetSigal object.
 			 * <p>The event NEW_CONNECTION can is also used to transport the
-			 * new connection object to the requester object by the NetworkService.
+			 * new connection object to the requester object by the NetworkManager.
 			 * <br>In this case the event saves just the connection object and
 			 * fill the address and port from that connection object.</p>
 			 * @param type Event type.
