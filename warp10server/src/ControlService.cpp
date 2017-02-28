@@ -8,6 +8,7 @@
 #include <ControlService>
 #include <ServerEvent>
 #include <ServerNetEvent>
+#include <NetTransferEvent>
 
 using namespace u;
 
@@ -121,7 +122,6 @@ void u::ControlService::removeListeners()
 		NetEvent::CLOSED
 		, Callback(this, cb_cast(&ControlService::onNetworkClosed))
 	);
-
 }
 
 void u::ControlService::onPluginRegistered(Object* arg)
@@ -177,6 +177,11 @@ void u::ControlService::onNewConnection(Object *arg)
 			NetEvent::CLOSED
 			, Callback(this, cb_cast(&ControlService::onRemoveConnection))
 		);
+
+		event->room()->addEventListener(
+			NetTransferEvent::DATA
+			, Callback(this, cb_cast(&ControlService::onNewData))
+		);
 	}
 	event->destroy();
 }
@@ -206,5 +211,19 @@ void u::ControlService::onRemoveConnection(Object* arg)
 		NetEvent::CLOSED
 		, Callback(this, cb_cast(&ControlService::onRemoveConnection))
 	);
+	room->removeEventListener(
+		NetTransferEvent::DATA
+		, Callback(this, cb_cast(&ControlService::onNewData))
+	);
+	event->destroy();
+}
+
+void u::ControlService::onNewData(Object* arg)
+{
+	NetTransferEvent* event = (NetTransferEvent *) arg;
+	if(event->data()->readString() == "shutdown")
+	{
+		_room->dispatchEvent(new ServerEvent(ServerEvent::SHUTDOWN));
+	}
 	event->destroy();
 }

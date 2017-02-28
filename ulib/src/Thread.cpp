@@ -131,7 +131,7 @@ void ThreadSystem::run(int64 id)
 
 #ifndef NDEBUG
 	if(peakRun < _run.size()) peakRun = _run.size();
-	/*if(ThreadSystem::isTerminating)
+	if(ThreadSystem::isTerminating)
 		trace(String("                                                                                        ")
 		+ "\n\033[A"
 		+ "\033[33mRun queue="+Object::int2string(_build.size())
@@ -139,7 +139,7 @@ void ThreadSystem::run(int64 id)
 		+ "("+Object::int2string(peakRun)+")"
 		+ "\tfinished="+Object::int2string(finish)
 		+ "\033[A"
-		);*/
+		);
 #endif
 	Thread *thread = _build.at(id);
 	_build.erase(id);

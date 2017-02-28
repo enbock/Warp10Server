@@ -3,6 +3,7 @@
 *.a
 .idea
 .vscode
+*.ldb
 doc/EA
 doc/cppdoc
 warp10server/warp10server
@@ -12,3 +13,4 @@ tDelete
 tEvent
 tObject
 tThread
+docker/run/warp10*

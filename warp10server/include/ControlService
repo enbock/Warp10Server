@@ -125,6 +125,13 @@ namespace u
 			 * @param arg The event object.
 			 */
 			void onRemoveConnection(Object *arg);
+
+			/**
+			 * New data on control connection.
+			 *
+			 * @param arg The event object.
+			 */
+			void onNewData(Object *arg);
 	};
 }
 
