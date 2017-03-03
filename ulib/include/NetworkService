@@ -1,0 +1,126 @@
+#ifndef NETWORKSERVICE_
+#define NETWORKSERVICE_
+
+#include <RoomClient>
+#include <NetworkServicePlugin>
+
+namespace u
+{
+	/**
+	 * Abstract Service for network service connections.
+	 * <p> It handle and implement the behavior for the connections. This is
+	 * the server side.
+	 * </p>
+	 */
+	class NetworkService : public RoomClient
+	{
+		protected:
+			/**
+			 * Listener room.
+			 */
+			EventRoom* _listenerRoom;
+
+			String address;
+
+		public:
+			/**
+			 * Constructor of service.
+			 */
+			NetworkService();
+
+			/**
+			 * Destructor of service.
+			 */
+			~NetworkService();
+
+			/**
+			 * Destroy with object.
+			 */
+			void destroy();
+
+			/**
+			 * Get the class name of this object.
+			 */
+			String className();
+
+			/**
+			 * Information about this object.
+			 */
+			String toString();
+
+			/**
+			* Enable the room listeners.
+			* <p>Add the listeners and send a plugin registration.</p>
+			*/
+			void addListeners();
+
+			/**
+			* Disable the room listeners.
+			* <p>Removed the listeners from the room.</p>
+			*/
+			void removeListeners();
+
+		protected:
+			/**
+			 * Event receiver for new listener.
+			 * <p>This function get the listener room and saved them for futrure
+			 * listener communication.</p>
+			 * @param arg The event object.
+			 */
+			virtual void onListener(Object *arg);
+
+			/**
+			 * Getting of ctrl listener failed.
+			 * @param arg The event object.
+			 */
+			virtual void onListenerFailed(Object *arg);
+
+			/**
+			 * Listener is gone.
+			 * @param arg The event object.
+			 */
+			virtual void onListenerClosed(Object *arg);
+
+			/**
+			 * Network is gone.
+			 * @param arg The event object.
+			 */
+			virtual void onNetworkClosed(Object *arg);
+
+			/**
+			 * Plugin was registered.
+			 * @param arg The event object.
+			 */
+			virtual void onPluginRegistered(Object *arg);
+
+			/**
+			 * A new connection is comming in.
+			 * @param arg The event object
+			 */
+			virtual void onNewConnection(Object *arg);
+
+			/**
+			 * A connection will close.
+			 * @param arg The event object.
+			 */
+			virtual void onConnectionClose(Object *arg);
+
+			/**
+			 * Remove a connection from service.
+			 * <p>This function cleans the events on a connection and will called
+			 * via the CLOSED event.</p>
+			 * @param arg The event object.
+			 */
+			virtual void onRemoveConnection(Object *arg);
+
+			/**
+			 * New data on control connection.
+			 *
+			 * @param arg The event object.
+			 */
+			virtual void onNewData(Object *arg) = 0;
+
+	};
+}
+
+#endif // !NETWORKSERVICE_

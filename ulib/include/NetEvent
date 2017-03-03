@@ -35,7 +35,7 @@ namespace u
 			 */
 			int64 _port;
 			/**
-			 * Transportet connection object.
+			 * Transport connection object.
 			 */
 			NetworkConnection* _con;
 
@@ -47,7 +47,7 @@ namespace u
 			 * server side.<br>
 			 * The <code>address</code> and <code>port</code> contains the data about
 			 * the other side. The <code>room</code> contains a pointer to the event
-			 * room in them the tranfer protocol will applied.<br>
+			 * room in them the transfer protocol will applied.<br>
 			 * <b>Note:</b> It is a good practise to add the listeners to the room,
 			 * but not to save the room self.</p>
 			 */

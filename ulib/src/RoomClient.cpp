@@ -44,7 +44,7 @@ String u::RoomClient::className()
 
 void u::RoomClient::room(EventRoom* value)
 {
-	//trace(className()+"("+ptr2string(this)+"):room("
+	// trace(className()+"("+ptr2string(this)+"):room("
 	//	+ptr2string(value)+") old: "+ptr2string(_room));
 	if (value != _room)
 	{
