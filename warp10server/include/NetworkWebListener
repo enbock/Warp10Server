@@ -1,0 +1,65 @@
+
+#ifndef NETWORKWEBLISTENER_
+#define NETWORKWEBLISTENER_
+
+#include <NetworkListener>
+
+namespace u
+{
+	/**
+	* Network listener for the server web connections.
+	*/
+	class NetworkWebListener : public NetworkListener
+	{
+		protected:
+		public:
+			/**
+			* Socket address.
+			*/
+			String socketAddress;
+
+			/**
+			* Port.
+			*/
+			int64 socketPort;
+
+			/**
+			* Constructor.
+			* <p>Create the object and set socketFile to null.</p>
+			*/
+			NetworkWebListener();
+			/**
+			* Destructor.
+			*/
+			~NetworkWebListener();
+			/**
+			* Name of the class.
+			*/
+			String className();
+			/**
+			* Default destroyer.
+			*/
+			void destroy();
+
+		protected:
+			/**
+			* Create socket.
+			* <p>Create and return the socket for listening.<br>
+			* <b>Note:</b> The socket self has not to be in the listener mode.</p>
+			* return Socket, setup with all parameter.
+			*/
+			Socket* createSocket();
+
+			/**
+			* Create a control network connection object.
+			* <p>This function create and return the network connection object
+			* from the accepted incomming connection.
+			* </p>
+			* @param connection Socket of incoming and accepted connection.
+			* @return The network control connection object.
+			*/
+			NetworkConnection* createIncomingConnection(Socket* connection);
+	};
+}
+
+#endif /* NETWORKWEBLISTENER_ */

@@ -72,19 +72,29 @@ void u::ControlService::removeListeners()
 /** Complete override */
 void u::ControlService::onPluginRegistered(Object* arg)
 {
-	arg->destroy();
-	_room->dispatchEvent(
-		new ServerNetEvent(
-			ServerNetEvent::GET_CTRL_LISTENER
-			, "/tmp/w10s_socket"
-		)
-	)->destroy();
+	ServerEvent *event = (ServerEvent*) arg;
+	if (event->data == _plugin) {
+		_room->dispatchEvent(
+			new ServerNetEvent(
+				ServerNetEvent::GET_CTRL_LISTENER
+				, "/tmp/w10s_socket"
+			)
+		)->destroy();
+	}
+
+	event->destroy();
 }
 
 /** Complete override */
 void u::ControlService::onListenerFailed(Object* arg)
 {
-	arg->destroy();
+	ServerNetEvent *event = ((ServerNetEvent*) arg);
+	if (!isMyListener(event))
+	{
+		event->destroy();
+		return;
+	}
+	event->destroy();
 	_room->dispatchEvent(
 			new ServerEvent(ServerEvent::SHUTDOWN)
 	)->destroy();
@@ -100,4 +110,16 @@ void u::ControlService::onNewData(Object* arg)
 		)->destroy();
 	}
 	event->destroy();
+}
+
+/**
+ * Check if a incoming listener event really for me.
+ */
+bool u::ControlService::isMyListener(NetEvent* event)
+{
+	// TODO: Address should be configured.
+	// Is address a good way to identify the correct listener?
+	return event->address() == "/tmp/w10s_socket"
+		&& event->port() == 0
+	;
 }

@@ -12,6 +12,10 @@
 #include <Socket>
 #include <NetworkConnection>
 
+#ifndef FPS
+#define FPS 90
+#endif
+
 namespace u
 {
 	/**

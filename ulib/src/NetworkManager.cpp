@@ -125,13 +125,15 @@ void u::NetworkManager::removeNetworkPlugin(NetworkServicePlugin* plugin)
 void u::NetworkManager::doGetListener(NetEvent *event,
 	NetworkServicePlugin* plugin)
 {
-	NetworkListener* listener = plugin->createNetworkListener(event->address(),
-		event->port());
+	NetworkListener* listener = plugin->createNetworkListener(
+		event->address(), event->port()
+	);
 
 	lock();
 	_listeners.push(listener);
-	listener->room()->addEventListener(NetEvent::CLOSED,
-		Callback(this, cb_cast(&NetworkManager::onListenerDestroy))
+	listener->room()->addEventListener(
+		NetEvent::CLOSED
+		, Callback(this, cb_cast(&NetworkManager::onListenerDestroy))
 	);
 	unlock();
 
@@ -139,15 +141,22 @@ void u::NetworkManager::doGetListener(NetEvent *event,
 	{
 		listener->room()->dispatchEvent(new NetEvent(NetEvent::CLOSE))->destroy();
 		_room->dispatchEvent(
-			new NetEvent(NetEvent::LISTENER_FAILED, listener->address()
-				, listener->port(), listener->room())
+			new NetEvent(
+				NetEvent::LISTENER_FAILED
+				, listener->address()
+				, listener->port()
+				, listener->room())
 		)->destroy();
 		return;
 	}
 
 	_room->dispatchEvent(
-		new NetEvent(NetEvent::LISTENER, listener->address(), listener->port(),
-			listener->room())
+		new NetEvent(
+			NetEvent::LISTENER
+			, listener->address()
+			, listener->port()
+			, listener->room()
+		)
 	)->destroy();
 
 }
@@ -156,16 +165,47 @@ void u::NetworkManager::onListenerDestroy(Object* arg)
 {
 	NetEvent *event = (NetEvent*) arg;
 	NetworkListener* listener = (NetworkListener*) event->closee;
+	event->destroy();
+
+	String listenerClass = listener->className();
+	trace(
+		className() + "::onListenerDestroy: Remove " 
+		+ listenerClass
+		+ "("+int2string(_listeners.size())+")"
+	);
 	lock();
+	int64 length = _listeners.size(), i;
+	bool foundListener = false;
+
+	for (i = 0; i < length; i++) {
+		if (_listeners.at(i) == listener) {
+			foundListener = true;
+		}
+	}
+
+	if (foundListener == false) {
+		trace(
+			className() + "::onListenerDestroy: " 
+			+ listenerClass + " already removed!"
+		);
+		unlock();
+		return;
+	}
+
 	_listeners.erase(listener);
-	unlock();
-
-
-	listener->room()->removeEventListener(NetEvent::CLOSED,
+	int64 listenerSize = _listeners.size();
+	listener->room()->removeEventListener(
+		NetEvent::CLOSED,
 		Callback(this, cb_cast(&NetworkManager::onListenerDestroy))
 	);
-	event->destroy();
+	unlock();
+	
 	listener->destroy();
+	trace(
+		className() + "::onListenerDestroy: Removed " 
+		+ listenerClass
+		+ "("+int2string(listenerSize)+")"
+	);
 }
 
 NetworkConnection*
@@ -190,7 +230,7 @@ void u::NetworkManager::onClose(Object* arg)
 {
 	int64 i,l;
 	arg->destroy();
-	trace(className()+"::onClose(): Shutdown listeners.");
+	trace(className()+"::onClose: Shutdown listeners.");
 	lock();
 	for(i=0, l=_listeners.length(); i < l; i++)
 	{
@@ -201,14 +241,18 @@ void u::NetworkManager::onClose(Object* arg)
 
 	while(_listeners.length() > 0)
 	{
+		trace(
+			className() + "::onClose: Waiting for "
+			+ int2string(_listeners.length()) + " listeners."
+		);
 		unlock();
 		usleep(1000000 / FPS);
 		lock();
 	}
 	unlock();
 
+	trace(className() + "::onClose: Finalize manager closing.");
 	NetEvent* event = new NetEvent(NetEvent::CLOSED);
 	event->closee = this;
-	_room->dispatchEvent(event);
-	event->destroy();
+	_room->dispatchEvent(event)->destroy();
 }

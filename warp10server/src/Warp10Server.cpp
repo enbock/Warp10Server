@@ -6,6 +6,7 @@
  */
 
 #include <ControlService>
+#include <WebService>
 #include <NetworkServicePlugin>
 #include <ServerNetEvent>
 #include <Warp10Server>
@@ -43,6 +44,14 @@ u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
 	ctrl = new ControlService();
 	ctrl->room(room());
 	_modules.push(ctrl);
+
+	/**
+	 * Webserver
+	 */
+	WebService* web;
+	web = new WebService();
+	web->room(room());
+	_modules.push(web);
 }
 
 u::Warp10Server::~Warp10Server()
@@ -92,8 +101,8 @@ void u::Warp10Server::onShutdown(Object *arg)
 	// Waiting for other thread (1 is me:)
 	while (ThreadSystem::numThreads() > 1)
 	{
-		trace("Waiting for threads: " + int2string(ThreadSystem::numThreads()));
-		usleep(1000000/(FPS*10));
+		trace("Waiting for threads: " + ThreadSystem::toString());
+		usleep(1000000/FPS);
 	}
 	programExit();
 }

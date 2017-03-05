@@ -78,7 +78,7 @@ void u::NetworkDecoder::doReadData(Object* arg)
 	unlock();
 	while(_stopReading == false)
 	{
-		//trace(className()+"::doReadData(): Start reading.");
+		trace(className()+"::doReadData(): Start reading.");
 		int64 l;
 		lock();
 		_con->_socket->lock();
@@ -86,7 +86,7 @@ void u::NetworkDecoder::doReadData(Object* arg)
 				&& buffer->length() == 0
 		)
 		{
-			//trace("Nothing to receive.");
+			trace("Nothing to receive.");
 			_con->_socket->unlock();
 			unlock();
 			usleep(1000000/FPS);
@@ -97,13 +97,13 @@ void u::NetworkDecoder::doReadData(Object* arg)
 
 		if(_stopReading == false)
 		{
-			//trace(className()+"::doReadData(): Start decoding.");
+			trace(className()+"::doReadData(): Start decoding.");
 			decodeData(buffer);
-			//trace ("Rest in buffer:" + int2string(buffer->available()));
-			//trace ("Position in buffer:" + int2string(buffer->position()));
+			trace ("Rest in buffer:" + int2string(buffer->available()));
+			trace ("Position in buffer:" + int2string(buffer->position()));
 		}
 
-		//trace(className()+"::doReadData(): Done. (Stop? "+(_stopReading==true?"Yes":"No")+")");
+		trace(className()+"::doReadData(): Done. (Stop? "+(_stopReading==true?"Yes":"No")+")");
 		unlock();
 	}
 	lock();

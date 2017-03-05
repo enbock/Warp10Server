@@ -4,6 +4,10 @@ ifndef TYPE
 TYPE=static
 endif
 
+ifndef DEV
+DEV=true
+endif
+
 MAKEFLAGS += -s --no-print-directory
 # -j 16
 BASEDIR = .
@@ -18,11 +22,13 @@ else
 	ULIB=libu.so.1.0
 endif
 
-# Production
-#CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle -DFD_SETSIZE=1024000
-
-# Dev
-CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+ifeq ($(DEV), true)
+	# Dev
+	CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+else
+	# Production
+	CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle -DFD_SETSIZE=1024000
+endif
 
 ifeq ($(TYPE),static)
 	LFLAGS=-static -static-libgcc 

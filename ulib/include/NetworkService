@@ -120,6 +120,12 @@ namespace u
 			 */
 			virtual void onNewData(Object *arg) = 0;
 
+			/**
+			 * Check if a incoming listener event really for me.
+			 * @param event The LISTENER event object.
+			 */
+			virtual bool isMyListener(NetEvent* event) = 0;
+
 	};
 }
 

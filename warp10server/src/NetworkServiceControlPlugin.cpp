@@ -21,7 +21,7 @@ u::NetworkServiceControlPlugin::NetworkServiceControlPlugin()
 
 u::NetworkServiceControlPlugin::~NetworkServiceControlPlugin()
 {
-	doDestruct();
+	doDestruct(); // run removeListeners via room(null)
 }
 
 String u::NetworkServiceControlPlugin::className()

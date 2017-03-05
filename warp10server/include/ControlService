@@ -85,6 +85,12 @@ namespace u
 			 * @param arg The event object.
 			 */
 			void onNewData(Object *arg);
+
+			/**
+			 * Check if a incoming listener event really for me.
+			 * @param event The LISTENER event object.
+			 */
+			bool isMyListener(NetEvent* event);
 	};
 }
 

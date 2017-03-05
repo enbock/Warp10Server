@@ -13,6 +13,10 @@
 #include <NetworkConnection>
 #include <NetEvent>
 
+#ifndef FPS
+#define FPS 90
+#endif
+
 namespace u
 {
 	//forward declaration

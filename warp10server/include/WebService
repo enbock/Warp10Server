@@ -1,0 +1,97 @@
+#ifndef WEBSERVICE_
+#define WEBSERVICE_
+
+#include <NetworkService>
+#include <NetworkServiceWebPlugin>
+
+namespace u
+{
+	/**
+	 * Module: HTTP service.
+	 * <p>A very simple http service to download files only.</p>
+	 */
+	class WebService : public NetworkService
+	{
+		protected:
+			/**
+			 * Control plugin.
+			 */
+			NetworkServiceWebPlugin _plugin;
+			
+		public:
+			/**
+			 * Constructor of service.
+			 */
+			WebService();
+
+			/**
+			 * Destructor of service.
+			 */
+			~WebService();
+
+			/**
+			 * Destroy with object.
+			 */
+			void destroy();
+
+			/**
+			 * Get the class name of this object.
+			 */
+			String className();
+
+			/**
+			 * Information about this object.
+			 */
+			String toString();
+
+			/**
+			* Enable the room listeners.
+			* <p>Each time, if a new room was set, will this function be called.</p>
+			*/
+			void addListeners();
+
+			/**
+			* Disable the room listeners.
+			* <p>Each time, if a new room will set or remove, will this function be
+			* called.</p>
+			*/
+			void removeListeners();
+
+		protected:
+
+			/**
+			 * Getting of ctrl listener failed.
+			 * @param arg The event object.
+			 */
+			void onListenerFailed(Object *arg);
+
+			/**
+			 * Plugin was registered.
+			 * @param arg The event object.
+			 */
+			void onPluginRegistered(Object *arg);
+
+			/**
+			 * New data on control connection.
+			 *
+			 * @param arg The event object.
+			 */
+			void onNewData(Object *arg);
+			
+			/**
+			 * Check if a incoming listener event really for me.
+			 * @param event The LISTENER event object.
+			 */
+			bool isMyListener(NetEvent* event);
+
+			/**
+			 * A new connection is comming in.
+			 * <p>The connection wait for a signal from this function before
+			 * it sends the received data.</p>
+			 * @param arg The event object
+			 */
+			virtual void onNewConnection(Object *arg);
+	};
+}
+
+#endif /* WEBSERVICE_ */

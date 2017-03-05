@@ -1,0 +1,231 @@
+#ifndef NETWORKWEBCONNECTION_
+#define NETWORKWEBCONNECTION_
+
+#include <NetworkConnection>
+#include <Socket>
+#include <NetworkWebDecoder>
+
+namespace u
+{
+	/**
+	 * Simple Web connection.
+	 * <p>
+	 * The web connection need only small parts of the standard network tranfer
+	 * protocoll. So its implement only <code>DATA</code> and <code>EOT</code>
+	 * events to interact with the service module.<br/>
+	 * <code>NetTransferEvent::DATA</code> will send after receiving a complete
+	 * request. The <code>NetTransferEvent::EOT</code> is expected a response
+	 * data transport event. His <code>ByteArray/code> will be the response data.
+	 * </p>
+	 */
+	class NetworkWebConnection : public NetworkConnection
+	{
+		protected:
+			/** 
+			 * Socket connection.
+			 */
+			Socket* _socket;
+
+		public:
+			/**
+			 * Ready to receive.
+			 * <p>Flag which indicate, that all internal event connected and 
+			 * awaiting data.</p>
+			 */
+			bool isReady;
+
+			/**
+			 * Constructor.
+			 * @param socket Connection socket object.
+			 * @param decoder Data decoder.
+			 */
+			NetworkWebConnection(Socket* socket, NetworkWebDecoder* decoder);
+
+			/**
+			 * Standard destructor.
+			 */
+			~NetworkWebConnection();
+
+			/**
+			 * Return the name of this class.
+			 *
+			 * @return Classname.
+			 */
+			String className();
+
+			/**
+			 * Default destroyer.
+			 */
+			void destroy();
+
+			/**
+			 * Simple stream representation.
+			 */
+			String toString();
+
+			/**
+			* Transfer begin event received[2].
+			* <p>The connection received a data init package and informs
+			* with the <code>INIT</code> event the project about it. The project
+			* can now prepare(eg. module loading/creating) the receiving of the
+			* data and answers with a <code>READY</code> event. The <code>id</code>
+			* data contains the transfer code. This code has on all follow
+			* event to be set in the <code>id</code> attribute.
+			* </p>
+			* @param id Transfer-id.
+			*/
+			void doTransferInit(uint64 id);
+
+			/**
+			* Transfer ready package was received[4].
+			* <p>The other side is ready to receive the data. This function
+			* send a <code>READY</code> event to the project, that now the
+			* transfer can be start. The project has to answer with a
+			* <code>NetTransferEvent::DATA</code> event.
+			* </p>
+			* @param id Transfer-id.
+			*/
+			void doTransfer(uint64 id);
+
+			/**
+			 * A datablock was received[7].
+			 * <p>The connection received a datablock from the other side. Via a
+			 * <code>NetTransferEvent::DATA</code> informs this function the
+			 * project about it.<br>
+			 * The <code>id</code> attribute contains the transfer code.
+			 * </p>
+			 * @param id Transfer-id.
+			 * @param data Received data.
+			 */
+			void doReceivedData(uint64 id, ByteArray* data);
+
+			/**
+			 * End of transfer received[11].
+			 * <p>The connection receive the EOT package. After all datablocks
+			 * was copied to the project close the connection this transfer.<br>
+			 * A <code>EOT</code> will be sent to inform the project about this.
+			 * </p>
+			 * @param id Transfer-id.
+			 */
+			void doEOT(uint64 id);
+
+			/**
+			 * Send event for a etablished connection.
+			 */
+			void doReady();
+
+			/**
+			* Close begin procedure was received.
+			* <p>This function send the <code>CLOSE_REQUIRED</code> event to the
+			* room. Also set the function the connection into the "inclose"
+			* status.</p>
+			*/
+			void doCloseRequired();
+
+		protected:
+			/**
+			 * Event API: Begin of the connection close procedure.
+			 * <p>With this event change the connection to the "inclose"
+			 * status. This means, that new transfer requests will ignored.<br>
+			 * Also send this function the close package to inform the other side.</p>
+			 * @param event Event object.
+			 */
+			void onClose(Object* event);
+
+			/**
+			* Event API: Close is confirmed.
+			* <p>With the event <code>CLOSE_CONFIRMED</code> eventize the project
+			* or program that the connection can closed now. After sending of
+			* the confirmation package close and destroy this function the
+			* connection object. A <code>CLOSED</code> event informs all room
+			* member, that the room will not more exists after receiving this event.
+			* A remove event listener is not necessary and can produce out of
+			* memory errors.</p>
+			* @param event Event object.
+			*/
+			void onCloseConfirmed(Object* event);
+
+			/**
+			* Event API: Data transfer initialized[1].
+			* <p>Via the <code>INIT</code> event tell the program/project the
+			* connection, that data(block) for sending exists.<br>
+			* This function send a data init package and a transfer code
+			* to the other side.
+			* </p>
+			* @param event The INIT event object.
+			*/
+			void onTransferInit(Object *event);
+
+			/**
+			* Event API: Ready for receiving of data[3].
+			* <p>This function informs the other side with a ready package, that
+			* this side is ready to receive the data.
+			* </p>
+			*/
+			void onTransferReady(Object *event);
+
+			/**
+			* Event API: Ready for sending of data[5].
+			* <p>Via the <code>NetTransferEvent::DATA</code> event starts the
+			* project the data transfer. Via <code>DataTransferEvent::GET</code> ask
+			* the connection active for the complete existing data(block). That event
+			* will sent by this function.
+			* </p>
+			* @param event The DATA event object.
+			*/
+			void onSendDataRequest(Object *event);
+
+			/**
+			* Event API: Data transport[6].
+			* <p>The project sent the data via this event. The decoder plugin
+			* encode the data for the target network and send the data on the
+			* socket.<br>
+			* The <code>data</code> attribute contains the pointer to the data
+			* and the <code>id</code> contains the transfer code.<br>
+			* After complete sending of the data send this function a <code>
+			* COMPLETE</code> event. The project can with receiving of that
+			* event clean the databugger and can start the next data
+			* block with <code>NetTransferEvent::DATA</code> or finishing the
+			* transfer with <code>NetTransferEvent::EOT</code>.
+			* </p>
+			* @param event The DATA event with the data.
+			*/
+			void onSendData(Object *event);
+
+			/**
+			* Event API: Get the received data[8].
+			* <p>The project informs the connection with this <code>GET</code> event
+			* that the datablock can now copied. This do this function with the
+			* <code>DataTransferEvent::DATA</code> event. The project has the
+			* receiving and saving activity to confirm with <code>COMPLETE</code>.
+			* </p>
+			*/
+			void onGetDataRequest(Object *event);
+
+			/**
+			* Event API: Complete saved[9].
+			* <p>This function remove the datablock, which was sent to the project
+			* and cleanup the memory. If more received datablock or eot packages
+			* exists, then call this the function the <code>doReceiveData()</code>
+			* or <code>doEOT()</code> function.<br>
+			* The <code>id</code> attribute contains the transfer code.
+			* </p>
+			* @param event The COMPLET event object with the transfer code.
+			*/
+			void onDataComplete(Object event);
+
+			/**
+			* Event API: End of transaction[10].
+			* <p>Over the <code>EOT</code> event tells the project the connection
+			* that the end of the data transfer reached. The connection sent a
+			* eot package to the other side and close the transfer after it. The
+			* transfer id from the <code>id</code> attribute will not more used,
+			* unless the maximum number if id's was reached.
+			* </p>
+			* @param event The EOT event object.
+			*/
+			void onEOT(Object *event);
+	};
+}
+
+#endif // ! NETWORKWEBCONNECTION_

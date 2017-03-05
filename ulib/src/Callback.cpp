@@ -66,10 +66,10 @@ void Callback::destroy()
 
 String Callback::toString()
 {
-	String str = "["+className();
-	str += " target=" + target->toString();
-	str += " function=" + ptr2string(function);
-	str += " arg=" + (arg?arg->toString():"<No Argument>");
+	String str = "[" + className() + " (" + ptr2string(this) + ")";
+	str += " target=" + (target?target->toString():"<Defunc>");
+	//str += " function=" + (function?ptr2string(&function):"<Defunc>");
+	//str += " arg=" + (arg?arg->toString():"<No Argument>");
 	str +="]";
 	return str;
 }

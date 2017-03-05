@@ -91,8 +91,8 @@ u::EventDispatcher::~EventDispatcher()
 			  }
 #ifndef NDEBUG
 			  trace(out+".");
-#endif
 			}
+#endif
 		}
 		unlock();
 #ifndef NDEBUG
@@ -153,14 +153,13 @@ void EventDispatcher::addEventListener(const String& type
 
 	for(i=0; i<l; i++)
 	{
-		if(vec->at(i) == callback)
+		if(vec->at(i).target == callback.target)
 		{
 			unlock();
 			return;
 		}
 	}
 
-	Callback tmp = callback;
 	vec->push_back(callback);
 	unlock();
 }
@@ -210,7 +209,6 @@ bool EventDispatcher::hasEventListener(const String& type)
 Event* EventDispatcher::dispatchEvent(Event *event)
 {
 	lock();
-	trace("DispatchEvent: "+*(event->_type));
 
 	Vector<Callback>* pVec = getEventVector(event->_type);
 	if(pVec != null)
@@ -222,6 +220,7 @@ Event* EventDispatcher::dispatchEvent(Event *event)
 		for(i=0; i<l; i++)
 		{
 			Callback cb = vec.at(i);
+			trace("DispatchEvent: "+*(event->_type)+" -> "+cb.toString());
 			Event* ev = event->clone();
 			ev->_target = this;
 			cb.arg = ev;

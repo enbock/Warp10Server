@@ -21,7 +21,7 @@ u::NetworkService::~NetworkService()
 	*       gone. You can not use this to indeirect call removeListeners() on
 	*       derived classes.
 	*/
-	room(null);
+	doDestruct();
 }
 
 String u::NetworkService::className()
@@ -40,6 +40,16 @@ void u::NetworkService::onListener(Object* arg)
 	NetEvent* event = (NetEvent*)arg;
 	EventRoom* room = event->room();
 
+	if(!isMyListener(event)) {
+		trace(
+			className() + "::onListener: " 
+			+ event->address() + " is not for me."
+		);
+		event->destroy();
+		return;
+	}
+	event->destroy();
+
 	lock();
 	_listenerRoom = room;
 	unlock();
@@ -54,24 +64,30 @@ void u::NetworkService::onListener(Object* arg)
 		, Callback(this, cb_cast(&NetworkService::onNewConnection))
 	);
 
-	event->destroy();
 }
 
 void u::NetworkService::onListenerClosed(Object* arg)
 {
+
 	arg->destroy();
 	lock();
-	_listenerRoom->removeEventListener(
-		NetEvent::CLOSED
-		, Callback(this, cb_cast(&NetworkService::onListenerClosed))
-	);
+	if(_listenerRoom != null) // on multiple listeners could receive to often.
+	{
+		trace(className() + "::onListenerClosed");
+		_listenerRoom->removeEventListener(
+			NetEvent::CLOSED
+			, Callback(this, cb_cast(&NetworkService::onListenerClosed))
+		);
 
-	_listenerRoom->removeEventListener(
-		NetEvent::NEW_CONNECTION
-		, Callback(this, cb_cast(&NetworkService::onNewConnection))
-	);
+		_listenerRoom->removeEventListener(
+			NetEvent::NEW_CONNECTION
+			, Callback(this, cb_cast(&NetworkService::onNewConnection))
+		);
 
-	_listenerRoom = null;
+		_listenerRoom = null;
+	} else {
+		trace(className() + "::onListenerClosed: Already closed!");
+	}
 	unlock();
 }
 

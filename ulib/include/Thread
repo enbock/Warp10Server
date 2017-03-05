@@ -112,6 +112,11 @@ namespace u
 			*/
 			static void destroy();
 
+			/**
+			* Dump tread data.
+			*/
+			static String toString();
+
 		protected:
 			/**
 			* Destroy a thread.
@@ -182,6 +187,11 @@ namespace u
 			* @param thread The thread object. It must be a Thread type.
 			*/
 			static void* execute(void *thread);
+
+			/**
+			* Dump thread data.
+			*/
+			String toString();
 	};
 }
 

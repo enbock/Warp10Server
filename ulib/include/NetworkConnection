@@ -114,7 +114,7 @@ namespace u
 			/**
 			* Close begin procedure was received.
 			* <p>This function send the <code>CLOSE_REQUIRED</code> event to the
-			* room. Also set the function the connection into the "inclode"
+			* room. Also set the function the connection into the "inclose"
 			* status.</p>
 			*/
 			virtual void doCloseRequired() = 0;

@@ -9,8 +9,18 @@
 
 using namespace u;
 
-const String u::ServerNetEvent::GET_CTRL_CONNECTION("u::ServerNetEvent::get_control_connection");
-const String u::ServerNetEvent::GET_CTRL_LISTENER("u::ServerNetEvent::get_control_listener");
+const String u::ServerNetEvent::GET_CTRL_CONNECTION(
+	"u::ServerNetEvent::get_control_connection"
+);
+const String u::ServerNetEvent::GET_WEB_CONNECTION(
+	"u::ServerNetEvent::get_web_connection"
+);
+const String u::ServerNetEvent::GET_CTRL_LISTENER(
+	"u::ServerNetEvent::get_control_listener"
+);
+const String u::ServerNetEvent::GET_WEB_LISTENER (
+	"u::ServerNetEvent::get_web_listener"
+);
 
 u::ServerNetEvent::ServerNetEvent(String const& type, String address
 	, int64 port, EventRoom* room) : NetEvent(type, address, port, room)

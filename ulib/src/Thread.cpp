@@ -48,13 +48,21 @@ void* Thread::execute(void *thread)
 
 bool ThreadSystem::create(Callback *cb)
 {
-	if(isTerminating) return false;
+	_access.lock();
+	if(isTerminating) {
+		_access.unlock();
+		return false;
+	}
 
 	Thread *t = new Thread(cb);
 
-	_access.lock();
 	_build.push_back(t);
 	_access.unlock();
+
+	trace(
+		"ThreadSystem::create: " + Object::ptr2string(cb)
+		 + " -> " +  Object::ptr2string(&(t->_call))
+	);
 
 	return true;
 }
@@ -174,3 +182,46 @@ void ThreadSystem::init()
 	// ups...nothing to do?..ok, function for later stuff ;)
 }
 
+
+/**
+* Dump tread data.
+*/
+String ThreadSystem::toString()
+{
+	int64 i, bs, rs;
+
+	_access.lock();
+
+	bs = _build.size();
+	rs = _run.size();
+
+	String output(
+		String("[u::Thread System\n")
+		+ "\tBuild Queue: " + Object::int2string(bs) + "\n"
+	);
+
+	for(i = 0; i < bs; i++) 
+	{
+		output += "\t\t" + _build[i]->toString() + "\n";
+	}
+
+	output += "\tRun Queue: " + Object::int2string(rs) + "\n";
+
+	for(i = 0; i < rs; i++) 
+	{
+		output += String("\t\t") + _run[i]->toString() + "\n";
+	}
+
+	_access.unlock();
+
+	output += "]";
+
+	return output;
+}
+
+String Thread::toString()
+{
+	return String("[u::Thread call=")
+		+ _call.toString()
+		+"]";
+}

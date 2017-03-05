@@ -19,6 +19,7 @@ u::NetworkControlListener::NetworkControlListener()
 u::NetworkControlListener::~NetworkControlListener()
 {
 	if(socketFile.length() > 0) unlink(socketFile.c_str());
+	trace(className()+"::~: Destroyed");
 }
 
 String u::NetworkControlListener::className()

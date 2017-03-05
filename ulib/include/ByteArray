@@ -232,7 +232,6 @@ namespace u
 			/**
 			* Write a other memory into the buffer.
 			* @param value ByteArray with the data.
-			* @param offset Offset of the read memory block(is not the position of this. It's the position of value).
 			*/
 			int64 writeBytes(ByteArray& value, int64 length = 0);
 

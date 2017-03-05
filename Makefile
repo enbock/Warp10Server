@@ -3,6 +3,11 @@ ifndef TYPE
 TYPE=static
 endif
 
+ifndef DEV
+DEV=true
+endif
+
+
 MAKEFLAGS += -s --no-print-directory -j 16
 BASEDIR = .
 SRCDIR = $(BASEDIR)/app
@@ -16,10 +21,13 @@ else
 endif
 
 # Produktion
-#CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle -DFD_SETSIZE=1024000
-CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+ifeq ($(DEV), true)
+	CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+else
+	CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle -DFD_SETSIZE=1024000
+endif
 
-ifeq ($(TYPE),static)
+ifeq ($(TYPE), static)
 	LFLAGS=-Wl,-L$(ULIBDIR) -lz -lxml2 -lpthread -lu -static 
 else
 	LFLAGS=-Wl,-L$(ULIBDIR) -Wl,-rpath,$(ULIBDIR) -lpthread -lz -lxml2 -ldl -lstdc++ 
@@ -58,9 +66,6 @@ clean:
 	rm $(FILES) >&2 2>/dev/null || true
 	$(MAKE) -C $(ULIBDIR) clean
 	$(MAKE) -C warp10server clean
-
-dev-install:
-	sudo apt-get install libc6-dev zlib1g-dev libxml2-dev valgrind g++
 
 $(ULIBDIR)/$(ULIB): $(wildcard $(ULIBDIR)/include/*) $(wildcard $(ULIBDIR)/src/*.cpp)
 	$(MAKE) -C $(ULIBDIR) $(ULIB)

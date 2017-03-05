@@ -6,11 +6,17 @@ INCDIR = $(BASEDIR)/include
 OBJDIR = $(BASEDIR)/aso
 SRCDIR = $(BASEDIR)/src
 
-# Production
-#CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle
+ifndef DEV
+DEV=true
+endif
 
-#Dev
-CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+ifeq ($(DEV), true)
+	#Dev
+	CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+else
+	# Production
+	CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle
+endif
 
 LDFLAGS=-shared -Wl,-soname,libu.so
 CC=g++ $(CFLAGS)

@@ -35,7 +35,11 @@ bool u::NetworkListener::listen()
 
 u::NetworkListener::~NetworkListener()
 {
-
+	_room.removeEventListener(
+		NetEvent::CLOSE
+		, Callback(this, cb_cast(&NetworkListener::onClose))
+	);
+	trace(className()+"::~: Destroyed");
 }
 
 void u::NetworkListener::onClose(Object* arg)
@@ -43,11 +47,6 @@ void u::NetworkListener::onClose(Object* arg)
 	arg->destroy();
 	// wait for possible other actions
 	lock();
-
-	_room.removeEventListener(
-		NetEvent::CLOSE
-		, Callback(this, cb_cast(&NetworkListener::onClose))
-	);
 
 	// first stop listening
 	if(_socket != null)
@@ -68,8 +67,12 @@ void u::NetworkListener::onClose(Object* arg)
 	// Wait for destroing connections
 	while(_connections.length())
 	{
+		trace(
+			className() + "::onClose: Waiting for "
+			+ int2string(_connections.length()) + " connections."
+		);
 		unlock();
-		usleep(1000000/90);
+		usleep(1000000/FPS);
 		lock();
 	}
 

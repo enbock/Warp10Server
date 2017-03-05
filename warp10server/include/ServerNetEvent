@@ -31,6 +31,14 @@ namespace u
 			* <code>address</code> to be the filenname of the socket.</p>
 			*/
 			static const String GET_CTRL_CONNECTION;
+			/**
+			* Event to get a new server web connection.
+			* <p>Via this event ask a program for a new network
+			* connection to a http server.<br>
+			* The answer should be a NEW_CONNECTION event.
+			* </p>
+			*/
+			static const String GET_WEB_CONNECTION;
 
 			/**
 			* Event to receive a new server control network listener.
@@ -44,6 +52,11 @@ namespace u
 			* <code>LISTENER</code>.</p>
 			*/
 			static const String GET_CTRL_LISTENER;
+
+			/**
+			* Get a web server listener.
+			*/
+			static const String GET_WEB_LISTENER;
 
 			/**
 			* Constructor of a ServerNetEvent Object.

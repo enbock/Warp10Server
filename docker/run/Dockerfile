@@ -10,5 +10,7 @@ COPY warp10admin /app/warp10admin
 
 VOLUME ["/app"]
 
+EXPOSE 80
+
 ENTRYPOINT []
 CMD ["/app/warp10server"]
