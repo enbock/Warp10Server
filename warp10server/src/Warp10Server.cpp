@@ -66,13 +66,6 @@ u::Warp10Server::~Warp10Server()
 		Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin))
 	);
 
-	while(_modules.length())
-	{
-		Object *module;
-		module = (Object *)_modules.pop();
-		module->destroy();
-	}
-
 	trace(className() + ": Server is down.");
 }
 
@@ -104,12 +97,20 @@ void u::Warp10Server::onShutdown(Object *arg)
 		trace("Waiting for threads: " + ThreadSystem::toString());
 		usleep(1000000/FPS);
 	}
+
+	while(_modules.length())
+	{
+		Object *module;
+		module = (Object *)_modules.pop();
+		module->destroy();
+	}
+	
 	programExit();
 }
 
 void u::Warp10Server::programExit()
 {
-	trace(className() + ": Exit programm.");
+	trace(ThreadSystem::toString()+"\n" + className() + ": Exit programm.");
 	u::programExit();
 }
 

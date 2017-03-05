@@ -6,16 +6,27 @@ INCDIR = $(BASEDIR)/include
 OBJDIR = $(BASEDIR)/aso
 SRCDIR = $(BASEDIR)/src
 
-ifndef DEV
 DEV=true
+ifdef NDEBUG
+DEV=false
 endif
+
+ifndef CFLAGS
+ifeq ($(DEV), true)
+CFLAGS=-DFPS=30
+else
+CFLAGS=-DFPS=1000
+endif
+endif
+
+CFLAGS += -fPIC  -DFD_SETSIZE=1024000
 
 ifeq ($(DEV), true)
 	#Dev
-	CFLAGS=-fPIC -g3 -O0 -fno-inline -DFD_SETSIZE=1024000
+	CFLAGS+=-g3 -O0 -fno-inline
 else
 	# Production
-	CFLAGS=-fPIC -DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle
+	CFLAGS+=-DNDEBUG -Os -fvisibility-inlines-hidden -g0 -gtoggle
 endif
 
 LDFLAGS=-shared -Wl,-soname,libu.so

@@ -24,6 +24,7 @@ u::NetworkManager::NetworkManager()
 u::NetworkManager::~NetworkManager()
 {
 	doDestruct();
+	trace(className() + "::~NetworkManager: Network is down.");
 }
 
 void u::NetworkManager::doDestruct()
@@ -34,12 +35,15 @@ void u::NetworkManager::doDestruct()
 
 	while (_plugins.length() > 0)
 	{
+		trace(
+			className() +"::doDestruct: Remove plugin "
+			+ _plugins.at(0)->toString()
+		);
 		_plugins.pop()->destroy();
 	}
 	unlock();
 
 	//RoomClient::doDestruct();
-
 }
 
 void u::NetworkManager::destroy()
