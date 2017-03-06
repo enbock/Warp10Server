@@ -9,7 +9,7 @@ dependencies:
 
 test:
   override:
-    - docker run -it -v "$PWD:/src" -v "$HOME:/root" -w "/src" --name W10SDev enbock/warp10server:dev CFLAGS=-FPS=2000 make
+    - docker run -it -v "$PWD:/src" -v "$HOME:/root" -w "/src" --name W10SDev enbock/warp10server:dev "bash -c 'export CFLAGS=-FPS=2000; make'"
 
 deployment:
   feature:
