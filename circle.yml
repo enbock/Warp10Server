@@ -9,14 +9,13 @@ dependencies:
 
 test:
   override:
-    - docker run -itd -v ".:/src" -v "~:/root" -w "/src" --name W10SDev enbock/warp10server:dev
-    - docker exec -it W10SDev make
+    - docker run -it -v "$PWD:/src" -v "$HOME:/root" -w "/src" --name W10SDev enbock/warp10server:dev make
 
 deployment:
   feature:
     branch: /feature.*/
     commands:
-      - cp warp10server/warp10* docker/run
+      - cp -v warp10server/warp10* docker/run
       - docker build --rm=false -t enbock/warp10server "docker/run"
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push enbock/warp10server
