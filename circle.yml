@@ -15,8 +15,8 @@ test:
 deployment:
   feature:
     branch: /feature.*/
-      commands:
-        - cp warp10server/warp10* docker/run
-        - docker build --rm=false -t enbock/warp10server "docker/run"
-        - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-        - docker push enbock/warp10server
+    commands:
+      - cp warp10server/warp10* docker/run
+      - docker build --rm=false -t enbock/warp10server "docker/run"
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push enbock/warp10server
