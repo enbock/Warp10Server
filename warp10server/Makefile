@@ -60,7 +60,7 @@ CPP=.cpp
 O=.o
 
 APPS=warp10server warp10admin
-SRCFILES=$(wildcard $(SRCDIR)/*$(CPP))
+SRCFILES=$(wildcard $(SRCDIR)/*$(CPP)) $(wildcard $(SRCDIR)/**/*$(CPP))
 APPFILES=$(patsubst $(APPDIR)/%$(CPP),%,$(APPS))
 FILES=$(patsubst $(SRCDIR)/%$(CPP),%,$(SRCFILES))
 OBJFILES=$(patsubst %,$(OBJDIR)/%$(O),$(FILES))
@@ -68,16 +68,20 @@ OBJFILES=$(patsubst %,$(OBJDIR)/%$(O),$(FILES))
 all: $(APPS)
 	echo "[`date`] Done."
 
+# Keep object files.
+.PRECIOUS: $(OBJFILES)
+
 warp10%: $(ULIBDIR)/$(ULIB) $(OBJFILES)
 	echo "[C] $@"
 	$(CC) $(LFLAGS) $(CFLAGS) $(INCLUDE) -o $@ $(APPDIR)/$@$(CPP) $(OBJFILES) $(LDLIBS) 
 
 $(OBJDIR)/%$(O): $(SRCDIR)/%$(CPP) $(INCDIR)/%
 	echo "[C] $*"
+	mkdir -p `dirname $@`
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 clean:
-	rm aso/* >&2 2>/dev/null || true
+	rm -r $(OBJDIR) >&2 2>/dev/null || true
 	rm $(APPS) >&2 2>/dev/null || true
 	$(MAKE) -C $(ULIBDIR) clean
 

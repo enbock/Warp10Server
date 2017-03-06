@@ -1,0 +1,18 @@
+#ifndef NETWORK_MANAGER_
+#define NETWORK_MANAGER_
+
+#include <RoomOwner>
+
+namespace u 
+{
+	namespace Network
+	{
+		class Manager : public RoomOwner
+		{
+			Manager();
+			~Manager();
+		};
+	}
+}
+
+#endif // ! NETWORK_MANAGER_
