@@ -5,11 +5,10 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker build --rm=false -t enbock/warp10server:$(cat docker/run/TAG)-compile docker/dev
 
 test:
   override:
-    - docker run -it -v "$PWD:/src" -v "$HOME:/root" -w "/src" --name W10SDev enbock/warp10server:$(cat docker/run/TAG)-compile "bash -c 'export CFLAGS=-FPS=2000; make'"
+    - docker run -it -v "$PWD:/src" -v "$HOME:/root" -w "/src" --name W10SDev enbock/warp10server:dev "bash -c 'export CFLAGS=-FPS=2000; make'"
 
 deployment:
   feature:
@@ -19,6 +18,8 @@ deployment:
       - docker build --rm=false -t enbock/warp10server:$(cat docker/run/TAG)-pre docker/run
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push enbock/warp10server
+      
+  production:
     branch: /master/
     commands:
       - cp -v warp10server/warp10* docker/run
