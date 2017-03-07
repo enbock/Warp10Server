@@ -1,0 +1,56 @@
+#ifndef NETWORK_EVENT_
+#define NETWORK_EVENT_
+
+#include <Event>
+#include <Network/IBuilder>
+
+namespace u
+{
+	namespace Network
+	{
+		class Event : public u::Event
+		{
+			public:
+				/**
+				 * Register a builder.
+				 * <p><code>networkType</code> and <code>builder</code> need to be set.<br>
+				 * The network manager takeover the ownership of the builder.</p>
+				 */
+				static const String REGISTER_NETWORK;
+				
+				/**
+				 * Request a listener for registered network.
+				 */
+				static const String REQUEST_LISTENER;
+				
+				/**
+				 * A network is now registered.
+				 */
+				static const String NETWORK_REGISTERED;
+
+				/**
+				 * A listener is created and start listening.
+				 */
+				static const String LISTENER_CREATED;
+
+				/**
+				 * A listener or connection was closed.
+				 */
+				static const String CLOSED;
+
+				IBuilder* builder;
+				String networkType;
+
+				/**
+				 * A listener was removed.
+				 */
+				static const String LISTENER_CLOSED;
+
+				Event(String const& type, String networkType, IBuilder* builder);
+				Event(String const& type, String networkType);
+				~Event();
+		};
+	}
+}
+
+#endif // ! NETWORK_EVENT_

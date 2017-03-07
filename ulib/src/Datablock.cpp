@@ -206,3 +206,33 @@ bool u::Datablock::hasKey(String key)
 
 	return false;
 }
+
+/**
+* Get the list of keys.
+*/
+Vector<String> u::Datablock::getKeys()
+{
+	Vector<String> result;
+	int length = _list.length(), i;
+	for(i = 0; i < length; i++)
+	{
+		result.push(_list[i]->name);
+	}
+
+	return result;
+}
+
+/**
+* Delete a key, if the key exists.
+*/
+void u::Datablock::remove(String key)
+{
+	int64 l = _list.length(), i;
+	for(i = 0; i < l; i++)
+	{
+		if(_list[i]->name == key) {
+			delete (_attribute*)_list[i];
+			return;
+		}
+	}
+}

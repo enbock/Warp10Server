@@ -1,0 +1,15 @@
+#ifndef NETWORK_IBUILDER_
+#define NETWORK_IBUILDER_
+
+#include <RoomOwner>
+
+namespace u 
+{
+	namespace Network
+	{
+		class IBuilder : public Object
+		{};
+	}
+}
+
+#endif // ! NETWORK_IBUILDER_
