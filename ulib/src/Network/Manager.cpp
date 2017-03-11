@@ -1,47 +1,59 @@
 #include <Network/Manager>
+#include <Network/IBuilder>
+#include <Network/IListener>
 
 using namespace u;
+using namespace Network;
 
 /**
 * Constructor.
 */
-u::Network::Manager::Manager() : EventRoom()
+Manager::Manager() : EventRoom()
 {
 	addEventListener(
-		Network::Event::REGISTER_NETWORK
+		Event::REGISTER_NETWORK
 		, Callback(this, cb_cast(&Network::Manager::onRegisterNetwork))
 	);
 	addEventListener(
-		Network::Event::REQUEST_LISTENER
+		Event::REQUEST_LISTENER
 		, Callback(this, cb_cast(&Network::Manager::onRequestListener))
+	);
+	addEventListener(
+		Event::CLOSE
+		, Callback(this, cb_cast(&Network::Manager::onCloseRequest))
 	);
 }
 
 /**
 * Destructor.
 */
-u::Network::Manager::~Manager()
+Manager::~Manager()
 {
-	/** future
-	if (_listeners.size > 0) {
-		error(className()+"::~Manager: Listeners must be closed on destroy.");
+	if (_listener.size() > 0) {
+		error(
+			className()
+			+ "::~Manager: Listeners must be closed before destroy."
+		);
 	}
-	*/
 	
 	removeEventListener(
-		Network::Event::REGISTER_NETWORK
+		Event::REGISTER_NETWORK
 		, Callback(this, cb_cast(&Network::Manager::onRegisterNetwork))
 	);
 	removeEventListener(
-		Network::Event::REQUEST_LISTENER
+		Event::REQUEST_LISTENER
 		, Callback(this, cb_cast(&Network::Manager::onRequestListener))
+	);
+	removeEventListener(
+		Event::CLOSE
+		, Callback(this, cb_cast(&Network::Manager::onCloseRequest))
 	);
 }
 
 /**
 * Destroyer.
 */
-void u::Network::Manager::destroy()
+void Manager::destroy()
 {
 	delete (Network::Manager*)this;
 }
@@ -49,7 +61,7 @@ void u::Network::Manager::destroy()
 /**
 * Get the class name.
 */
-String u::Network::Manager::className()
+String Manager::className()
 {
 	return "u::Network::Manager";
 }
@@ -57,53 +69,112 @@ String u::Network::Manager::className()
 /**
 * Register a new network.
 */
-void Network::Manager::onRegisterNetwork(Object *arg)
+void Manager::onRegisterNetwork(Object *arg)
 {
-	Network::Event* event = ((Network::Event*) arg);
+	Event* event = ((Event*) arg);
 
 	lock();
 	if (_builder.hasKey(event->networkType) == false) {
 		_builder[event->networkType] = event->builder;
-		Network::Event response(
-			Network::Event::NETWORK_REGISTERED
+		Event response(
+			Event::NETWORK_REGISTERED
 			, event->networkType
 		);
+		unlock();
 		dispatchEvent(&response);
+	} else {
+		unlock();
 	}
-	unlock();
 
 	event->destroy();
 }
 
-
 /**
 * Requesting a listener.
 */
-void Network::Manager::onRequestListener(Object *arg)
+void Manager::onRequestListener(Object *arg)
 {
-	Network::Event* event = ((Network::Event*) arg);
+	Event* event = ((Event*) arg);
 
 	lock();
 	if (_builder.hasKey(event->networkType) == true) 
 	{
-		/** TODO Next implementation ...
-		Network::Listener* listener;
-		listener = _builder[event->networkType]->createListener();
-		_listeners.push(listener);
+		Network::IListener* listener;
+		listener = ((IBuilder*)((Object *)_builder[event->networkType]))
+			->createListener();
+		_listener.push(listener);
 		listener->listen();
 
-		listener.addEventListener(
-			Network::Event::CLOSED
-			, Callback(this, cb_cast(&Network::Manager:onListenerClosed))
+		listener->addEventListener(
+			Event::CLOSED
+			, Callback(this, cb_cast(&Network::Manager::onListenerClosed))
 		);
 
-		Network::Event response(
-			Network::Event::LISTENER_CREATED, listener
+		Event response(
+			Event::LISTENER_CREATED, event->networkType, listener
 		);
+		unlock();
 		dispatchEvent(&response);
-		*/
+	} else {
+		unlock();
 	}
-	unlock();
 
 	event->destroy();
+}
+
+/**
+* Listener was closed.
+*/
+void Manager::onListenerClosed(Object *arg)
+{
+	Event* event = ((Event*) arg);
+	lock();
+	Network::IListener* listener = ((Network::IListener*) event->target());
+	if (_listener.erase(listener) != -1) {
+		// Destroy only when owned.
+		listener->removeEventListener(
+			Event::CLOSED
+			, Callback(this, cb_cast(&Network::Manager::onListenerClosed))
+		);
+		listener->destroy();
+
+		unlock();
+		checkForCloseState();
+	} else {
+		unlock();
+	}
+	event->destroy();
+}
+
+/**
+* Request to close all listeners.
+*/
+void Manager::onCloseRequest(Object *arg)
+{
+	trace(className() + ": Start close procedure.");
+	arg->destroy();
+	lock();
+	uint64 i, length = _listener.length();
+	Event close(Event::CLOSE);
+	for (i = 0; i < length; i++) {
+		_listener[i]->dispatchEvent(&close);
+	}
+	unlock();
+	checkForCloseState();
+}
+
+/**
+* Checking if all listeners removed.
+*/
+void Manager::checkForCloseState()
+{
+	lock();
+	if (_listener.length() == 0) {
+		trace(className() + ": All closed.");
+		Event closed(Event::CLOSED);
+		unlock();
+		dispatchEvent(&closed);
+	} else {
+		unlock();
+	}
 }

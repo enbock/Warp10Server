@@ -5,12 +5,10 @@
  *      Author: Endre Bock
  */
 
-#include <ControlService>
-#include <WebService>
-#include <NetworkServicePlugin>
-#include <ServerNetEvent>
+#include <ServerEvent>
 #include <Warp10Server>
 #include <signal.h>
+#include <Network/Event>
 
 using namespace u;
 
@@ -22,36 +20,19 @@ u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
 	signal((int)SIGABRT, OSEventHandler);
 	signal((int)SIGTERM, OSEventHandler);
 
+	_isShuttingDown = false;
+
 	_room.addEventListener(
 		ServerEvent::SHUTDOWN, 
 		Callback(this, cb_cast(&Warp10Server::onShutdown))
 	);
 
-	_room.addEventListener(
-		ServerEvent::REGISTER_NETWORK_PLUGIN, 
-		Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin))
+	_manager.addEventListener(
+		Network::Event::CLOSED, 
+		Callback(this, cb_cast(&Warp10Server::onManagerClosed))
 	);
 
-	// network setup
-	_network.room(room());
-
 	trace(className() + ": Server is running.");
-
-	/*
-	 * Controller
-	 */
-	ControlService *ctrl;
-	ctrl = new ControlService();
-	ctrl->room(room());
-	_modules.push(ctrl);
-
-	/**
-	 * Webserver
-	 */
-	WebService* web;
-	web = new WebService();
-	web->room(room());
-	_modules.push(web);
 }
 
 u::Warp10Server::~Warp10Server()
@@ -61,9 +42,9 @@ u::Warp10Server::~Warp10Server()
 		Callback(this, cb_cast(&Warp10Server::onShutdown))
 	);
 
-	_room.removeEventListener(
-		ServerEvent::REGISTER_NETWORK_PLUGIN, 
-		Callback(this, cb_cast(&Warp10Server::onRegisterNetworkPlugin))
+	_manager.removeEventListener(
+		Network::Event::CLOSED, 
+		Callback(this, cb_cast(&Warp10Server::onManagerClosed))
 	);
 
 	trace(className() + ": Server is down.");
@@ -81,35 +62,19 @@ void u::Warp10Server::onShutdown(Object *arg)
 {
 	arg->destroy();
 
-	_room.removeEventListener(
-		ServerEvent::SHUTDOWN,
-		Callback(this, cb_cast(&Warp10Server::onShutdown))
-	);
-
 	trace(className() + ": Server shutting down.");
-	_room.dispatchEvent(
-			new NetEvent(NetEvent::CLOSE))
-	->destroy();
+	lock();
+	_isShuttingDown = true;
+	unlock();
 
-	// Waiting for other thread (1 is me:)
-	while (ThreadSystem::numThreads() > 1)
-	{
-		trace("Waiting for threads: " + ThreadSystem::toString());
-		usleep(1000000/FPS);
-	}
-
-	while(_modules.length())
-	{
-		Object *module;
-		module = (Object *)_modules.pop();
-		module->destroy();
-	}
-	
-	programExit();
+	_manager.dispatchEvent(
+		new Network::Event(Network::Event::CLOSE)
+	)->destroy();
 }
 
 void u::Warp10Server::programExit()
 {
+	lock();	unlock(); // wait for other progress(es)
 	trace(ThreadSystem::toString()+"\n" + className() + ": Exit programm.");
 	u::programExit();
 }
@@ -131,27 +96,21 @@ String u::Warp10Server::toString()
 
 void u::OSEventHandler(int signalNumber)
 {
-	/*switch (signalNumber)
-	{
-		case SIGINT:
-		{*/
-			((Warp10Server *)__main__)->shutdown();
-		/*}
-		break;
-	}*/
+	trace("OSEventHandler: Interrupt received.");
+	((Warp10Server *)__main__)->shutdown();
 }
 
-void u::Warp10Server::onRegisterNetworkPlugin(Object *arg)
+/**
+* Manager has closed all listeners.
+*/
+void Warp10Server::onManagerClosed(Object* arg)
 {
-	ServerEvent *event = (ServerEvent *)arg;
-	_network.lock();
-	_network.registerNetworkPlugin((NetworkServicePlugin *)event->data);
-	_network.unlock();
-
-	ServerEvent sendEvent(ServerEvent::NETWORK_PLUGIN_REGISTERED);
-	sendEvent.data = event->data;
-
-	_room.dispatchEvent(&sendEvent);
-
-	event->destroy();
+	arg->destroy();
+	lock();
+	bool shutdown = _isShuttingDown == true;
+	unlock();
+	if (shutdown) {
+		trace(className() + ": All closed. Exit program.");
+		programExit();
+	} else trace(className() + ": All closed. Continue program.");
 }

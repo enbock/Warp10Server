@@ -59,7 +59,7 @@ H=
 CPP=.cpp
 O=.o
 
-APPS=warp10server warp10admin
+APPS=warp10server
 SRCFILES=$(wildcard $(SRCDIR)/*$(CPP)) $(wildcard $(SRCDIR)/**/*$(CPP))
 APPFILES=$(patsubst $(APPDIR)/%$(CPP),%,$(APPS))
 FILES=$(patsubst $(SRCDIR)/%$(CPP),%,$(SRCFILES))

@@ -141,6 +141,7 @@ namespace u
 
 			/**
 			* Call a listening function for the event.
+			* <p><b>Attention:</b> dispatcEvent will lock the object.</p>
 			* @param event Pointer to the event object.
 			*/
 			Event* dispatchEvent(Event *event);

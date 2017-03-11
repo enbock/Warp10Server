@@ -167,7 +167,7 @@ void Datablock::_attribute::destroyValue()
 		if(isObject == true)
 		{
 			//trace("Destroy object.");
-			if(valid(value)) ((Object*)value)->destroy();
+			if(valid((Object *)value)) ((Object*)value)->destroy();
 		}
 		else
 		{

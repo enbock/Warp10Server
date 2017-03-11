@@ -3,6 +3,7 @@
 
 #include <Event>
 #include <Network/IBuilder>
+#include <Network/IListener>
 
 namespace u
 {
@@ -34,21 +35,86 @@ namespace u
 				static const String LISTENER_CREATED;
 
 				/**
-				 * A listener or connection was closed.
+				 * Request closing on the dispatched element.
+				 */
+				static const String CLOSE;
+
+				/**
+				 * A listener, connection or manager was closed.
 				 */
 				static const String CLOSED;
 
 				IBuilder* builder;
+				IListener* listener;
 				String networkType;
 
 				/**
-				 * A listener was removed.
+				 * Event constructor with builder reference.
+				 * <p>Events:<ul>
+				 * <li> REGISTER_NETWORK
+				 * </ul></p>
 				 */
-				static const String LISTENER_CLOSED;
-
 				Event(String const& type, String networkType, IBuilder* builder);
+
+				/**
+				 * Event constructor with listener reference.
+				 * <p>Events:<ul>
+				 * <li> LISTENER_CREATED
+				 * </ul></p>
+				 */
+				Event(String const& type, String networkType, IListener* listener);
+
+				/**
+				 * Event constructor.
+				 * <p>Events:<ul>
+				 * <li> NETWORK_REGISTERED
+				 * <li> REQUEST_LISTENER
+				 * </ul>
+				 * </p>
+				 */
 				Event(String const& type, String networkType);
+
+				/**
+				 * Default event constructor.
+				 * <p>Events:<ul>
+				 * <li> CLOSED
+				 * <li> CLOSE
+				 * </ul>
+				 * Info: The CLOSED event have always to be dispatched on the 
+				 *       element, which was closed. The target value can be
+				 *       used.
+				 * </p>
+				 */
+				Event(String const& type);
+
+				/**
+				 * Copy constructor.
+				 */
+				Event(Event& source);
+
+				/**
+				 * Destructor.
+				 */
 				~Event();
+
+				/**
+				* Destroy this object.
+				*/
+				virtual void destroy();
+
+				/**
+				* The class name.
+				* @return String with the class name.
+				*/
+				virtual String className();
+	
+				/**
+				 * Clone the event.
+				 * @return A with new created copy of this event.
+				 */
+				virtual u::Event* clone();
+
+			protected:
 		};
 	}
 }

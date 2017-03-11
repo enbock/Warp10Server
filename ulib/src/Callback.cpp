@@ -44,7 +44,7 @@ Callback::Callback(const Callback& value)
 
 void Callback::call(void)
 {
-	if(valid(target))
+	if(valid((Object *)target))
 	{
 		(target->*function)(arg);
 	}
@@ -66,15 +66,19 @@ void Callback::destroy()
 
 String Callback::toString()
 {
-	String str = "[" + className() + " (" + ptr2string(this) + ")";
+	String str = "[" + className()
+	 + " (" 
+	 + ptr2string((Object *)this) 
+	 + ")"
+	;
 	str += " target=" + (target?target->toString():"<Defunc>");
 	//str += " function=" + (function?ptr2string(&function):"<Defunc>");
 	//str += " arg=" + (arg?arg->toString():"<No Argument>");
-	str +="]";
+	str += "]";
 	return str;
 }
 
 String Callback::className()
 {
-	return "Callback";
+	return "u::Callback";
 }

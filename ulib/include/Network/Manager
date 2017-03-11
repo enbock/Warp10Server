@@ -21,12 +21,18 @@ namespace u
 		* <ul>
 		* <li> <code>u::Network::Event::REGISTER_NETWORK</code>
 		* <li> <code>u::Network::Event::REQUEST_LISTENER</code>
+		* <li> <code>u::Network::Event::CLOSE</code>
 		* </ul>
 		* Sending events on the manager:
 		* <ul>
 		* <li> <code>u::Network::Event::NETWORK_REGISTERED</code>
 		* <li> <code>u::Network::Event::LISTENER_CREATED</code>
+		* <li> <code>u::Network::Event::CLOSED</code> - All listeners closed.
 		* </ul>
+        * Closing methodology: The closing procedure must be triggered before
+		*                      the manager will be deleted. The owning domain
+		*                      is responsible to handle it.
+		* </p>
 		*/
 		class Manager : public EventRoom
 		{
@@ -34,6 +40,11 @@ namespace u
 			 * Builder list.
 			 */
 			Datablock _builder;
+
+			/**
+			* Listener list.
+			*/
+			Vector<IListener*> _listener; 
 
 			public:
 				/**
@@ -61,13 +72,32 @@ namespace u
 				 * Register a new network.
 				 * @param arg REGISTER_NETWORK event object.
 				 */
-				void onRegisterNetwork(Object *arg);
+				virtual void onRegisterNetwork(Object *arg);
 
 				/**
 				 * Requesting a listener.
 				 * @param arg REQUEST_LISTENER event object.
 				 */
-				void onRequestListener(Object *arg);
+				virtual void onRequestListener(Object *arg);
+
+				/**
+				 * Listener was closed.
+				 * @param arg CLOSED event object.
+				 */
+				virtual void onListenerClosed(Object *arg);
+
+				/**
+				 * Request to close all listeners.
+				 * @param arg CLOSE event.
+				 */
+				virtual void onCloseRequest(Object *arg);
+
+				/**
+				 * Checking if all listeners removed.
+				 * <p>If all listener gone, then will this function send a
+				 * CLOSED event.</p>
+				 */
+				virtual void checkForCloseState();
 		};
 	}
 }

@@ -12,7 +12,7 @@
 #include <RoomOwner>
 #include <ServerEvent>
 #include <Socket>
-#include <NetworkManager>
+#include <Network/Manager>
 
 #ifndef FPS
 #define FPS 90
@@ -47,14 +47,14 @@ namespace u
 	{
 		protected:
 			/**
-			 * Network main service object.
+			 * Network manager.
 			 */
-			NetworkManager _network;
+			Network::Manager _manager;
 
 			/**
-			 * Loaded modules.
+			 * Shutdown flag.
 			 */
-			Vector<Object*> _modules;
+			bool _isShuttingDown;
 
 		public:
 			/**
@@ -110,14 +110,9 @@ namespace u
 			void programExit();
 
 			/**
-			 * Event receiver for EventServer::NEW_NETWORK_PLUGIN
-			 * <p>Received, when a program part or module need a new network
-			 * plugin.<br/>
-			 * The event transport the new network plugin object via the data
-			 * attribute of the event object.</p>
-			 * @param arg The event object.
+			 * Manager has closed all listeners.
 			 */
-			void onRegisterNetworkPlugin(Object* arg);
+			void onManagerClosed(Object* arg);
 	};
 
 }

@@ -91,7 +91,7 @@ namespace u
 	/**
 	 * A list of existing objects.
 	 */
-	static std::vector<void*>* __Object_validObjects;
+	static std::vector<void const*>* __Object_validObjects;
 	/**
 	 * Access mutex for valid objects list.
 	 */
@@ -133,7 +133,7 @@ namespace u
 			* @param value void pointer.
 			* @return The string text(Pointer is displayed as a number like 0xabc000).
 			*/
-			static String ptr2string(void*);
+			static String ptr2string(void const*);
 
 			/**
 			* Default constructor.
@@ -173,7 +173,7 @@ namespace u
 			 * @param ptr Pointer to object.
 			 * @return True, when object is alive.
 			 */
-			static bool valid(void* ptr);
+			static bool valid(void const* ptr);
 
 		protected:
 	};

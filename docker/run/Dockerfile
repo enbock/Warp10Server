@@ -6,7 +6,7 @@
 FROM busybox
 
 COPY warp10server /app/warp10server
-COPY warp10admin /app/warp10admin
+#COPY warp10admin /app/warp10admin
 
 VOLUME ["/app"]
 

@@ -61,7 +61,7 @@ u::EventDispatcher::~EventDispatcher()
 			  for(vi=0, vl = vec->list.length(); vi < vl; vi++)
 			  {
 			  	// autoremove on invalid target
-			  	if(!valid(vec->list.at(vi).target))
+			  	if(!valid((Object *)(vec->list.at(vi).target)))
 			  	{
 #ifndef NDEBUG
 			  		trace(
@@ -236,7 +236,7 @@ Event* EventDispatcher::dispatchEvent(Event *event)
 	}
 	else
 	{
-		//trace("\033[32mno listener for "+*event->type());
+		trace("\033[32mNo listener for "+*event->type());
 	}
 	unlock();
 	return event;
