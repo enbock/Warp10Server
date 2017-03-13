@@ -6,13 +6,14 @@
  */
 
 #include <ServerEvent>
-#include <Warp10Server>
+#include <Server>
 #include <signal.h>
 #include <Network/Event>
 
 using namespace u;
+using namespace Warp10;
 
-u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
+Server::Server(Vector<String> arg) : RoomOwner()
 {
 	// connect Ctrl+C with shutdown
 	signal((int)SIGINT, OSEventHandler);
@@ -24,33 +25,33 @@ u::Warp10Server::Warp10Server(Vector<String> arg) : RoomOwner()
 
 	_room.addEventListener(
 		ServerEvent::SHUTDOWN, 
-		Callback(this, cb_cast(&Warp10Server::onShutdown))
+		Callback(this, cb_cast(&Server::onShutdown))
 	);
 
 	_manager.addEventListener(
 		Network::Event::CLOSED, 
-		Callback(this, cb_cast(&Warp10Server::onManagerClosed))
+		Callback(this, cb_cast(&Server::onManagerClosed))
 	);
 
 	trace(className() + ": Server is running.");
 }
 
-u::Warp10Server::~Warp10Server()
+Server::~Server()
 {
 	_room.removeEventListener(
 		ServerEvent::SHUTDOWN, 
-		Callback(this, cb_cast(&Warp10Server::onShutdown))
+		Callback(this, cb_cast(&Server::onShutdown))
 	);
 
 	_manager.removeEventListener(
 		Network::Event::CLOSED, 
-		Callback(this, cb_cast(&Warp10Server::onManagerClosed))
+		Callback(this, cb_cast(&Server::onManagerClosed))
 	);
 
 	trace(className() + ": Server is down.");
 }
 
-void u::Warp10Server::shutdown()
+void Server::shutdown()
 {
 	// tell the network for shutdown
 	_room.dispatchEvent(
@@ -58,7 +59,7 @@ void u::Warp10Server::shutdown()
 	)->destroy();
 }
 
-void u::Warp10Server::onShutdown(Object *arg)
+void Server::onShutdown(Object *arg)
 {
 	arg->destroy();
 
@@ -72,38 +73,38 @@ void u::Warp10Server::onShutdown(Object *arg)
 	)->destroy();
 }
 
-void u::Warp10Server::programExit()
+void Server::programExit()
 {
 	lock();	unlock(); // wait for other progress(es)
 	trace(ThreadSystem::toString()+"\n" + className() + ": Exit programm.");
 	u::programExit();
 }
 
-String u::Warp10Server::className()
+String Server::className()
 {
-	return "u::Warp10Server";
+	return "Warp10::Server";
 }
 
-void u::Warp10Server::destroy()
+void Server::destroy()
 {
-	delete (Warp10Server *)this;
+	delete (Server *)this;
 }
 
-String u::Warp10Server::toString()
+String Server::toString()
 {
 	return "[" + className() + "]";
 }
 
-void u::OSEventHandler(int signalNumber)
+void Warp10::OSEventHandler(int signalNumber)
 {
 	trace("OSEventHandler: Interrupt received.");
-	((Warp10Server *)__main__)->shutdown();
+	((Server *)__main__)->shutdown();
 }
 
 /**
 * Manager has closed all listeners.
 */
-void Warp10Server::onManagerClosed(Object* arg)
+void Server::onManagerClosed(Object* arg)
 {
 	arg->destroy();
 	lock();

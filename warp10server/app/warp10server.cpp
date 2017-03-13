@@ -5,7 +5,7 @@
 *      Author: Endre Bock
 */
 
-#include <Warp10Server>
+#include <Server>
 
-#define APPLICATION Warp10Server
+#define APPLICATION Warp10::Server
 #include <Application>

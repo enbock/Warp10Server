@@ -18,10 +18,16 @@
 #define FPS 90
 #endif
 
-namespace u
+using namespace u;
+
+namespace u 
 {
 	void programExit();
 	extern Object *__main__;
+}
+
+namespace Warp10
+{
 
 	/**
 	 * Event handler.
@@ -43,7 +49,7 @@ namespace u
 	 * </p>
 	 * @see http://drive.ww/Architektur/EARoot/EA1/EA3/EA46.html Server structure
 	 */
-	class Warp10Server : public RoomOwner
+	class Server : public RoomOwner
 	{
 		protected:
 			/**
@@ -65,14 +71,14 @@ namespace u
 			 * protocol.</p>
 			 * @param arg List of argument from the command line.
 			 */
-			Warp10Server(Vector<String> arg);
+			Server(Vector<String> arg);
 
 			/**
 			 * Destructor.
 			 * <p>Destroy the service objects and remove the listener for the shutdown
 			 * protocol.</p>
 			 */
-			~Warp10Server();
+			~Server();
 
 			/**
 			 * The name of this class.
