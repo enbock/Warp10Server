@@ -13,12 +13,14 @@
 #include <ServerEvent>
 #include <Socket>
 #include <Network/Manager>
+#include <WebService>
 
 #ifndef FPS
 #define FPS 90
 #endif
 
 using namespace u;
+using namespace Warp10::Network;
 
 namespace u 
 {
@@ -55,12 +57,14 @@ namespace Warp10
 			/**
 			 * Network manager.
 			 */
-			Network::Manager _manager;
+			u::Network::Manager _manager;
 
 			/**
 			 * Shutdown flag.
 			 */
 			bool _isShuttingDown;
+
+			WebService* _webService;
 
 		public:
 			/**

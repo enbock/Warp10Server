@@ -68,7 +68,7 @@ u::EventDispatcher::~EventDispatcher()
 			  			className() + "::~EventDispatcher: Remove target "
 			  			+ ptr2string(vec->list.at(vi).target) + " from list "
 			  			+ (*vec->type)
-						);
+					);
 #endif
 			  		vec->list.erase(vi);
 			  		vl = vec->list.length();
@@ -220,7 +220,10 @@ Event* EventDispatcher::dispatchEvent(Event *event)
 		for(i=0; i<l; i++)
 		{
 			Callback cb = vec.at(i);
-			trace("DispatchEvent: "+*(event->_type)+" -> "+cb.toString());
+			trace(
+				"DispatchEvent: " + *(event->_type)
+				+ "\033[36m -> "+cb.toString()
+			);
 			Event* ev = event->clone();
 			ev->_target = this;
 			cb.arg = ev;
@@ -236,7 +239,10 @@ Event* EventDispatcher::dispatchEvent(Event *event)
 	}
 	else
 	{
-		trace("\033[32mNo listener for "+*event->type());
+		trace(
+			"\033[32mNo listener for " + *event->type()
+			+ " on target "+ toString() + "."
+		);
 	}
 	unlock();
 	return event;
@@ -294,8 +300,7 @@ String EventDispatcher::className()
 
 String EventDispatcher::toString()
 {
-	String str = "[" + className();
-	str += "]";
+	String str = "[" + className() + "]";
 	return str;
 }
 

@@ -67,11 +67,18 @@ void Callback::destroy()
 String Callback::toString()
 {
 	String str = "[" + className()
+	/*
 	 + " (" 
 	 + ptr2string((Object *)this) 
 	 + ")"
+	 */
 	;
+	//*
 	str += " target=" + (target?target->toString():"<Defunc>");
+	/*/
+	str += " target=" + (target?target->className():"<Defunc>");
+	//*/
+
 	//str += " function=" + (function?ptr2string(&function):"<Defunc>");
 	//str += " arg=" + (arg?arg->toString():"<No Argument>");
 	str += "]";

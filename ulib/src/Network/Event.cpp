@@ -3,14 +3,20 @@
 using namespace u;
 using namespace Network;
 
-const String Network::Event::REGISTER_NETWORK("u::Network::registerNetwork");
-const String Network::Event::REQUEST_LISTENER("u::Network::requestListener");
-const String Network::Event::NETWORK_REGISTERED(
-	"u::Network::networkRegistered"
+const String Network::Event::REGISTER_NETWORK(
+	"u::Network::Event::registerNetwork"
 );
-const String Network::Event::LISTENER_CREATED("u::Network::listenerCreated");
-const String Network::Event::CLOSE("u::Network::close");
-const String Network::Event::CLOSED("u::Network::closed");
+const String Network::Event::REQUEST_LISTENER(
+	"u::Network::Event::requestListener"
+);
+const String Network::Event::NETWORK_REGISTERED(
+	"u::Network::Event::networkRegistered"
+);
+const String Network::Event::LISTENER_CREATED(
+	"u::Network::Event::listenerCreated"
+);
+const String Network::Event::CLOSE("u::Network::Event::close");
+const String Network::Event::CLOSED("u::Network::Event::closed");
 
 /**
 * Event constructor with builder reference.

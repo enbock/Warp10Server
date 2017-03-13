@@ -29,22 +29,26 @@ Server::Server(Vector<String> arg) : RoomOwner()
 	);
 
 	_manager.addEventListener(
-		Network::Event::CLOSED, 
+		u::Network::Event::CLOSED, 
 		Callback(this, cb_cast(&Server::onManagerClosed))
 	);
 
 	trace(className() + ": Server is running.");
+
+	_webService = new WebService(&_manager);
 }
 
 Server::~Server()
 {
+	_webService->destroy();
+	
 	_room.removeEventListener(
 		ServerEvent::SHUTDOWN, 
 		Callback(this, cb_cast(&Server::onShutdown))
 	);
 
 	_manager.removeEventListener(
-		Network::Event::CLOSED, 
+		u::Network::Event::CLOSED, 
 		Callback(this, cb_cast(&Server::onManagerClosed))
 	);
 
@@ -69,14 +73,17 @@ void Server::onShutdown(Object *arg)
 	unlock();
 
 	_manager.dispatchEvent(
-		new Network::Event(Network::Event::CLOSE)
+		new u::Network::Event(u::Network::Event::CLOSE)
 	)->destroy();
 }
 
 void Server::programExit()
 {
 	lock();	unlock(); // wait for other progress(es)
-	trace(ThreadSystem::toString()+"\n" + className() + ": Exit programm.");
+	trace(
+		//ThreadSystem::toString()+"\n" + 
+		className() + ": Exit programm."
+	);
 	u::programExit();
 }
 

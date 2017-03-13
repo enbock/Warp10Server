@@ -1,0 +1,63 @@
+#ifndef W10_NETWORK_WEBLISTENER_
+#define W10_NETWORK_WEBLISTENER_
+
+#include <Network/IListener>
+#include <Network/IBuilder>
+
+using namespace u;
+using namespace u::Network;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		class WebListener : public IListener
+		{
+			protected:
+				IBuilder* _builder;
+
+			public:
+				/**
+				* Constructor.
+				* @param builder Network object builder.
+				*/
+				WebListener(IBuilder* builder);
+
+				/**
+				* Destructor.
+				*/
+				~WebListener();
+
+				/**
+				* Destroy this object.
+				*/
+				virtual void destroy();
+
+				/**
+				* The class name.
+				* @return String with the class name.
+				*/
+				virtual String className();
+
+				/**
+				 * Start listening for new connections.
+				 */
+				virtual void listen();
+			
+			protected:
+				/**
+				 * Check that all connection closed.
+				 * <p>Send the CLOSED event if all closed.</p>
+				 */
+				virtual void checkClosed();
+
+				/**
+				 * Listener was requested to close.
+				 * @param arg CLOSE event object.
+				 */
+				virtual void onClose(Object* arg);
+		};
+	}
+}
+
+#endif // ! W10_NETWORK_WEBLISTENER_

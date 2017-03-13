@@ -1,0 +1,45 @@
+#ifndef W10_NETWORK_WEBBUILDER_
+#define W10_NETWORK_WEBBUILDER_
+
+#include <Network/IBuilder>
+
+using namespace u;
+using namespace u::Network;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		class WebBuilder : public IBuilder
+		{
+			public:
+				/**
+				 * Default constructor.
+				 */
+				WebBuilder();
+
+				/**
+				 * Destructor.
+				 */
+				~WebBuilder();
+
+				/**
+				 * Destroy this object.
+				 */
+				virtual void destroy();
+
+				/**
+				 * The class name.
+				 * @return String with the class name.
+				 */
+				virtual String className();
+
+				/**
+				 * Create a listener for the network type.
+				 */
+				virtual IListener* createListener();
+		};
+	}
+}
+
+#endif // ! W10_NETWORK_WEBBUILDER_

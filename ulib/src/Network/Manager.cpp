@@ -102,6 +102,9 @@ void Manager::onRequestListener(Object *arg)
 		Network::IListener* listener;
 		listener = ((IBuilder*)((Object *)_builder[event->networkType]))
 			->createListener();
+		trace(
+			className() + "::onRequestListener: Create " + listener->toString()
+		);
 		_listener.push(listener);
 		listener->listen();
 
