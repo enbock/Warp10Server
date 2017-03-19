@@ -1,13 +1,13 @@
 #ifndef NETWORK_ICONNECTION_
 #define NETWORK_ICONNECTION_
 
-#include <Object>
+#include <EventRoom>
 
 namespace u
 {
 	namespace Network
 	{
-		class IConnection : public Object
+		class IConnection : public EventRoom
 		{
 			public:
 				/**

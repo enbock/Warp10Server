@@ -43,6 +43,16 @@ Network::Event::Event(String const& type, String networkType, IListener* listene
 	Event::builder     = null;
 	Event::listener    = listener;
 }
+/**
+* Event constructor with connection reference.
+*/
+Network::Event::Event(String const& type, String networkType, IConnection* connection)
+	: u::Event(type)
+{
+	Event::networkType = networkType;
+	Event::builder     = null;
+	Event::connection  = connection;
+}
 
 /**
 * Event constructor.

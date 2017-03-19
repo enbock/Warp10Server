@@ -116,8 +116,8 @@ int32 u::Socket::descriptor()
 
 void u::Socket::destructor()
 {
-	lock();
 	if(isConnected()) close();
+	lock();
 
 	if(_neverUsed && _descriptor != -1)
 	{
@@ -176,6 +176,7 @@ bool u::Socket::connect()
 {
 	if(isConnected()) return false;
 
+	lock();
 	switch(_domain)
 	{
 		case AF_UNIX:
@@ -215,29 +216,37 @@ bool u::Socket::connect()
 			freeaddrinfo(servinfo);
 		} break;
 	}
+	unlock();
 	return isConnected();
 }
 
 bool u::Socket::isConnected()
 {
-	return _con != -1;
+	lock();
+	bool result = _con != -1;
+	unlock();
+	return result;
 }
 
 void u::Socket::close()
 {
 	if(!isConnected()) return;
+	lock();
 	_neverUsed = false;
 	::shutdown(_descriptor, SHUT_RDWR);
 	::close(_descriptor);
 	_con = -1;
 	_descriptor = -1;
+	unlock();
 }
 
 bool u::Socket::listen()
 {
 	if(isConnected()) return false;
 
+	lock();
 	_con = ::bind(_descriptor, (const struct sockaddr*)_addr, _addrLen);
+	unlock();
 
 	if(!isConnected())
 	{
@@ -245,7 +254,9 @@ bool u::Socket::listen()
 		return false; // bind error
 	}
 
+	lock();
 	_con = ::listen(_descriptor, maxWaitingClients);
+	unlock();
 	if(!isConnected())
 	{
 		error(className()+": Socket listen error. ["+int2string(_descriptor)+"]");
@@ -373,7 +384,6 @@ int64 u::Socket::port()
 u::Socket* u::Socket::accept()
 {
 	Socket* clientSocket; 		// client socket data
-	int32 addrLen;						// address description size
 
 	lock();
 	int32 srcDescriptor = _descriptor;

@@ -12,6 +12,7 @@ WebService::WebService(Manager* manager, String address, int64 port) : Object()
 	_port   = port;
 
 	_builder.setupListener(_address, _port);
+	_builder.networkType = type;
 
 	_manager->addEventListener(
 		u::Network::Event::NETWORK_REGISTERED,

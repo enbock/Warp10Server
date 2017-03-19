@@ -46,7 +46,12 @@ IListener* WebBuilder::createListener()
 		className() + "::createListener: Create socket on " + _address
 		+ " " + int2string(_port)
 	);
-	return new WebListener(this, new Socket(AF_INET, _address, _port));
+	lock();
+	WebListener* listener = new WebListener(
+		this, new Socket(AF_INET, _address, _port)
+	);
+	unlock();
+	return listener;
 }
 
 /**
@@ -54,8 +59,10 @@ IListener* WebBuilder::createListener()
 */
 void WebBuilder::setupListener(String address, int64 port)
 {
+	lock();
 	_address = address;
 	_port    = port;
+	unlock();
 }
 
 /**
@@ -63,5 +70,5 @@ void WebBuilder::setupListener(String address, int64 port)
 */
 IConnection* WebBuilder::createConnection(Socket*)
 {
-
+	error(className() + "::createConnection: TODO make connection");
 }

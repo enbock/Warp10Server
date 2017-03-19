@@ -1,6 +1,7 @@
 #ifndef W10_NETWORK_WEBLISTENER_
 #define W10_NETWORK_WEBLISTENER_
 
+#include <Network/IConnection>
 #include <Network/IListener>
 #include <Network/WebBuilder>
 #include <Socket>
@@ -17,6 +18,7 @@ namespace Warp10
 			protected:
 				WebBuilder* _builder;
 				Socket* _socket;
+				Vector<IConnection*> _connections;
 
 			public:
 				/**
@@ -58,6 +60,18 @@ namespace Warp10
 				 * @param arg CLOSE event object.
 				 */
 				virtual void onClose(Object* arg);
+
+				/**
+				 * Listen for incomming connections.
+				 * @param arg Empty pointer.
+				 */
+				virtual void listenSocket(Object* arg);
+
+				/**
+				 * Connection was closed.
+				 * @param arg CLOSED event object.
+				 */
+				virtual void onConnectionClosed(Object *arg);
 		};
 	}
 }

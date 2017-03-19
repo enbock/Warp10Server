@@ -4,6 +4,7 @@
 #include <Event>
 #include <Network/IBuilder>
 #include <Network/IListener>
+#include <Network/IConnection>
 
 namespace u
 {
@@ -52,6 +53,7 @@ namespace u
 				IBuilder* builder;
 				IListener* listener;
 				String networkType;
+				IConnection* connection;
 
 				/**
 				 * Event constructor with builder reference.
@@ -68,6 +70,14 @@ namespace u
 				 * </ul></p>
 				 */
 				Event(String const& type, String networkType, IListener* listener);
+
+				/**
+				 * Event constructor with connection reference.
+				 * <p>Events:<ul>
+				 * <li> CONNECTION_CREATED
+				 * </ul></p>
+				 */
+				Event(String const& type, String networkType, IConnection* connection);
 
 				/**
 				 * Event constructor.

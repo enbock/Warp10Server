@@ -18,6 +18,11 @@ namespace Warp10
 
 			public:
 				/**
+				 * Network type.
+				 */
+				String networkType;
+
+				/**
 				 * Default constructor.
 				 */
 				WebBuilder();

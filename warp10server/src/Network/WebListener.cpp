@@ -65,8 +65,8 @@ void WebListener::listen()
 	}
 
 	// start incoming connections
-	//Callback cb(this, cb_cast(&NetworkListener::doListening));
-	//ThreadSystem::create(&cb);
+	Callback cb(this, cb_cast(&WebListener::listenSocket));
+	ThreadSystem::create(&cb);
 
 	return;
 }
@@ -76,8 +76,14 @@ void WebListener::listen()
 */
 void WebListener::onClose(Object* arg)
 {
-	_socket->close();
 	checkClosed();
+
+	/**
+	 * Close socket AFTER check to synchronize the process streams.
+	 * Otherwise could object destored while connection is in closing
+	 * but not closed.
+	 */
+	_socket->close();
 
 	arg->destroy();
 }
@@ -87,7 +93,100 @@ void WebListener::onClose(Object* arg)
 */
 void WebListener::checkClosed()
 {
-	trace(className() + "::checkClosed: x connection left.");
-	u::Network::Event closed(u::Network::Event::CLOSED);
-	dispatchEvent(&closed);
+	lock();
+	int64 count      = _connections.length();
+	bool isConnected = _socket->isConnected();
+	unlock();
+	trace(
+		className() + "::checkClosed: " + int2string(count)
+		+ " connection left and socket is " 
+		+ (isConnected ? "connected" : "disconnected")
+		+ "."
+	);
+	if(count == 0 && isConnected == false) {
+		u::Network::Event closed(u::Network::Event::CLOSED);
+		dispatchEvent(&closed);
+	}
+}
+
+/**
+* Listen for incomming connections.
+*/
+void WebListener::listenSocket(Object* arg)
+{
+	lock();
+	Socket* listener = _socket;
+	unlock();
+
+	if(!valid(listener)) return;
+	trace(className() + "::listenSocket: Wait for connection...");
+	Socket* newSocket = listener->accept();
+
+	lock();
+	if(newSocket == null)
+	{
+		// listening interrupted...socket closed?
+		if(valid(_socket) && _socket->isConnected())
+		{
+			error(className()+"::listenSocket: Error on getting connection.");
+		}
+		else
+		{
+			trace(className() + "::listenSocket: Stop listening.");
+			unlock();
+			checkClosed();
+			return;
+		}
+	}
+	else
+	{
+		trace(className()+"::listenSocket: Incomming connection.");
+		IConnection* newConnection = _builder->createConnection(newSocket);
+		if(newConnection != null)
+		{
+			_connections.push(newConnection);
+
+			newConnection->addEventListener(
+				u::Network::Event::CLOSED
+				, Callback(
+					this, cb_cast(&WebListener::onConnectionClosed)
+				)
+			);
+
+			u::Network::Event connectionCreated(
+				u::Network::Event::CONNECTION_CREATED,
+				_builder->networkType,
+				newConnection
+			);
+			unlock();
+			dispatchEvent(&connectionCreated);
+			lock();
+		}
+		else
+		{
+			error(
+				className()
+				+ "::listenSocket: Can not etablish incomming conection"
+			);
+			newSocket->destroy();
+		}
+	}
+
+	//self start ;)
+	Callback cb(this, cb_cast(&WebListener::listenSocket));
+	ThreadSystem::create(&cb);
+
+	unlock();
+}
+
+/**
+* Connection was closed.
+*/
+void WebListener::onConnectionClosed(Object *arg)
+{
+	error(
+		className() + "::onConnectionClosed: TODO"
+	);
+
+	arg->destroy();
 }
