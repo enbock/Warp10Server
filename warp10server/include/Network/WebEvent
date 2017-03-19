@@ -1,0 +1,83 @@
+#ifndef W10_NETWORK_WEBEVENT_
+#define W10_NETWORK_WEBEVENT_
+
+#include <Event>
+#include <Network/WebConnection>
+
+using namespace u;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		class WebEvent : public u::Event
+		{
+			public:
+				WebConnection* connection;
+
+				/**
+				 * Message about a new connection.
+				 */
+				static const String INCOMMING_CONNECTION;
+				/**
+				 * Message to inform controller that listener will close.
+				 * <p>The listener will use this event binding to detected
+				 * connected controllers.</p>
+				 */
+				static const String WILL_CLOSE;
+				/**
+				 * Message from controller to allowed to be closed.
+				 */
+				static const String CAN_CLOSE;
+
+				/**
+				 * Event constructor.
+				 * <p>Events:<ul>
+				 * <li> NEW_CONNECTION
+				 * </ul>
+				 * </p>
+				 */
+				WebEvent(String const& type, WebConnection* connection);
+				
+				/**
+				 * Default constructor.
+				 * <p>Events:<ul>
+				 * </ul>
+				 * </p>
+				 */
+				WebEvent(String const& type);
+
+				/**
+				 * Copy constructor.
+				 */
+				WebEvent(WebEvent& source);
+
+				/**
+				 * Destructor.
+				 */
+				~WebEvent();
+
+				/**
+				* Destroy this object.
+				*/
+				virtual void destroy();
+
+				/**
+				* The class name.
+				* @return String with the class name.
+				*/
+				virtual String className();
+	
+				/**
+				 * Clone the event.
+				 * @return A with new created copy of this event.
+				 */
+				virtual u::Event* clone();
+				
+
+			protected:
+		};
+	}
+}
+
+#endif // ! NETWORK_EVENT_

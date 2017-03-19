@@ -48,7 +48,7 @@ namespace u
 				/**
 				 * A connect was created.
 				 */
-				 static const String CONNECTION_CREATED;
+				static const String CONNECTION_CREATED;
 
 				IBuilder* builder;
 				IListener* listener;

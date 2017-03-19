@@ -11,6 +11,10 @@
 #include <Thread>
 #include <Event>
 
+#ifndef FPS
+#define FPS 90
+#endif
+
 namespace u
 {
 	/**

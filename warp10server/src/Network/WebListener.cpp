@@ -1,5 +1,6 @@
 #include <Network/WebListener>
 #include <Network/Event>
+#include <Network/WebEvent>
 
 using namespace u;
 using namespace u::Network;
@@ -11,12 +12,17 @@ using namespace Warp10::Network;
 WebListener::WebListener(IBuilder* builder, Socket* socket) : IListener()
 {
 	_builder  = ((WebBuilder*)builder);
-	_socket   = socket;
-	_isClosed = false;
+	_socket    = socket;
+	_isClosed  = false;
+	_closeSent = false;
 
 	addEventListener(
 		u::Network::Event::CLOSE,
 		Callback(this, cb_cast(&WebListener::onClose))
+	);
+	addEventListener(
+		WebEvent::CAN_CLOSE,
+		Callback(this, cb_cast(&WebListener::onCanClose))
 	);
 }
 
@@ -29,6 +35,10 @@ WebListener::~WebListener()
 	removeEventListener(
 		u::Network::Event::CLOSE,
 		Callback(this, cb_cast(&WebListener::onClose))
+	);
+	removeEventListener(
+		WebEvent::CAN_CLOSE,
+		Callback(this, cb_cast(&WebListener::onCanClose))
 	);
 	trace(className() + "::~WebListener: Down.");
 }
@@ -77,30 +87,41 @@ void WebListener::listen()
 */
 void WebListener::onClose(Object* arg)
 {
+	bool sendWillClose = false;
+	arg->destroy();
 	lock();
+	if(_isClosed == false) {
+
+		_socket->close();
+		
+		int64 i = 0, l = _connections.length();
+		for(; i < l; i++)
+		{
+			u::Network::Event close(u::Network::Event::CLOSE);
+			IConnection* connection = _connections[i];
+			connection->dispatchEvent(&close);
+		}
+
+		sendWillClose = true;
+	}
 	_isClosed = true;
 	unlock();
 
 	checkClosed();
 
-	/**
-	 * Close socket AFTER check to synchronize the process streams.
-	 * Otherwise could object destored while connection is in closing
-	 * but not closed.
-	 */
-	_socket->close();
-
-	lock();
-	Vector<IConnection*> connections = _connections; // copy
-	unlock();
-	while(connections.length() > 0)
-	{
-		u::Network::Event close(u::Network::Event::CLOSE);
-		IConnection* connection = connections.pop();
-		connection->dispatchEvent(&close);
+	if(sendWillClose == true) {
+		WebEvent willClose(WebEvent::WILL_CLOSE);
+		dispatchEvent(&willClose);
 	}
+}
 
+/**
+* Controller allow close.
+*/
+void WebListener::onCanClose(Object* arg)
+{
 	arg->destroy();
+	checkClosed();
 }
 
 /**
@@ -109,18 +130,27 @@ void WebListener::onClose(Object* arg)
 void WebListener::checkClosed()
 {
 	lock();
-	int64 count      = _connections.length();
-	bool isConnected = _socket->isConnected();
+	int64 count   = _connections.length();
+	bool isClosed = _isClosed;
 	unlock();
 	trace(
 		className() + "::checkClosed: " + int2string(count)
 		+ " connection left and socket is " 
-		+ (isConnected ? "connected" : "disconnected")
+		+ (isClosed == false ? "connected" : "disconnected")
 		+ "."
 	);
-	if(count == 0 && isConnected == false) {
-		u::Network::Event closed(u::Network::Event::CLOSED);
-		dispatchEvent(&closed);
+	if(
+		count == 0 && isClosed == true
+		&& hasEventListener(WebEvent::WILL_CLOSE) == false
+	) {
+		lock(); // sync canClose and connection closed here
+		bool sent = _closeSent;
+		_closeSent = true;
+		unlock();
+		if (sent  == false) {
+			u::Network::Event closed(u::Network::Event::CLOSED);
+			dispatchEvent(&closed);
+		}
 	}
 }
 
@@ -168,10 +198,9 @@ void WebListener::listenSocket(Object* arg)
 				)
 			);
 
-			u::Network::Event connectionCreated(
-				u::Network::Event::CONNECTION_CREATED,
-				_builder->networkType,
-				newConnection
+			WebEvent connectionCreated(
+				WebEvent::INCOMMING_CONNECTION
+				, (WebConnection*)newConnection
 			);
 			unlock();
 			dispatchEvent(&connectionCreated);
@@ -186,12 +215,11 @@ void WebListener::listenSocket(Object* arg)
 			newSocket->destroy();
 		}
 	}
+	unlock();
 
 	//self start ;)
 	Callback cb(this, cb_cast(&WebListener::listenSocket));
 	ThreadSystem::create(&cb);
-
-	unlock();
 }
 
 /**
@@ -203,7 +231,6 @@ void WebListener::onConnectionClosed(Object *arg)
 	IConnection* connection  = ((IConnection*)event->target());
 	lock();
 	int64 index = _connections.erase(connection);
-	unlock();
 	if (index != -1) {
 		trace(
 			className() + "::onConnectionClosed: Removed connection from list."
@@ -214,7 +241,6 @@ void WebListener::onConnectionClosed(Object *arg)
 		);
 		connection->destroy();
 	}
-	lock();
 	bool isClosed = _isClosed;
 	unlock();
 	if (isClosed == true) {

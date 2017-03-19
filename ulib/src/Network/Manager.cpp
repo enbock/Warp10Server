@@ -10,6 +10,7 @@ using namespace Network;
 */
 Manager::Manager() : EventRoom()
 {
+	_isClosing = false;
 	addEventListener(
 		Event::REGISTER_NETWORK
 		, Callback(this, cb_cast(&Network::Manager::onRegisterNetwork))
@@ -99,7 +100,7 @@ void Manager::onRequestListener(Object *arg)
 	Event* event = ((Event*) arg);
 
 	lock();
-	if (_builder.hasKey(event->networkType) == true) 
+	if (_builder.hasKey(event->networkType) == true && _isClosing == false) 
 	{
 		Network::IListener* listener;
 		listener = ((IBuilder*)((Object *)_builder[event->networkType]))
@@ -108,7 +109,6 @@ void Manager::onRequestListener(Object *arg)
 			className() + "::onRequestListener: Create " + listener->toString()
 		);
 		_listener.push(listener);
-		listener->listen();
 
 		listener->addEventListener(
 			Event::CLOSED
@@ -159,11 +159,14 @@ void Manager::onCloseRequest(Object *arg)
 	trace(className() + ": Start close procedure.");
 	arg->destroy();
 	lock();
-	uint64 i, length = _listener.length();
-	Event close(Event::CLOSE);
-	for (i = 0; i < length; i++) {
-		_listener[i]->dispatchEvent(&close);
+	if(_isClosing == false) {
+		uint64 i, length = _listener.length();
+		Event close(Event::CLOSE);
+		for (i = 0; i < length; i++) {
+			_listener[i]->dispatchEvent(&close);
+		}
 	}
+	_isClosing = true;
 	unlock();
 	checkForCloseState();
 }

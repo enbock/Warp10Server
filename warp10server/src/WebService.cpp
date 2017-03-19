@@ -1,4 +1,5 @@
 #include <WebService>
+#include <Network/WebEvent>
 
 using namespace u;
 using namespace Warp10;
@@ -70,7 +71,17 @@ void  WebService::onListenerCreated(Object* arg)
 {
 	u::Network::Event* event = ((u::Network::Event*)arg);
 	if (event->networkType == type) {
-		trace(className() + ": Listener ready.");
+		trace(className() + "::onListenerCreated: Listener ready.");
+		IListener* listener = event->listener;
+		listener->addEventListener(
+			WebEvent::INCOMMING_CONNECTION,
+			Callback(this, cb_cast(&WebService::onNewConnection))
+		);
+		listener->addEventListener(
+			WebEvent::WILL_CLOSE,
+			Callback(this, cb_cast(&WebService::onListenerClose))
+		);
+		listener->listen();
 	}
 	event->destroy();
 }
@@ -83,6 +94,37 @@ void WebService::registerNetwork()
 	lock();
 	_manager->dispatchEvent(&registerNetwork);
 	unlock();
+}
+/**
+* Listener will close.
+*/
+void WebService::onListenerClose(Object* arg)
+{
+	WebEvent* event = ((WebEvent*)arg);
+	IListener* listener = ((IListener*)event->target());
+	listener->removeEventListener(
+		WebEvent::INCOMMING_CONNECTION,
+		Callback(this, cb_cast(&WebService::onNewConnection))
+	);
+	listener->removeEventListener(
+		WebEvent::WILL_CLOSE,
+		Callback(this, cb_cast(&WebService::onListenerClose))
+	);
+	event->destroy();
+
+	WebEvent canClose(WebEvent::CAN_CLOSE);
+	listener->dispatchEvent(&canClose);
+}
+
+/**
+* Listener created a new connection.
+*/
+void WebService::onNewConnection(Object* arg)
+{
+	Network::WebEvent* event  = ((Network::WebEvent*)arg);
+	WebConnection* connection = ((WebConnection*)event->connection);
+	connection->read();
+	event->destroy();
 }
 
 /*

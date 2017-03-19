@@ -42,8 +42,8 @@ u::EventDispatcher::~EventDispatcher()
 	while(hasEventListener())
 	{
 #ifndef NDEBUG
-		if(c == 0)
-			trace(className()+": Has "+int2string(_eventList.length())+" binder types.");
+		if(c == 0) 
+			error(className()+": Has "+int2string(_eventList.length())+" binder types.");
 #endif
 		int64 i,l;
 		for(i=0, l=_eventList.length(); i<l; i++)
@@ -61,7 +61,7 @@ u::EventDispatcher::~EventDispatcher()
 			  for(vi=0, vl = vec->list.length(); vi < vl; vi++)
 			  {
 			  	// autoremove on invalid target
-			  	if(!valid((Object *)(vec->list.at(vi).target)))
+			  	if(!valid((Object *)&(vec->list.at(vi).target)))
 			  	{
 #ifndef NDEBUG
 			  		trace(
@@ -72,12 +72,12 @@ u::EventDispatcher::~EventDispatcher()
 #endif
 			  		vec->list.erase(vi);
 			  		vl = vec->list.length();
-			  		vi--;
+			  		if(vl > 0) vi--;
 			  		if(vec->list.empty())
 			  		{
 			  			delEventVector(vec->type);
 			  			l = _eventList.length();
-			  			i--;
+			  			if (l > 0) i--;
 			  			break;
 			  		}
 			  	}
@@ -99,7 +99,7 @@ u::EventDispatcher::~EventDispatcher()
 		c++;
 		if(c>=90) c=0;
 #endif
-		usleep(1000000/90);
+		usleep(1000000/FPS);
 		lock();
 	}
 	unlock();

@@ -36,15 +36,17 @@ namespace u
 		*/
 		class Manager : public EventRoom
 		{
-			/**
-			 * Builder list.
-			 */
-			Datablock _builder;
+			protected:
+				/**
+				* Builder list.
+				*/
+				Datablock _builder;
 
-			/**
-			* Listener list.
-			*/
-			Vector<IListener*> _listener; 
+				/**
+				* Listener list.
+				*/
+				Vector<IListener*> _listener; 
+				bool _isClosing;
 
 			public:
 				/**

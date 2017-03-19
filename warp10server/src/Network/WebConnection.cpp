@@ -12,6 +12,7 @@ WebConnection::WebConnection(Socket* socket) : IConnection()
 {
 	_isReading = false;
 	_socket    = socket;
+	_isClosed  = false;
 
 	addEventListener(
 		u::Network::Event::CLOSE
@@ -47,6 +48,18 @@ String WebConnection::className()
 	return "Warp10::Network::WebConnection";
 }
 
+/**
+* Create read thread.
+*/
+void WebConnection::read()
+{
+	Callback call(this, cb_cast(&WebConnection::read));
+	ThreadSystem::create(&call);
+}
+
+/**
+* Threaded read data.
+*/
 void WebConnection::read(Object* arg)
 {
 	lock();
@@ -72,7 +85,7 @@ void WebConnection::read(Object* arg)
 	_isReading = false;
 	unlock();
 
-	error("TODO event" + buffer->toString());
+	error(className() + "::read: TODO event " + buffer->toString());
 
 	buffer->destroy();
 }
@@ -105,13 +118,19 @@ void WebConnection::send(ByteArray* data)
 void WebConnection::onClose(Object *arg)
 {
 	u::Network::Event* event = ((u::Network::Event*)arg);
+	event->destroy();
 
 	lock();
-	_socket->close();
+	if (_isClosed == false) {
+		_socket->close();
+	} else {
+		// avoid double close
+		unlock();
+		return;
+	}
+	_isClosed  = true;
 	unlock();
 
 	u::Network::Event closed(u::Network::Event::CLOSED);
 	dispatchEvent(&closed);
-
-	event->destroy();
 }

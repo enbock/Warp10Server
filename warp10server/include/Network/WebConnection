@@ -17,6 +17,7 @@ namespace Warp10
 			protected:
 				bool _isReading;
 				Socket* _socket;
+				bool _isClosed;
 			public:
 				/**
 				 * Default constructor.
@@ -40,10 +41,9 @@ namespace Warp10
 				virtual String className();
 
 				/**
-				 * Threaded read data.
-				 * @param arg NULL reference.
+				 * Create read thread.
 				 */
-				virtual void read(Object*);
+				virtual void read();
 
 				/**
 				 * Send binary data.
@@ -51,6 +51,11 @@ namespace Warp10
 				 */
 				virtual void send(ByteArray* data);
 			protected:
+				/**
+				 * Threaded read data.
+				 * @param arg NULL reference.
+				 */
+				virtual void read(Object*);
 				/**
 				 * Close request received.
 				 * @param arg CLOSE event object.
