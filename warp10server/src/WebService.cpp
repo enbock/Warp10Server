@@ -5,9 +5,13 @@ using namespace Warp10;
 
 String WebService::type = "http";
 
-WebService::WebService(Manager* manager) : Object()
+WebService::WebService(Manager* manager, String address, int64 port) : Object()
 {
 	_manager = manager;
+	_address = address;
+	_port   = port;
+
+	_builder.setupListener(_address, _port);
 
 	_manager->addEventListener(
 		u::Network::Event::NETWORK_REGISTERED,
@@ -17,11 +21,6 @@ WebService::WebService(Manager* manager) : Object()
 		u::Network::Event::LISTENER_CREATED,
 		Callback(this, cb_cast(&WebService::onListenerCreated))
 	);
-
-	u::Network::Event registerNetwork(
-		u::Network::Event::REGISTER_NETWORK, type, &_builder
-	);
-	_manager->dispatchEvent(&registerNetwork);
 }
 
 WebService::~WebService()
@@ -71,6 +70,14 @@ void  WebService::onListenerCreated(Object* arg)
 		trace(className() + ": Listener ready.");
 	}
 	event->destroy();
+}
+
+void WebService::registerNetwork()
+{
+	u::Network::Event registerNetwork(
+		u::Network::Event::REGISTER_NETWORK, type, &_builder
+	);
+	_manager->dispatchEvent(&registerNetwork);
 }
 
 /*

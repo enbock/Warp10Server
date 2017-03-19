@@ -42,5 +42,26 @@ String WebBuilder::className()
 */
 IListener* WebBuilder::createListener()
 {
-	return new WebListener(this);
+	trace(
+		className() + "::createListener: Create socket on " + _address
+		+ " " + int2string(_port)
+	);
+	return new WebListener(this, new Socket(AF_INET, _address, _port));
+}
+
+/**
+* Setup listener connection.
+*/
+void WebBuilder::setupListener(String address, int64 port)
+{
+	_address = address;
+	_port    = port;
+}
+
+/**
+* Create a web network connection.
+*/
+IConnection* WebBuilder::createConnection(Socket*)
+{
+
 }

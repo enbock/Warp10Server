@@ -171,7 +171,7 @@ namespace u
 			String _hostname;
 
 			/**
-			*´Port.
+			* Port.
 			*/
 			int64 _port;
 

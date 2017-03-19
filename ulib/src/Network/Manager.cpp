@@ -48,6 +48,8 @@ Manager::~Manager()
 		Event::CLOSE
 		, Callback(this, cb_cast(&Network::Manager::onCloseRequest))
 	);
+
+	trace(className() + "::~Manager: Down.");
 }
 
 /**

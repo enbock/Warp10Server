@@ -3,6 +3,8 @@
 
 #include <RoomOwner>
 #include <Network/IListener>
+#include <Network/IConnection>
+#include <Socket>
 
 namespace u 
 {
@@ -26,6 +28,12 @@ namespace u
 				 * Create a listener for the network type.
 				 */
 				virtual IListener* createListener() = 0;
+
+				/**
+				* Create a network connection of the network type.
+				* @param socket Network socket.
+				*/
+				virtual IConnection* createConnection(Socket*) = 0;
 		};
 	}
 }

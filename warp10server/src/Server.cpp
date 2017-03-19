@@ -35,7 +35,8 @@ Server::Server(Vector<String> arg) : RoomOwner()
 
 	trace(className() + ": Server is running.");
 
-	_webService = new WebService(&_manager);
+	_webService = new WebService(&_manager, "0.0.0.0", 80);
+	_webService->registerNetwork();
 }
 
 Server::~Server()

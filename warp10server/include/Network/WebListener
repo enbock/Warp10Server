@@ -2,7 +2,8 @@
 #define W10_NETWORK_WEBLISTENER_
 
 #include <Network/IListener>
-#include <Network/IBuilder>
+#include <Network/WebBuilder>
+#include <Socket>
 
 using namespace u;
 using namespace u::Network;
@@ -14,14 +15,15 @@ namespace Warp10
 		class WebListener : public IListener
 		{
 			protected:
-				IBuilder* _builder;
+				WebBuilder* _builder;
+				Socket* _socket;
 
 			public:
 				/**
 				* Constructor.
 				* @param builder Network object builder.
 				*/
-				WebListener(IBuilder* builder);
+				WebListener(IBuilder* builder, Socket* socket);
 
 				/**
 				* Destructor.

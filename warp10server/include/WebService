@@ -19,6 +19,8 @@ namespace Warp10
 		protected:
 			u::Network::Manager* _manager;
 			WebBuilder _builder;
+			String _address;
+			int64 _port;
 			
 		public:
 			static String type;
@@ -27,7 +29,7 @@ namespace Warp10
 			 * Constructor of service.
 			 * @param manager Network manager.
 			 */
-			WebService(Manager*);
+			WebService(Manager*, String address, int64 port);
 
 			/**
 			 * Destructor of service.
@@ -43,6 +45,11 @@ namespace Warp10
 			 * Get the class name of this object.
 			 */
 			String className();
+
+			/**
+			 * Register the network on the manager.
+			 */
+			virtual void registerNetwork();
 
 		protected:
 			/**

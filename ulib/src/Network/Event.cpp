@@ -17,6 +17,9 @@ const String Network::Event::LISTENER_CREATED(
 );
 const String Network::Event::CLOSE("u::Network::Event::close");
 const String Network::Event::CLOSED("u::Network::Event::closed");
+const String Network::Event::CONNECTION_CREATED(
+	"u::Network::Event::connectionCreated"
+);
 
 /**
 * Event constructor with builder reference.

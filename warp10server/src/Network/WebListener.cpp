@@ -8,9 +8,10 @@ using namespace Warp10::Network;
 /**
 * Constructor.
 */
-WebListener::WebListener(IBuilder* builder) : IListener()
+WebListener::WebListener(IBuilder* builder, Socket* socket) : IListener()
 {
-	_builder = builder;
+	_builder = ((WebBuilder*)builder);
+	_socket  = socket;
 
 	addEventListener(
 		u::Network::Event::CLOSE,
@@ -23,10 +24,12 @@ WebListener::WebListener(IBuilder* builder) : IListener()
 */
 WebListener::~WebListener()
 {
+	_socket->destroy();
 	removeEventListener(
 		u::Network::Event::CLOSE,
 		Callback(this, cb_cast(&WebListener::onClose))
 	);
+	trace(className() + "::~WebListener: Down.");
 }
 
 /**
@@ -50,7 +53,22 @@ String WebListener::className()
 */
 void WebListener::listen()
 {
-	error(className() + "::Listen: TODO to listening");
+	bool ret = _socket->listen();
+
+	if(ret == false) {
+		error(className()+"::listen: Can not etablish connection.");
+		u::Network::Event close(
+			u::Network::Event::CLOSE
+		);
+		dispatchEvent(&close);
+		return;
+	}
+
+	// start incoming connections
+	//Callback cb(this, cb_cast(&NetworkListener::doListening));
+	//ThreadSystem::create(&cb);
+
+	return;
 }
 
 /**
@@ -58,6 +76,7 @@ void WebListener::listen()
 */
 void WebListener::onClose(Object* arg)
 {
+	_socket->close();
 	checkClosed();
 
 	arg->destroy();

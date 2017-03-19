@@ -44,6 +44,11 @@ namespace u
 				 */
 				static const String CLOSED;
 
+				/**
+				 * A connect was created.
+				 */
+				 static const String CONNECTION_CREATED;
+
 				IBuilder* builder;
 				IListener* listener;
 				String networkType;

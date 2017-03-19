@@ -12,6 +12,10 @@ namespace Warp10
 	{
 		class WebBuilder : public IBuilder
 		{
+			protected:
+				String _address;
+				int64 _port;
+
 			public:
 				/**
 				 * Default constructor.
@@ -35,9 +39,20 @@ namespace Warp10
 				virtual String className();
 
 				/**
-				 * Create a listener for the network type.
+				 * Create a web listener.
 				 */
 				virtual IListener* createListener();
+
+				/**
+				* Create a web network connection.
+				* @param socket Network socket.
+				*/
+				virtual IConnection* createConnection(Socket*);
+
+				/**
+				 * Setup listener connection.
+				 */
+				virtual void setupListener(String address, int64 port);
 		};
 	}
 }
