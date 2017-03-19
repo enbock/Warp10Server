@@ -1,0 +1,63 @@
+#ifndef W10_NETWORK_CONNECTION_
+#define W10_NETWORK_CONNECTION_
+
+#include <Network/IConnection>
+#include <ByteArray>
+#include <Socket>
+
+using namespace u;
+using namespace u::Network;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		class WebConnection : public IConnection
+		{
+			protected:
+				bool _isReading;
+				Socket* _socket;
+			public:
+				/**
+				 * Default constructor.
+				 */
+				WebConnection(Socket* socket);
+
+				/**
+				 * Destructor.
+				 */
+				~WebConnection();
+
+				/**
+				 * Destroy this object.
+				 */
+				virtual void destroy();
+
+				/**
+				 * The class name.
+				 * @return String with the class name.
+				 */
+				virtual String className();
+
+				/**
+				 * Threaded read data.
+				 * @param arg NULL reference.
+				 */
+				virtual void read(Object*);
+
+				/**
+				 * Send binary data.
+				 * @param data Binary data.
+				 */
+				virtual void send(ByteArray* data);
+			protected:
+				/**
+				 * Close request received.
+				 * @param arg CLOSE event object.
+				 */
+				virtual void onClose(Object *arg);
+		};
+	}
+}
+
+#endif // ! W10_NETWORK_CONNECTION_

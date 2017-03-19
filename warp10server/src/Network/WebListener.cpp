@@ -10,8 +10,9 @@ using namespace Warp10::Network;
 */
 WebListener::WebListener(IBuilder* builder, Socket* socket) : IListener()
 {
-	_builder = ((WebBuilder*)builder);
-	_socket  = socket;
+	_builder  = ((WebBuilder*)builder);
+	_socket   = socket;
+	_isClosed = false;
 
 	addEventListener(
 		u::Network::Event::CLOSE,
@@ -76,6 +77,10 @@ void WebListener::listen()
 */
 void WebListener::onClose(Object* arg)
 {
+	lock();
+	_isClosed = true;
+	unlock();
+
 	checkClosed();
 
 	/**
@@ -84,6 +89,16 @@ void WebListener::onClose(Object* arg)
 	 * but not closed.
 	 */
 	_socket->close();
+
+	lock();
+	Vector<IConnection*> connections = _connections; // copy
+	unlock();
+	while(connections.length() > 0)
+	{
+		u::Network::Event close(u::Network::Event::CLOSE);
+		IConnection* connection = connections.pop();
+		connection->dispatchEvent(&close);
+	}
 
 	arg->destroy();
 }
@@ -142,7 +157,7 @@ void WebListener::listenSocket(Object* arg)
 	{
 		trace(className()+"::listenSocket: Incomming connection.");
 		IConnection* newConnection = _builder->createConnection(newSocket);
-		if(newConnection != null)
+		if(newConnection != null && _isClosed == false)
 		{
 			_connections.push(newConnection);
 
@@ -184,9 +199,27 @@ void WebListener::listenSocket(Object* arg)
 */
 void WebListener::onConnectionClosed(Object *arg)
 {
-	error(
-		className() + "::onConnectionClosed: TODO"
-	);
+	u::Network::Event* event = ((u::Network::Event*)arg);
+	IConnection* connection  = ((IConnection*)event->target());
+	lock();
+	int64 index = _connections.erase(connection);
+	unlock();
+	if (index != -1) {
+		trace(
+			className() + "::onConnectionClosed: Removed connection from list."
+		);
+		connection->removeEventListener(
+			u::Network::Event::CLOSED
+			, Callback(this, cb_cast(&WebListener::onConnectionClosed))
+		);
+		connection->destroy();
+	}
+	lock();
+	bool isClosed = _isClosed;
+	unlock();
+	if (isClosed == true) {
+		checkClosed();
+	}
 
-	arg->destroy();
+	event->destroy();
 }

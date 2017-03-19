@@ -119,7 +119,11 @@ void Server::onManagerClosed(Object* arg)
 	bool shutdown = _isShuttingDown == true;
 	unlock();
 	if (shutdown) {
-		trace(className() + ": All closed. Exit program.");
+		trace(className() + "::onManagerClosed: All closed. Exit program.");
 		programExit();
-	} else trace(className() + ": All closed. Continue program.");
+	} else {
+		error(className() + "::onManagerClosed: Unexpected closing.");
+		this->shutdown();
+		//trace(className() + ": All closed. Continue program.");
+	}
 }

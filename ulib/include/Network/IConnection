@@ -7,6 +7,15 @@ namespace u
 {
 	namespace Network
 	{
+		/**
+		 * Network connection interface.
+		 * <p>Conection has to listen:<ul>
+		 * <li> u::Network::Event::CLOSE
+		 * </ul>
+		 * Follow events are expected to send:<ul>
+		 * <li> u::Network::Event::CLOSED
+		 * </ul></p>
+		 */
 		class IConnection : public EventRoom
 		{
 			public:

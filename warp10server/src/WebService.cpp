@@ -56,7 +56,9 @@ void WebService::onNetworkRegistered(Object* arg)
 		u::Network::Event requestListener(
 			u::Network::Event::REQUEST_LISTENER, type
 		);
+		lock();
 		_manager->dispatchEvent(&requestListener);
+		unlock();
 	}
 	event->destroy();
 }
@@ -78,7 +80,9 @@ void WebService::registerNetwork()
 	u::Network::Event registerNetwork(
 		u::Network::Event::REGISTER_NETWORK, type, &_builder
 	);
+	lock();
 	_manager->dispatchEvent(&registerNetwork);
+	unlock();
 }
 
 /*

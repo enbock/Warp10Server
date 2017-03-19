@@ -198,7 +198,7 @@ bool u::Socket::connect()
 
 			if(::getaddrinfo(_hostname.c_str(), int2string((int)_port).c_str(), &hints, &servinfo) != 0)
 			{
-				error(className()+".connect(): Can't resolv hostname "+_hostname+":"
+				error(className()+"::connect: Can't resolv hostname "+_hostname+":"
 					+int2string(_port));
 				return false;
 			}
@@ -250,7 +250,7 @@ bool u::Socket::listen()
 
 	if(!isConnected())
 	{
-		error(className()+": Socket bind error. ["+int2string(_descriptor)+"]");
+		error(className()+"::listen: Socket bind error. ["+int2string(_descriptor)+"]");
 		return false; // bind error
 	}
 
@@ -259,7 +259,7 @@ bool u::Socket::listen()
 	unlock();
 	if(!isConnected())
 	{
-		error(className()+": Socket listen error. ["+int2string(_descriptor)+"]");
+		error(className()+"::listen: Socket listen error. ["+int2string(_descriptor)+"]");
 		return false;
 	}
 
@@ -275,7 +275,11 @@ int64 u::Socket::send(ByteArray *data)
 	char *buffer;		// send buffer
 
 	if(!isConnected()) return -1;
-	if(_isSending == true) return 0;
+	lock();
+	if(_isSending == true) {
+		unlock();
+		return 0;
+	}
 	_isSending = true;
 
 	pos = data->position();
@@ -287,7 +291,7 @@ int64 u::Socket::send(ByteArray *data)
 
 	if(ret == -1)
 	{
-		//error(className()+": Sending failed.");
+		error(className()+"::send: Sending failed.");
 		data->position(pos);
 	}
 	else
@@ -297,9 +301,12 @@ int64 u::Socket::send(ByteArray *data)
 
 	delete[] buffer;
 	_isSending = false;
+	unlock();
 
-	trace(className()+": Sent "+int2string(ret)+" bytes of "+int2string(len)
-		+" bytes.");
+	trace(
+		className() + "::send: Sent " + int2string(ret) + " bytes of "
+		+ int2string(len) + " bytes."
+	);
 	return ret;
 }
 
@@ -317,10 +324,12 @@ int64 u::Socket::read(ByteArray *data)
 	// set pointer to end for append
 	data->position(data->length());
 
+	lock();
 	len = receiveBufferSize;
 	buffer = new char[len];
 
 	ret = ::recv(_descriptor, buffer, len, 0);
+	unlock();
 
 	if(ret > 0)
 	{
@@ -331,7 +340,7 @@ int64 u::Socket::read(ByteArray *data)
 
 	data->position(0); // set pointer to begin
 
-	//trace(className()+": Received "+int2string(ret)+" bytes.");
+	trace(className()+"::read: Received "+int2string(ret)+" bytes.");
 	return ret;
 }
 
@@ -347,7 +356,9 @@ bool u::Socket::hasIncomingData()
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;
 
+	lock();
 	retval = select(_descriptor+1, &rfds, NULL, NULL, &tv);
+	unlock();
 
 	return retval > 0;
 

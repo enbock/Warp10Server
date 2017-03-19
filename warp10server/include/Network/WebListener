@@ -19,6 +19,7 @@ namespace Warp10
 				WebBuilder* _builder;
 				Socket* _socket;
 				Vector<IConnection*> _connections;
+				bool _isClosed;
 
 			public:
 				/**

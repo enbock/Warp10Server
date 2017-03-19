@@ -1,5 +1,6 @@
 #include <Network/WebBuilder>
 #include <Network/WebListener>
+#include <Network/WebConnection>
 
 using namespace u;
 using namespace u::Network;
@@ -68,7 +69,7 @@ void WebBuilder::setupListener(String address, int64 port)
 /**
 * Create a web network connection.
 */
-IConnection* WebBuilder::createConnection(Socket*)
+IConnection* WebBuilder::createConnection(Socket* socket)
 {
-	error(className() + "::createConnection: TODO make connection");
+	return new WebConnection(socket);
 }
