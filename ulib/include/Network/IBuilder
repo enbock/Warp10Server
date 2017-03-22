@@ -1,0 +1,41 @@
+#ifndef NETWORK_IBUILDER_
+#define NETWORK_IBUILDER_
+
+#include <RoomOwner>
+#include <Network/IListener>
+#include <Network/IConnection>
+#include <Socket>
+
+namespace u 
+{
+	namespace Network
+	{
+		/**
+		 * The network builder interface.
+		 * <p>Network builder are configured creator of objects.<br>
+		 * The builder does not own the created object. That have to take
+		 * over the calling domain object.</p>
+		 */
+		class IBuilder : public Object
+		{
+			public:
+				/**
+				 * Cleanup destructor.
+				 */
+				~IBuilder() {};
+
+				/**
+				 * Create a listener for the network type.
+				 */
+				virtual IListener* createListener() = 0;
+
+				/**
+				* Create a network connection of the network type.
+				* @param socket Network socket.
+				*/
+				virtual IConnection* createConnection(Socket*) = 0;
+		};
+	}
+}
+
+#endif // ! NETWORK_IBUILDER_

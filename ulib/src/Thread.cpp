@@ -59,10 +59,13 @@ bool ThreadSystem::create(Callback *cb)
 	_build.push_back(t);
 	_access.unlock();
 
+#ifndef NDEBUG
 	trace(
-		"ThreadSystem::create: " + Object::ptr2string(cb)
+		"\033[0mThreadSystem::create: " + Object::ptr2string(cb)
 		 + " -> " +  Object::ptr2string(&(t->_call))
+		 //+ "\n\033[37m" + ThreadSystem::toString()
 	);
+#endif
 
 	return true;
 }
@@ -138,7 +141,6 @@ void ThreadSystem::run(int64 id)
 	_access.lock();
 
 #ifndef NDEBUG
-	if(peakRun < _run.size()) peakRun = _run.size();
 	if(ThreadSystem::isTerminating)
 		trace(String("                                                                                        ")
 		+ "\n\033[A"
@@ -152,6 +154,9 @@ void ThreadSystem::run(int64 id)
 	Thread *thread = _build.at(id);
 	_build.erase(id);
 	_run.push_back(thread);
+#ifndef NDEBUG
+	if(peakRun < _run.size()) peakRun = _run.size();
+#endif
 	_access.unlock();
 	thread->run();
 }

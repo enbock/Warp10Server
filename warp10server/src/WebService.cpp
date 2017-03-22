@@ -1,140 +1,157 @@
 #include <WebService>
-#include <ServerEvent>
-#include <NetTransferEvent>
-#include <ServerNetEvent>
-#include <EventDispatcher>
+#include <Network/WebEvent>
 
 using namespace u;
+using namespace Warp10;
 
+String WebService::type = "http";
 
-String u::WebService::toString()
+WebService::WebService(Manager* manager, String address, int64 port) : Object()
 {
-	return "[" + className() + "]";
+	_manager = manager;
+	_address = address;
+	_port   = port;
+
+	_builder.setupListener(_address, _port);
+	_builder.networkType = type;
+
+	_manager->addEventListener(
+		u::Network::Event::NETWORK_REGISTERED,
+		Callback(this, cb_cast(&WebService::onNetworkRegistered))
+	);
+	_manager->addEventListener(
+		u::Network::Event::LISTENER_CREATED,
+		Callback(this, cb_cast(&WebService::onListenerCreated))
+	);
 }
 
-u::WebService::WebService() : NetworkService()
+WebService::~WebService()
 {
+	_manager->removeEventListener(
+		u::Network::Event::NETWORK_REGISTERED,
+		Callback(this, cb_cast(&WebService::onNetworkRegistered))
+	);
+	_manager->removeEventListener(
+		u::Network::Event::LISTENER_CREATED,
+		Callback(this, cb_cast(&WebService::onListenerCreated))
+	);
 }
 
-u::WebService::~WebService()
+String WebService::className()
 {
-	if(_plugin.service()) {
-		trace(this->className()+": Remove plugin from manager.");
-		NetworkManager* srv = _plugin.service();
-		srv->lock();
-		srv->removeNetworkPlugin(&_plugin);
-		srv->unlock();
-	}
-	removeListeners();
+	return "Warp10::WebService";
 }
 
-String u::WebService::className()
-{
-	return "u::WebService";
-}
-
-void u::WebService::destroy()
+void WebService::destroy()
 {
 	delete (WebService*) this;
 }
 
-void u::WebService::addListeners()
+/**
+* Network manager has registered builder.
+*/
+void WebService::onNetworkRegistered(Object* arg)
 {
-	NetworkService::addListeners();
-	_room->addEventListener(
-		ServerEvent::NETWORK_PLUGIN_REGISTERED
-		, Callback(this, cb_cast(&WebService::onPluginRegistered))
-	);
-
-	ServerEvent event(ServerEvent::REGISTER_NETWORK_PLUGIN);
-	event.data = &_plugin;
-	_room->dispatchEvent(&event);
-}
-
-void u::WebService::removeListeners()
-{
-	NetworkService::removeListeners();
-
-	_room->removeEventListener(
-		ServerEvent::NETWORK_PLUGIN_REGISTERED
-		, Callback(this, cb_cast(&WebService::onPluginRegistered))
-	);
-}
-
-/** Complete override */
-void u::WebService::onPluginRegistered(Object* arg)
-{
-	ServerEvent* event = ((ServerEvent*) arg);
-	if (event->data == &_plugin)
-	{
-		_room->dispatchEvent(
-			new ServerNetEvent(
-				ServerNetEvent::GET_WEB_LISTENER
-				, "0.0.0.0"
-				, 80
-			)
-		)->destroy();
+	u::Network::Event* event = ((u::Network::Event*)arg);
+	if (event->networkType == type) {
+		u::Network::Event requestListener(
+			u::Network::Event::REQUEST_LISTENER, type
+		);
+		lock();
+		_manager->dispatchEvent(&requestListener);
+		unlock();
 	}
-	
-	event->destroy();
-}
-
-/** Complete override */
-void u::WebService::onListenerFailed(Object* arg)
-{
-	ServerNetEvent *event = ((ServerNetEvent*) arg);
-	if (!isMyListener(event))
-	{
-		event->destroy();
-		return;
-	}
-	event->destroy();
-	error("Can not entablish Web Service.");
-}
-
-void u::WebService::onNewData(Object* arg)
-{
-	NetTransferEvent* event = ((NetTransferEvent *) arg);
-	EventDispatcher* sourceDispatcher = event->target();
-	
-	trace(this->className()+": Incoming data " + event->data()->toString());
-
-	String dummy("TODO answer\n");
-	
-	ByteArray responseData;
-	responseData.writeBytes(dummy.c_str(), dummy.length());
-
-	NetTransferEvent responseEvent(NetTransferEvent::EOT, 0, &responseData);
-	sourceDispatcher->dispatchEvent(&responseEvent);
-
 	event->destroy();
 }
 
 /**
- * Check if a incoming listener event really for me.
- */
-bool u::WebService::isMyListener(NetEvent* event)
+* Network manager the listener created.
+*/
+void  WebService::onListenerCreated(Object* arg)
 {
-	// TODO: Address should be configured.
-	// Is address a good way to identify the correct listener?
-	return event->address() == "0.0.0.0"
-		&& event->port() == 80
-	;
+	u::Network::Event* event = ((u::Network::Event*)arg);
+	if (event->networkType == type) {
+		trace(className() + "::onListenerCreated: Listener ready.");
+		IListener* listener = event->listener;
+		listener->addEventListener(
+			WebEvent::INCOMMING_CONNECTION,
+			Callback(this, cb_cast(&WebService::onNewConnection))
+		);
+		listener->addEventListener(
+			WebEvent::WILL_CLOSE,
+			Callback(this, cb_cast(&WebService::onListenerClose))
+		);
+		listener->listen();
+	}
+	event->destroy();
+}
+
+void WebService::registerNetwork()
+{
+	u::Network::Event registerNetwork(
+		u::Network::Event::REGISTER_NETWORK, type, &_builder
+	);
+	lock();
+	_manager->dispatchEvent(&registerNetwork);
+	unlock();
+}
+/**
+* Listener will close.
+*/
+void WebService::onListenerClose(Object* arg)
+{
+	WebEvent* event = ((WebEvent*)arg);
+	IListener* listener = ((IListener*)event->target());
+	listener->removeEventListener(
+		WebEvent::INCOMMING_CONNECTION,
+		Callback(this, cb_cast(&WebService::onNewConnection))
+	);
+	listener->removeEventListener(
+		WebEvent::WILL_CLOSE,
+		Callback(this, cb_cast(&WebService::onListenerClose))
+	);
+	event->destroy();
+
+	WebEvent canClose(WebEvent::CAN_CLOSE);
+	listener->dispatchEvent(&canClose);
 }
 
 /**
- * A new connection is comming in.
- */
-void u::WebService::onNewConnection(Object *arg)
+* Listener created a new connection.
+*/
+void WebService::onNewConnection(Object* arg)
 {
-	NetEvent* event = ((NetEvent*) arg);
-	String address  = event->address();
-	int64 port      = event->port();
-	EventRoom* room = event->room();
-	NetworkService::onNewConnection(arg);
-
-	NetEvent readySignal(
-		NetEvent::CONNECTION_IS_READY, address, port
+	Network::WebEvent* event  = ((Network::WebEvent*)arg);
+	WebConnection* connection = ((WebConnection*)event->connection);
+	connection->addEventListener(
+		WebEvent::REQUEST,
+		Callback(this, cb_cast(&WebService::onRequest))
 	);
-	room->dispatchEvent(&readySignal);
+	connection->read();
+	event->destroy();
 }
+
+
+void WebService::onRequest(Object* arg)
+{
+	Network::WebEvent* event  = ((Network::WebEvent*)arg);
+	WebConnection* connection = ((WebConnection*)event->connection);
+
+	connection->removeEventListener(
+		WebEvent::REQUEST,
+		Callback(this, cb_cast(&WebService::onRequest))
+	);
+	
+	trace(
+		this->className() + "::onRequest: Incoming request: " 
+		+ "Method: '" + event->request.method
+		+ "'\tResource: '" + event->request.resource + "'"
+	);
+
+	event->destroy();
+
+	// DUMMY
+	u::Network::Event close(u::Network::Event::CLOSE);
+	connection->dispatchEvent(&close);
+}
+

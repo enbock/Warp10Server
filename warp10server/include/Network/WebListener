@@ -1,0 +1,88 @@
+#ifndef W10_NETWORK_WEBLISTENER_
+#define W10_NETWORK_WEBLISTENER_
+
+#include <Network/IConnection>
+#include <Network/IListener>
+#include <Network/WebBuilder>
+#include <Socket>
+#include <ByteArray>
+
+using namespace u;
+using namespace u::Network;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		class WebListener : public IListener
+		{
+			protected:
+				WebBuilder* _builder;
+				Socket* _socket;
+				Vector<IConnection*> _connections;
+				bool _isClosed;
+				bool _closeSent;
+
+			public:
+				/**
+				* Constructor.
+				* @param builder Network object builder.
+				*/
+				WebListener(IBuilder* builder, Socket* socket);
+
+				/**
+				* Destructor.
+				*/
+				~WebListener();
+
+				/**
+				* Destroy this object.
+				*/
+				virtual void destroy();
+
+				/**
+				* The class name.
+				* @return String with the class name.
+				*/
+				virtual String className();
+
+				/**
+				 * Start listening for new connections.
+				 */
+				virtual void listen();
+			
+			protected:
+				/**
+				 * Check that all connection closed.
+				 * <p>Send the CLOSED event if all closed.</p>
+				 */
+				virtual void checkClosed();
+
+				/**
+				 * Listener was requested to close.
+				 * @param arg CLOSE event object.
+				 */
+				virtual void onClose(Object* arg);
+
+				/**
+				 * Controller allow close.
+				 * @param arg CAN_CLOSE event object.
+				 */
+				virtual void onCanClose(Object* arg);
+
+				/**
+				 * Listen for incomming connections.
+				 * @param arg Empty pointer.
+				 */
+				virtual void listenSocket(Object* arg);
+
+				/**
+				 * Connection was closed.
+				 * @param arg CLOSED event object.
+				 */
+				virtual void onConnectionClosed(Object *arg);
+		};
+	}
+}
+
+#endif // ! W10_NETWORK_WEBLISTENER_

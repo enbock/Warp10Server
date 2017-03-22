@@ -42,8 +42,8 @@ u::EventDispatcher::~EventDispatcher()
 	while(hasEventListener())
 	{
 #ifndef NDEBUG
-		if(c == 0)
-			trace(className()+": Has "+int2string(_eventList.length())+" binder types.");
+		if(c == 0) 
+			error(className()+": Has "+int2string(_eventList.length())+" binder types.");
 #endif
 		int64 i,l;
 		for(i=0, l=_eventList.length(); i<l; i++)
@@ -61,23 +61,23 @@ u::EventDispatcher::~EventDispatcher()
 			  for(vi=0, vl = vec->list.length(); vi < vl; vi++)
 			  {
 			  	// autoremove on invalid target
-			  	if(!valid(vec->list.at(vi).target))
+			  	if(!valid((Object *)&(vec->list.at(vi).target)))
 			  	{
 #ifndef NDEBUG
 			  		trace(
 			  			className() + "::~EventDispatcher: Remove target "
 			  			+ ptr2string(vec->list.at(vi).target) + " from list "
 			  			+ (*vec->type)
-						);
+					);
 #endif
 			  		vec->list.erase(vi);
 			  		vl = vec->list.length();
-			  		vi--;
+			  		if(vl > 0) vi--;
 			  		if(vec->list.empty())
 			  		{
 			  			delEventVector(vec->type);
 			  			l = _eventList.length();
-			  			i--;
+			  			if (l > 0) i--;
 			  			break;
 			  		}
 			  	}
@@ -99,7 +99,7 @@ u::EventDispatcher::~EventDispatcher()
 		c++;
 		if(c>=90) c=0;
 #endif
-		usleep(1000000/90);
+		usleep(1000000/FPS);
 		lock();
 	}
 	unlock();
@@ -220,7 +220,10 @@ Event* EventDispatcher::dispatchEvent(Event *event)
 		for(i=0; i<l; i++)
 		{
 			Callback cb = vec.at(i);
-			trace("DispatchEvent: "+*(event->_type)+" -> "+cb.toString());
+			trace(
+				"DispatchEvent: " + *(event->_type)
+				+ "\033[36m -> "+cb.toString()
+			);
 			Event* ev = event->clone();
 			ev->_target = this;
 			cb.arg = ev;
@@ -236,7 +239,10 @@ Event* EventDispatcher::dispatchEvent(Event *event)
 	}
 	else
 	{
-		//trace("\033[32mno listener for "+*event->type());
+		trace(
+			"\033[32mNo listener for " + *event->type()
+			+ " on target "+ toString() + "."
+		);
 	}
 	unlock();
 	return event;
@@ -294,8 +300,7 @@ String EventDispatcher::className()
 
 String EventDispatcher::toString()
 {
-	String str = "[" + className();
-	str += "]";
+	String str = "[" + className() + "]";
 	return str;
 }
 

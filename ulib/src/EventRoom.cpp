@@ -35,7 +35,10 @@ String u::EventRoom::className()
 
 String u::EventRoom::toString()
 {
-	String out="["+className()+"<"+ptr2string(this)+"> Listeners:";
+	String out = "[" + className()
+		//+ "<"+ptr2string(this)+">"
+		+ " Listeners:"
+	;
 	int64 i,l;
 	for(i=0, l=_eventList.length(); i < l; i++)
 	{
@@ -44,7 +47,7 @@ String u::EventRoom::toString()
 		for(vi=0, vl=_eventList.at(i).list.length(); vi < vl; vi++)
 		{
 			out+=_eventList.at(i).list.at(vi).target->className();
-			out+="<"+ptr2string(_eventList.at(i).list.at(vi).target)+">";
+			//out+="<"+ptr2string(_eventList.at(i).list.at(vi).target)+">";
 			if(vi+1 != vl) out+=" and ";
 		}
 		out+=")";

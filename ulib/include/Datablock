@@ -168,15 +168,21 @@ namespace u
 			/**
 			 * Get the list of keys.
 			 * @return The key list.
-			 * /
+			 */
 			Vector<String> getKeys();
-			*/
 
 			/**
 			 * Search, if an key exists.
 			 * @param key Search key.
 			 */
 			virtual bool hasKey(String key);
+
+			/**
+			 * Delete a key, if the key exists.
+			 * <p>The object self will <b>not</b> be destroying.</p>
+			 * @param key Search key.
+			 */
+			void remove(String key);
 
 		protected:
 			/**

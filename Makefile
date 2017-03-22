@@ -28,7 +28,7 @@ CFLAGS=-DFPS=1000
 endif
 endif
 
-CFLAGS += -fPIC  -DFD_SETSIZE=1024000
+CFLAGS += -std=c++11 -fPIC  -DFD_SETSIZE=1024000
 
 # Produktion
 ifeq ($(DEV), true)
@@ -72,12 +72,11 @@ test: $(FILES)
 	if test -z "$(APP)"; then for i in $(FILES); do	lc ./$$i; done; else lc ./$(APP); fi
 
 clean:
-	#rm aso/* >&2 2>/dev/null || true
 	rm $(FILES) >&2 2>/dev/null || true
 	$(MAKE) -C $(ULIBDIR) clean
 	$(MAKE) -C warp10server clean
 
-$(ULIBDIR)/$(ULIB): $(wildcard $(ULIBDIR)/include/*) $(wildcard $(ULIBDIR)/src/*.cpp)
+$(ULIBDIR)/$(ULIB): $(wildcard $(ULIBDIR)/include/*) $(wildcard $(ULIBDIR)/include/**/*) $(wildcard $(ULIBDIR)/src/*.cpp)  $(wildcard $(ULIBDIR)/src/**/*.cpp)
 	$(MAKE) -C $(ULIBDIR) $(ULIB)
 
 ea:
@@ -90,7 +89,7 @@ ea:
 doc: /tmp/make_ulib_doc
 	echo "[$$(date)] Done."
 
-/tmp/make_ulib_doc: $(wildcard $(ULIBDIR)/include/*) $(wildcard warp10server/include/*) 
+/tmp/make_ulib_doc: $(wildcard $(ULIBDIR)/include/*) $(wildcard $(ULIBDIR)/include/**/*) $(wildcard warp10server/include/*) $(wildcard warp10server/include/**/*)
 	echo "[DOC] libu.sh"
 	cd tools/cppdoc2 && ./libu.sh
 	> $@

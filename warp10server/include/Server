@@ -1,0 +1,130 @@
+/*
+ * Warp10Server.h
+ *
+ *  Created on: 11.06.2011
+ *      Author: Endre Bock
+ */
+
+#ifndef WARP10SERVER_H_
+#define WARP10SERVER_H_
+
+#include <Object>
+#include <RoomOwner>
+#include <ServerEvent>
+#include <Socket>
+#include <Network/Manager>
+#include <WebService>
+
+#ifndef FPS
+#define FPS 90
+#endif
+
+using namespace u;
+using namespace Warp10::Network;
+
+namespace u 
+{
+	void programExit();
+	extern Object *__main__;
+}
+
+namespace Warp10
+{
+
+	/**
+	 * Event handler.
+	 * <p>This function handles the event from the operating system and calls
+	 * specified events.<br>
+	 * In follow the list of activies for the events:
+	 * <ul>
+	 * 	<li> SIGINT - send EventServer::SHUTDOWN </li>
+	 * </ul>
+	 * </p>
+	 */
+	void OSEventHandler(int signalNumber);
+
+	/**
+	 * Server main program.
+	 * <p>This class is the main program of the W10S. The protocol "Shutdown
+	 * Server" and the creating of the main event room, the control service
+	 * and the network service object is implemented here.
+	 * </p>
+	 * @see http://drive.ww/Architektur/EARoot/EA1/EA3/EA46.html Server structure
+	 */
+	class Server : public RoomOwner
+	{
+		protected:
+			/**
+			 * Network manager.
+			 */
+			u::Network::Manager _manager;
+
+			/**
+			 * Shutdown flag.
+			 */
+			bool _isShuttingDown;
+
+			WebService* _webService;
+
+		public:
+			/**
+			 * Constructor.
+			 * <p>This function create the server application instance. Also
+			 * it create the subobjects: control service and network service.<br/>
+			 * The constructor add also the event listening for the shutdown
+			 * protocol.</p>
+			 * @param arg List of argument from the command line.
+			 */
+			Server(Vector<String> arg);
+
+			/**
+			 * Destructor.
+			 * <p>Destroy the service objects and remove the listener for the shutdown
+			 * protocol.</p>
+			 */
+			~Server();
+
+			/**
+			 * The name of this class.
+			 * @return A String with the class name.
+			 */
+			String className();
+
+			/**
+			* Give basis information about this object.
+			*/
+			String toString();
+
+			/**
+			 * Destroy the server object.
+			 */
+			void destroy();
+
+			/**
+			 * Shutdown the server and interrupt the connections, if open.
+			 */
+			void shutdown();
+
+		protected:
+			/**
+			 * Event receiver for EventServer::SHUTDOWN.
+			 * <p>This function shutdown the thread system and stops so the server
+			 * excecution.</p>
+			 * @param arg The event object.
+			 */
+			void onShutdown(Object *arg);
+
+			/**
+			 * Exit the server
+			 */
+			void programExit();
+
+			/**
+			 * Manager has closed all listeners.
+			 */
+			void onManagerClosed(Object* arg);
+	};
+
+}
+
+#endif /* WARP10SERVER_H_ */

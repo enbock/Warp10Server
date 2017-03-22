@@ -1,28 +1,35 @@
 #ifndef WEBSERVICE_
 #define WEBSERVICE_
 
-#include <NetworkService>
-#include <NetworkServiceWebPlugin>
+#include <Network/Manager>
+#include <Network/WebBuilder>
 
-namespace u
+using namespace u;
+using namespace u::Network;
+using namespace Warp10::Network;
+
+namespace Warp10
 {
 	/**
 	 * Module: HTTP service.
 	 * <p>A very simple http service to download files only.</p>
 	 */
-	class WebService : public NetworkService
+	class WebService : public Object
 	{
 		protected:
-			/**
-			 * Control plugin.
-			 */
-			NetworkServiceWebPlugin _plugin;
+			u::Network::Manager* _manager;
+			WebBuilder _builder;
+			String _address;
+			int64 _port;
 			
 		public:
+			static String type;
+
 			/**
 			 * Constructor of service.
+			 * @param manager Network manager.
 			 */
-			WebService();
+			WebService(Manager*, String address, int64 port);
 
 			/**
 			 * Destructor of service.
@@ -40,57 +47,36 @@ namespace u
 			String className();
 
 			/**
-			 * Information about this object.
+			 * Register the network on the manager.
 			 */
-			String toString();
-
-			/**
-			* Enable the room listeners.
-			* <p>Each time, if a new room was set, will this function be called.</p>
-			*/
-			void addListeners();
-
-			/**
-			* Disable the room listeners.
-			* <p>Each time, if a new room will set or remove, will this function be
-			* called.</p>
-			*/
-			void removeListeners();
+			virtual void registerNetwork();
 
 		protected:
-
 			/**
-			 * Getting of ctrl listener failed.
-			 * @param arg The event object.
+			 * Network manager has registered builder.
+			 * @param arg NETWORK_REGISTERED event object.
 			 */
-			void onListenerFailed(Object *arg);
-
+			virtual void onNetworkRegistered(Object* arg);
 			/**
-			 * Plugin was registered.
-			 * @param arg The event object.
+			 * Network manager the listener created.
+			 * @param arg LISTENER_CREATED event object.
 			 */
-			void onPluginRegistered(Object *arg);
-
+			virtual void onListenerCreated(Object* arg);
 			/**
-			 * New data on control connection.
-			 *
-			 * @param arg The event object.
+			 * Listener will close.
+			 * @param arg WILL_CLOSE event object.
 			 */
-			void onNewData(Object *arg);
-			
+			virtual void onListenerClose(Object* arg);
 			/**
-			 * Check if a incoming listener event really for me.
-			 * @param event The LISTENER event object.
+			 * Listener created a new connection.
+			 * @param arg CONNECTION_CREATED event object.
 			 */
-			bool isMyListener(NetEvent* event);
-
+			virtual void onNewConnection(Object* arg);
 			/**
-			 * A new connection is comming in.
-			 * <p>The connection wait for a signal from this function before
-			 * it sends the received data.</p>
-			 * @param arg The event object
+			 * Incomming request.
+			 * @param arg REQUEST event object.
 			 */
-			virtual void onNewConnection(Object *arg);
+			virtual void onRequest(Object* arg);
 	};
 }
 

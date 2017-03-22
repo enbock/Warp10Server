@@ -1,0 +1,65 @@
+#ifndef W10_NETWORK_WEBBUILDER_
+#define W10_NETWORK_WEBBUILDER_
+
+#include <Network/IBuilder>
+
+using namespace u;
+using namespace u::Network;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		class WebBuilder : public IBuilder
+		{
+			protected:
+				String _address;
+				int64 _port;
+
+			public:
+				/**
+				 * Network type.
+				 */
+				String networkType;
+
+				/**
+				 * Default constructor.
+				 */
+				WebBuilder();
+
+				/**
+				 * Destructor.
+				 */
+				~WebBuilder();
+
+				/**
+				 * Destroy this object.
+				 */
+				virtual void destroy();
+
+				/**
+				 * The class name.
+				 * @return String with the class name.
+				 */
+				virtual String className();
+
+				/**
+				 * Create a web listener.
+				 */
+				virtual IListener* createListener();
+
+				/**
+				* Create a web network connection.
+				* @param socket Network socket.
+				*/
+				virtual IConnection* createConnection(Socket*);
+
+				/**
+				 * Setup listener connection.
+				 */
+				virtual void setupListener(String address, int64 port);
+		};
+	}
+}
+
+#endif // ! W10_NETWORK_WEBBUILDER_

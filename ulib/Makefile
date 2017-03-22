@@ -19,7 +19,7 @@ CFLAGS=-DFPS=1000
 endif
 endif
 
-CFLAGS += -fPIC  -DFD_SETSIZE=1024000
+CFLAGS += -std=c++11 -fPIC  -DFD_SETSIZE=1024000
 
 ifeq ($(DEV), true)
 	#Dev
@@ -41,17 +41,18 @@ O=.o
 A=.a
 SO=.so
 
-SRCFILES=$(wildcard $(SRCDIR)/*$(CPP))
+SRCFILES=$(wildcard $(SRCDIR)/*$(CPP)) $(wildcard $(SRCDIR)/**/*$(CPP))
 FILES=$(patsubst $(SRCDIR)/%$(CPP),%,$(SRCFILES))
 OBJFILES=$(patsubst %,$(OBJDIR)/%$(O),$(FILES))
 HDRFILES=$(patsubst %,$(INCDIR)/%$(H),$(FILES))
 
 $(OBJDIR)/%$(O): $(SRCDIR)/%$(CPP) $(INCDIR)/%
 	echo "[C] $*"
+	mkdir -p `dirname $@`
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-all: libu$(SO) libu$(A)
-	echo "[`date`] Done."
+all: libu$(SO) libu$(A) $(OBJFILES)
+	echo "[`date`] Done. > $(OBJFILES)"
 
 install: libu$(SO)
 	sudo cp libu$(SO) /lib/
@@ -69,7 +70,7 @@ libu$(A): $(OBJFILES)
 	ar rs $@ $(OBJFILES) 	
 
 clean:
-	rm aso/* >&2 2>/dev/null || true
+	rm -r $(OBJDIR) >&2 2>/dev/null || true
 	rm libu$(A) >&2 2>/dev/null || true
 	rm libu$(SO) >&2 2>/dev/null || true
 	rm libu$(SO).$(VERSION) >&2 2>/dev/null || true

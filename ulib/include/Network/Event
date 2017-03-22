@@ -1,0 +1,137 @@
+#ifndef NETWORK_EVENT_
+#define NETWORK_EVENT_
+
+#include <Event>
+#include <Network/IBuilder>
+#include <Network/IListener>
+#include <Network/IConnection>
+
+namespace u
+{
+	namespace Network
+	{
+		class Event : public u::Event
+		{
+			public:
+				/**
+				 * Register a builder.
+				 * <p><code>networkType</code> and <code>builder</code> need to be set.<br>
+				 * The network manager takeover the ownership of the builder.</p>
+				 */
+				static const String REGISTER_NETWORK;
+				
+				/**
+				 * Request a listener for registered network.
+				 */
+				static const String REQUEST_LISTENER;
+				
+				/**
+				 * A network is now registered.
+				 */
+				static const String NETWORK_REGISTERED;
+
+				/**
+				 * A listener is created and start listening.
+				 */
+				static const String LISTENER_CREATED;
+
+				/**
+				 * Request closing on the dispatched element.
+				 */
+				static const String CLOSE;
+
+				/**
+				 * A listener, connection or manager was closed.
+				 */
+				static const String CLOSED;
+
+				/**
+				 * A connect was created.
+				 */
+				static const String CONNECTION_CREATED;
+
+				IBuilder* builder;
+				IListener* listener;
+				String networkType;
+				IConnection* connection;
+
+				/**
+				 * Event constructor with builder reference.
+				 * <p>Events:<ul>
+				 * <li> REGISTER_NETWORK
+				 * </ul></p>
+				 */
+				Event(String const& type, String networkType, IBuilder* builder);
+
+				/**
+				 * Event constructor with listener reference.
+				 * <p>Events:<ul>
+				 * <li> LISTENER_CREATED
+				 * </ul></p>
+				 */
+				Event(String const& type, String networkType, IListener* listener);
+
+				/**
+				 * Event constructor with connection reference.
+				 * <p>Events:<ul>
+				 * <li> CONNECTION_CREATED
+				 * </ul></p>
+				 */
+				Event(String const& type, String networkType, IConnection* connection);
+
+				/**
+				 * Event constructor.
+				 * <p>Events:<ul>
+				 * <li> NETWORK_REGISTERED
+				 * <li> REQUEST_LISTENER
+				 * </ul>
+				 * </p>
+				 */
+				Event(String const& type, String networkType);
+
+				/**
+				 * Default event constructor.
+				 * <p>Events:<ul>
+				 * <li> CLOSED
+				 * <li> CLOSE
+				 * </ul>
+				 * Info: The CLOSED event have always to be dispatched on the 
+				 *       element, which was closed. The target value can be
+				 *       used.
+				 * </p>
+				 */
+				Event(String const& type);
+
+				/**
+				 * Copy constructor.
+				 */
+				Event(Event& source);
+
+				/**
+				 * Destructor.
+				 */
+				~Event();
+
+				/**
+				* Destroy this object.
+				*/
+				virtual void destroy();
+
+				/**
+				* The class name.
+				* @return String with the class name.
+				*/
+				virtual String className();
+	
+				/**
+				 * Clone the event.
+				 * @return A with new created copy of this event.
+				 */
+				virtual u::Event* clone();
+
+			protected:
+		};
+	}
+}
+
+#endif // ! NETWORK_EVENT_

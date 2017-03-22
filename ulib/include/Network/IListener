@@ -1,0 +1,32 @@
+#ifndef NETWORK_ILISTENER_
+#define NETWORK_ILISTENER_
+
+#include <EventRoom>
+
+namespace u 
+{
+	namespace Network
+	{
+		/**
+		 * The Network Listener Interface.
+		 * <p>Network listener listen for incoming network connections on a
+		 * configured socket.<br>
+		 * Classical is a Listener owned by a Network::Manager.</p>
+		 */
+		class IListener : public EventRoom
+		{
+			public:
+				/**
+				 * Cleanup destructor.
+				 */
+				~IListener() {};
+
+				/**
+				 * Start listening for new connections.
+				 */
+				virtual void listen() = 0;
+		};
+	}
+}
+
+#endif // ! NETWORK_ILISTENER_

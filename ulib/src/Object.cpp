@@ -12,10 +12,10 @@ using namespace u;
 Object::Object() : Mutex()
 {
 	if(!__Object_mx_validObjects) __Object_mx_validObjects = new Mutex();
-	if(!__Object_validObjects) __Object_validObjects = new std::vector<void*>();
+	if(!__Object_validObjects) __Object_validObjects = new std::vector<void const*>();
 
 	__Object_mx_validObjects->lock();
-	__Object_validObjects->push_back((void*)this);
+	__Object_validObjects->push_back((void const*)this);
 	__Object_mx_validObjects->unlock();
 }
 
@@ -28,7 +28,7 @@ Object::~Object()
 	l = __Object_validObjects->size();
 	for(i=0; i<l; i++)
 	{
-		if(__Object_validObjects->at(i) == (void*)this)
+		if(__Object_validObjects->at(i) == (void const*)this)
 		{
 			__Object_validObjects->erase(__Object_validObjects->begin()+i);
 			break;
@@ -48,9 +48,9 @@ Object::~Object()
 Object::Object(Object &value) : Mutex()
 {
 	if(!__Object_mx_validObjects) __Object_mx_validObjects = new Mutex();
-	if(!__Object_validObjects) __Object_validObjects = new std::vector<void*>();
+	if(!__Object_validObjects) __Object_validObjects = new std::vector<void const*>();
 	__Object_mx_validObjects->lock();
-	__Object_validObjects->push_back((void*)this);
+	__Object_validObjects->push_back((void const*)this);
 	__Object_mx_validObjects->unlock();
 }
 
@@ -63,10 +63,10 @@ String Object::int2string(int value)
 
 String Object::ptr2string(Object* value)
 {
-	return ptr2string((void*)value);
+	return ptr2string((void const*)value);
 }
 
-String Object::ptr2string(void* value)
+String Object::ptr2string(void const* value)
 {
 	std::ostringstream v;
 	v << value;
@@ -194,7 +194,32 @@ String String::trim(const std::string & t)
 void String::replace(String search, String replace)
 {
 	std::string * s = this;
-	s->replace(s->find(search),search.length(),(const std::string&)replace);
+	while(s->find(search) != std::string::npos) {
+		s->replace(
+			s->find(search)
+			, search.length()
+			, (const std::string&)replace
+		);
+	}
+}
+
+/**
+* Explode string to list.
+*/
+Vector<String>* String::explode(String delimiter)
+{
+	std::string * s = this;
+	size_t position = 0;
+	Vector<String>* result = new Vector<String>;
+	while (position < length()) {
+		size_t found = s->find(delimiter, position);
+		if(found == std::string::npos) {
+			found = s->size();
+		}
+		result->push(String(s->substr(position, found - position)));
+		position = found + delimiter.length();
+	}
+	return result;
 }
 
 String Object::toString()
@@ -222,7 +247,7 @@ String String::className()
 	return "u::String";
 }
 
-bool u::Object::valid(void* ptr)
+bool u::Object::valid(void const* ptr)
 {
 	__Object_mx_validObjects->lock();
 	bool ret = false;

@@ -1,0 +1,107 @@
+#ifndef NETWORK_MANAGER_
+#define NETWORK_MANAGER_
+
+#include <EventRoom>
+#include <Network/Event>
+#include <Network/IBuilder>
+#include <Datablock>
+
+namespace u 
+{
+	namespace Network
+	{
+		/**
+		* The network manager.
+		* <p>Responsible to:
+		* <ul>
+		* <li> Provide register for INetworkBuilder
+		* <li> Create/destroy listeners
+		* </ul>
+		* Listening events on the mannager:
+		* <ul>
+		* <li> <code>u::Network::Event::REGISTER_NETWORK</code>
+		* <li> <code>u::Network::Event::REQUEST_LISTENER</code>
+		* <li> <code>u::Network::Event::CLOSE</code>
+		* </ul>
+		* Sending events on the manager:
+		* <ul>
+		* <li> <code>u::Network::Event::NETWORK_REGISTERED</code>
+		* <li> <code>u::Network::Event::LISTENER_CREATED</code>
+		* <li> <code>u::Network::Event::CLOSED</code> - All listeners closed.
+		* </ul>
+        * Closing methodology: The closing procedure must be triggered before
+		*                      the manager will be deleted. The owning domain
+		*                      is responsible to handle it.
+		* </p>
+		*/
+		class Manager : public EventRoom
+		{
+			protected:
+				/**
+				* Builder list.
+				*/
+				Datablock _builder;
+
+				/**
+				* Listener list.
+				*/
+				Vector<IListener*> _listener; 
+				bool _isClosing;
+
+			public:
+				/**
+				 * Default constructor.
+				 */
+				Manager();
+
+				/**
+				 * Destructor.
+				 */
+				~Manager();
+
+				/**
+				 * Destroyer.
+				 */
+				void destroy();
+
+				/**
+				 * Get the class name.
+				 */
+				String className();
+
+			protected:
+				/**
+				 * Register a new network.
+				 * @param arg REGISTER_NETWORK event object.
+				 */
+				virtual void onRegisterNetwork(Object *arg);
+
+				/**
+				 * Requesting a listener.
+				 * @param arg REQUEST_LISTENER event object.
+				 */
+				virtual void onRequestListener(Object *arg);
+
+				/**
+				 * Listener was closed.
+				 * @param arg CLOSED event object.
+				 */
+				virtual void onListenerClosed(Object *arg);
+
+				/**
+				 * Request to close all listeners.
+				 * @param arg CLOSE event.
+				 */
+				virtual void onCloseRequest(Object *arg);
+
+				/**
+				 * Checking if all listeners removed.
+				 * <p>If all listener gone, then will this function send a
+				 * CLOSED event.</p>
+				 */
+				virtual void checkForCloseState();
+		};
+	}
+}
+
+#endif // ! NETWORK_MANAGER_

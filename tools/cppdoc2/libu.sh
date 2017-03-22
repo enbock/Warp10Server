@@ -1,6 +1,6 @@
 #!/bin/bash
 
-yes | ./cppdoc \
+./cppdoc \
 	-title="ulibs" \
 	-company="Endre Bock" \
 	-include-const  \

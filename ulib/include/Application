@@ -62,7 +62,7 @@ namespace u
 	*/
 	void mainLoop()
 	{
-		static int64 time = 1000000 / FPS;
+		int64 time = 1000000 / FPS;
 		while(__PROGRAMM_END__ == false)
 		{
 			ThreadSystem::tick();
