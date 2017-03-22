@@ -1,5 +1,7 @@
 #include <Network/WebConnection>
 #include <Network/Event>
+#include <Network/WebRequest>
+#include <Network/WebEvent>
 
 using namespace u;
 using namespace u::Network;
@@ -85,7 +87,7 @@ void WebConnection::read(Object* arg)
 	_isReading = false;
 	unlock();
 
-	error(className() + "::read: TODO event " + buffer->toString());
+	decodeBuffer(buffer);
 
 	buffer->destroy();
 }
@@ -133,4 +135,72 @@ void WebConnection::onClose(Object *arg)
 
 	u::Network::Event closed(u::Network::Event::CLOSED);
 	dispatchEvent(&closed);
+}
+
+/**
+* Decode buffer and transform to request.
+*/
+void WebConnection::decodeBuffer(ByteArray* buffer)
+{
+	Vector<String> header;
+	buffer->position(0);
+	int64 startPosition = 0, position = 0;
+	bool continueRead = true;
+	// read header
+	while (continueRead) {
+		position++;
+		buffer->position(position);
+		char byte = buffer->readByte();
+		if (byte == 0x0D || position + 1 == buffer->length()) {
+			int64 length = position - startPosition ;
+			if (length == 0) {
+				// end of header
+				continueRead = false;
+				continue;
+			}
+			char* line = (char*)malloc(length + 1);
+			if (!line) {
+				error(
+					className() + "::decodeBuffer: Out of memory."
+				);
+				return;
+			}
+			buffer->position(startPosition);
+			buffer->readBytes(line, length, 0);
+			line[length] = 0x00; // end byte
+			String headerLine = String(line);
+			headerLine.replace("\r", "_");
+			header.push(headerLine);
+			free(line);
+			startPosition = position + 2;
+			continueRead = startPosition < buffer->length();
+		}
+	}
+
+#ifndef NDEBUG
+	trace("");
+	for(int64 i = 0, l = header.length(); i < l; i++) trace(header[i]);
+	trace("");
+#endif
+
+	Vector<String>* commandParts = ((String)header[0]).explode(" ");
+
+	if (commandParts->length() < 2) {
+		error(className() + "::decodeBuffer: Invalid request.");
+		
+		u::Network::Event close(u::Network::Event::CLOSE);
+		dispatchEvent(&close);
+		delete commandParts;
+		return;
+	}
+	
+	WebRequest request;
+	request.method = commandParts->at(0);
+	request.resource = commandParts->at(1);
+	if(commandParts->length() > 2)
+		request.protocol = commandParts->at(2);
+	delete commandParts;
+
+	WebEvent requestEvent(WebEvent::REQUEST, this, request);
+	dispatchEvent(&requestEvent);
 }

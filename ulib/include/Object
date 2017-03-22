@@ -177,6 +177,8 @@ namespace u
 
 		protected:
 	};
+	
+	template<class T> class Vector ;
 
 	/**
 	* Stringclass.
@@ -322,6 +324,12 @@ namespace u
 			* @param replace Replace with that string.
 			*/
 			void replace(String search, String replace);
+
+			/**
+			 * Explode string to list.
+			 * @param delimiter 
+			 */
+			Vector<String>* explode(String delimiter);
 
 			/**
 			* Default destroyer.

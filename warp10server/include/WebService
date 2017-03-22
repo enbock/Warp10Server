@@ -72,6 +72,11 @@ namespace Warp10
 			 * @param arg CONNECTION_CREATED event object.
 			 */
 			virtual void onNewConnection(Object* arg);
+			/**
+			 * Incomming request.
+			 * @param arg REQUEST event object.
+			 */
+			virtual void onRequest(Object* arg);
 	};
 }
 

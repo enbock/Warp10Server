@@ -3,6 +3,7 @@
 
 #include <Event>
 #include <Network/WebConnection>
+#include <Network/WebRequest>
 
 using namespace u;
 
@@ -14,6 +15,7 @@ namespace Warp10
 		{
 			public:
 				WebConnection* connection;
+				WebRequest request;
 
 				/**
 				 * Message about a new connection.
@@ -29,6 +31,10 @@ namespace Warp10
 				 * Message from controller to allowed to be closed.
 				 */
 				static const String CAN_CLOSE;
+				/**
+				 * Informs about a incoming request.
+				 */
+				static const String REQUEST;
 
 				/**
 				 * Event constructor.
@@ -38,6 +44,15 @@ namespace Warp10
 				 * </p>
 				 */
 				WebEvent(String const& type, WebConnection* connection);
+
+				/**
+				 * Event constructor.
+				 * <p>Events:<ul>
+				 * <li> REQUEST
+				 * </ul>
+				 * </p>
+				 */
+				WebEvent(String const& type, WebConnection* connection, WebRequest request);
 				
 				/**
 				 * Default constructor.

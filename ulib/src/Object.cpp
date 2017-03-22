@@ -194,7 +194,32 @@ String String::trim(const std::string & t)
 void String::replace(String search, String replace)
 {
 	std::string * s = this;
-	s->replace(s->find(search),search.length(),(const std::string&)replace);
+	while(s->find(search) != std::string::npos) {
+		s->replace(
+			s->find(search)
+			, search.length()
+			, (const std::string&)replace
+		);
+	}
+}
+
+/**
+* Explode string to list.
+*/
+Vector<String>* String::explode(String delimiter)
+{
+	std::string * s = this;
+	size_t position = 0;
+	Vector<String>* result = new Vector<String>;
+	while (position < length()) {
+		size_t found = s->find(delimiter, position);
+		if(found == std::string::npos) {
+			found = s->size();
+		}
+		result->push(String(s->substr(position, found - position)));
+		position = found + delimiter.length();
+	}
+	return result;
 }
 
 String Object::toString()

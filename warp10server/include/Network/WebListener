@@ -5,6 +5,7 @@
 #include <Network/IListener>
 #include <Network/WebBuilder>
 #include <Socket>
+#include <ByteArray>
 
 using namespace u;
 using namespace u::Network;

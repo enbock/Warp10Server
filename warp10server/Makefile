@@ -31,7 +31,7 @@ else
 CFLAGS=-DFPS=1000
 endif
 endif
-CFLAGS += -fPIC  -DFD_SETSIZE=1024000
+CFLAGS += -std=c++11 -fPIC  -DFD_SETSIZE=1024000
 
 ifeq ($(DEV), true)
 	# Dev

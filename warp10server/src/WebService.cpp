@@ -123,26 +123,35 @@ void WebService::onNewConnection(Object* arg)
 {
 	Network::WebEvent* event  = ((Network::WebEvent*)arg);
 	WebConnection* connection = ((WebConnection*)event->connection);
+	connection->addEventListener(
+		WebEvent::REQUEST,
+		Callback(this, cb_cast(&WebService::onRequest))
+	);
 	connection->read();
 	event->destroy();
 }
 
-/*
-void WebService::onNewData(Object* arg)
+
+void WebService::onRequest(Object* arg)
 {
-	NetTransferEvent* event = ((NetTransferEvent *) arg);
-	EventDispatcher* sourceDispatcher = event->target();
-	
-	trace(this->className()+": Incoming data " + event->data()->toString());
+	Network::WebEvent* event  = ((Network::WebEvent*)arg);
+	WebConnection* connection = ((WebConnection*)event->connection);
 
-	String dummy("TODO answer\n");
+	connection->removeEventListener(
+		WebEvent::REQUEST,
+		Callback(this, cb_cast(&WebService::onRequest))
+	);
 	
-	ByteArray responseData;
-	responseData.writeBytes(dummy.c_str(), dummy.length());
-
-	NetTransferEvent responseEvent(NetTransferEvent::EOT, 0, &responseData);
-	sourceDispatcher->dispatchEvent(&responseEvent);
+	trace(
+		this->className() + "::onRequest: Incoming request: " 
+		+ "Method: '" + event->request.method
+		+ "'\tResource: '" + event->request.resource + "'"
+	);
 
 	event->destroy();
+
+	// DUMMY
+	u::Network::Event close(u::Network::Event::CLOSE);
+	connection->dispatchEvent(&close);
 }
-*/
+

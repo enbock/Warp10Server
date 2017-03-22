@@ -12,18 +12,26 @@ const String WebEvent::WILL_CLOSE(
 const String WebEvent::CAN_CLOSE(
 	"Warp10::Network::WebEvent::canClose"
 );
+const String WebEvent::REQUEST(
+	"Warp10::Network::WebEvent::request"
+);
 
 /**
 * Event constructor.
-* <p>Events:<ul>
-* <li> NEW_CONNECTION
-* </ul>
-* </p>
 */
 WebEvent::WebEvent(String const& type, WebConnection* connection)
 	: u::Event(type)
 {
 	WebEvent::connection = connection;
+}
+
+/**
+* Event constructor.
+*/
+WebEvent::WebEvent(String const& type, WebConnection* connection, WebRequest request)
+	: WebEvent(type, connection)
+{
+	WebEvent::request = request;
 }
 
 /**
@@ -42,6 +50,7 @@ WebEvent::WebEvent(WebEvent& source)
 	: u::Event(*source.type())
 {
 	WebEvent::connection = source.connection;
+	WebEvent::request = source.request;
 }
 
 /**

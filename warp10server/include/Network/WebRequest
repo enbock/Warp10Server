@@ -1,0 +1,26 @@
+#ifndef W10_NETWORK_WEBREQUEST_
+#define W10_NETWORK_WEBREQUEST_
+
+#include <Object>
+
+using namespace u;
+using namespace u::Network;
+
+namespace Warp10
+{
+	namespace Network
+	{
+		/**
+		 * Data of http request.
+		 */
+		class WebRequest : public Object
+		{
+			public:
+				String method;
+				String resource;
+				String protocol;
+		};
+	}
+}
+
+#endif // ! W10_NETWORK_WEBREQUEST_

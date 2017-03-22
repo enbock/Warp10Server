@@ -61,6 +61,13 @@ namespace Warp10
 				 * @param arg CLOSE event object.
 				 */
 				virtual void onClose(Object *arg);
+
+				/**
+				 * Decode buffer and transform to request.
+				 * @param buffer Received data blob.
+				 * @event HTTP_REQUEST
+				 */
+				virtual void decodeBuffer(ByteArray* buffer);
 		};
 	}
 }
