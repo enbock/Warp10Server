@@ -27,3 +27,4 @@ deployment:
       - docker tag enbock/warp10server enbock/warp10server:$(cat docker/run/TAG)
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push enbock/warp10server:$(cat docker/run/TAG)
+      - docker push enbock/warp10server

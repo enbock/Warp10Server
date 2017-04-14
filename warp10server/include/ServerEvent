@@ -18,7 +18,7 @@ namespace u
 			/**
 			 * Pointer to transport/share via the event.
 			 */
-			Object *data;
+			Object* data;
 
 			/**
 			* Event name for shutdown the server.

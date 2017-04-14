@@ -6,7 +6,7 @@
 #include <Network/IConnection>
 #include <Socket>
 
-namespace u 
+namespace u
 {
 	namespace Network
 	{
@@ -22,7 +22,8 @@ namespace u
 				/**
 				 * Cleanup destructor.
 				 */
-				~IBuilder() {};
+				~IBuilder()
+				{};
 
 				/**
 				 * Create a listener for the network type.

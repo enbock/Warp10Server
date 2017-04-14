@@ -3,7 +3,7 @@
 
 #include <EventRoom>
 
-namespace u 
+namespace u
 {
 	namespace Network
 	{
@@ -19,7 +19,8 @@ namespace u
 				/**
 				 * Cleanup destructor.
 				 */
-				~IListener() {};
+				~IListener()
+				{};
 
 				/**
 				 * Start listening for new connections.

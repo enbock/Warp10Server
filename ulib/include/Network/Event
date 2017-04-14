@@ -19,12 +19,12 @@ namespace u
 				 * The network manager takeover the ownership of the builder.</p>
 				 */
 				static const String REGISTER_NETWORK;
-				
+
 				/**
 				 * Request a listener for registered network.
 				 */
 				static const String REQUEST_LISTENER;
-				
+
 				/**
 				 * A network is now registered.
 				 */
@@ -50,7 +50,7 @@ namespace u
 				 */
 				static const String CONNECTION_CREATED;
 
-				IBuilder* builder;
+				IBuilder * builder;
 				IListener* listener;
 				String networkType;
 				IConnection* connection;
@@ -61,7 +61,11 @@ namespace u
 				 * <li> REGISTER_NETWORK
 				 * </ul></p>
 				 */
-				Event(String const& type, String networkType, IBuilder* builder);
+				Event(
+						String const& type
+						, String networkType
+						, IBuilder* builder
+				);
 
 				/**
 				 * Event constructor with listener reference.
@@ -69,7 +73,11 @@ namespace u
 				 * <li> LISTENER_CREATED
 				 * </ul></p>
 				 */
-				Event(String const& type, String networkType, IListener* listener);
+				Event(
+						String const& type
+						, String networkType
+						, IListener* listener
+				);
 
 				/**
 				 * Event constructor with connection reference.
@@ -77,7 +85,11 @@ namespace u
 				 * <li> CONNECTION_CREATED
 				 * </ul></p>
 				 */
-				Event(String const& type, String networkType, IConnection* connection);
+				Event(
+						String const& type
+						, String networkType
+						, IConnection* connection
+				);
 
 				/**
 				 * Event constructor.
@@ -122,7 +134,7 @@ namespace u
 				* @return String with the class name.
 				*/
 				virtual String className();
-	
+
 				/**
 				 * Clone the event.
 				 * @return A with new created copy of this event.

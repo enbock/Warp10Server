@@ -15,7 +15,7 @@ namespace u
 	/**
 	* A event room.
 	* <p>
-	* The event room is a communication connection point. Object can observ
+	* The event room is a communication connection point. Object can observe
 	* event on the room or can dispatch events into the room. Inside a event
 	* room is it possible to use multiple types of event protocols. The event
 	* protocol is the definitions how to react on events. So can be implement
@@ -37,19 +37,23 @@ namespace u
 			* @see EventDispatcher::EventDispatcher()
 			*/
 			EventRoom();
+
 			/**
 			* Destroy the event room object.
 			*/
 			~EventRoom();
+
 			/**
 			* Destroy a dynamic event room object.
 			*/
 			void destroy();
+
 			/**
 			* Class name.
 			* @return The class name as String.
 			*/
 			String className();
+
 			/**
 			 * Dump object
 			 */

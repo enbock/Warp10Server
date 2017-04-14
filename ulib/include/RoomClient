@@ -34,7 +34,7 @@ namespace u
 			* was set, then is this pointer <code>null</code>.
 			* </p>
 			*/
-			EventRoom *_room;
+			EventRoom* _room;
 		public:
 			/**
 			* Constructor.
@@ -55,7 +55,7 @@ namespace u
 			* the others one.</p>
 			* @param value Other(or source) event room client object.
 			*/
-			RoomClient(RoomClient &value);
+			RoomClient(RoomClient& value);
 
 			/**
 			* Default destroyer.
@@ -64,10 +64,11 @@ namespace u
 			void destroy();
 
 			/**
-			* Classname of this object.
+			* Class name of this object.
 			* @return The FQCN in a string object.
 			*/
 			String className();
+
 			/**
 			* Copy operator.
 			* <p>Replaces the current room with the others one.</p>

@@ -18,10 +18,10 @@ namespace Warp10
 		{
 			protected:
 				WebBuilder* _builder;
-				Socket* _socket;
+				Socket    * _socket;
 				Vector<IConnection*> _connections;
-				bool _isClosed;
-				bool _closeSent;
+				bool                 _isClosed;
+				bool                 _closeSent;
 
 			public:
 				/**
@@ -50,7 +50,7 @@ namespace Warp10
 				 * Start listening for new connections.
 				 */
 				virtual void listen();
-			
+
 			protected:
 				/**
 				 * Check that all connection closed.
@@ -71,7 +71,7 @@ namespace Warp10
 				virtual void onCanClose(Object* arg);
 
 				/**
-				 * Listen for incomming connections.
+				 * Listen for incoming connections.
 				 * @param arg Empty pointer.
 				 */
 				virtual void listenSocket(Object* arg);
@@ -80,7 +80,7 @@ namespace Warp10
 				 * Connection was closed.
 				 * @param arg CLOSED event object.
 				 */
-				virtual void onConnectionClosed(Object *arg);
+				virtual void onConnectionClosed(Object* arg);
 		};
 	}
 }

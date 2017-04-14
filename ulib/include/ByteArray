@@ -2,8 +2,8 @@
 * utils/ByteArray.
 * $Id: $
 */
-#ifndef BYTEARRAY_
-#define BYTEARRAY_
+#ifndef BYTE_ARRAY_
+#define BYTE_ARRAY_
 
 #include <DataArray>
 
@@ -13,36 +13,33 @@ namespace u
 	* Value of a unsigned int value in ByteArray.
 	* <p><b>See also:</b><ul><li> <a href="ByteArray.html">ByteArray</a></ul></p>
 	*/
-	#define TYPE_UINT 0
+#define TYPE_UINT 0
 	/**
 	* Value of a negative int value in ByteArray.
 	* <p><b>See also:</b><ul><li> <a href="ByteArray.html">ByteArray</a></ul></p>
 	*/
-	#define TYPE_NEGATIVE_INT 2
+#define TYPE_NEGATIVE_INT 2
 	/**
 	* Value of a positive int value in ByteArray.
 	* <p><b>See also:</b><ul><li> <a href="ByteArray.html">ByteArray</a></ul></p>
 	*/
-	#define TYPE_POSITIVE_INT 1
+#define TYPE_POSITIVE_INT 1
 
 	/**
 	* Size of a memory block.
 	* <p>ByteArray increase and decrease the internal memory block in this size.
 	* </p>
 	*/
-	#define BYTEARRAY_CHUNK 1024
+#define BYTE_ARRAY_CHUNK 1024
 
 
 	/**
 	* Converter class between Object(Array???) and Binary data.
 	* <p>This class implement the data conversion between a array structure
-	* and binary structure.<br>
-	* For the binary structure description see
-	* <a href="http://server1.psy/wiki/index.php/Psyber/binarytransfer"
-	* >Psyber-Wiki:binarytransfer</a><br>
+	* and binary structure.<br>>
 	* <b>Info:</b> This class is not thread safe.</p>
 	*/
-	class ByteArray: public DataArray
+	class ByteArray : public DataArray
 	{
 		protected:
 			/**
@@ -128,21 +125,27 @@ namespace u
 			/**
 			* Write a int value into the buffer.
 			* @param value The value to write.
-			* @param min Minumum of used bytes in storage.
+			* @param min Minimum of used bytes in storage.
 			* @param noHeader If it true, then is the internal header not used.
 			* (Direct memory access)
 			*/
-			void writeInt(const int64 value, int64 min = 1, bool noHeader = false);
+			void
+			writeInt(const int64 value, int64 min = 1, bool noHeader = false);
 
 			/**
 			* Write a uint value into the buffer.
 			* @param value The value to write.
-			* @param min Minumum of used bytes in storage.
+			* @param min Minimum of used bytes in storage.
 			* @param noHeader If it true, then is the internal header not used.
 			* (Direct memory access)
 			* @param type [internal] Type if value.
 			*/
-			void writeUInt(const uint64 value, int64 min = 1, bool noHeader = false, int8 type = TYPE_UINT);
+			void writeUInt(
+					const uint64 value
+					, int64 min = 1
+					, bool noHeader = false
+					, int8 type = TYPE_UINT
+			);
 
 			/**
 			* Write one byte into the stream.
@@ -174,7 +177,7 @@ namespace u
 			uint64 readInt(int64 min = 0, int8* type = null);
 
 			/**
-			* Get the amount of availabe bytes.
+			* Get the amount of available bytes.
 			* @return Number of bytes left.
 			*/
 			uint64 bytesAvailable() const;
@@ -241,7 +244,7 @@ namespace u
 			* then will read only the rest bytes.</p>
 			* @param bytes Destination memory(in correct size!).
 			* @param length Number of bytes to read.
-			* @param offset Offset, at which postion will the read bytes written.
+			* @param offset Offset, at which position will the read bytes written.
 			* @return Number of read bytes.
 			*/
 			int64 readBytes(char* bytes, int64 length, int64 offset = 0);
@@ -250,13 +253,13 @@ namespace u
 			* Read bytes of the byte array and store it into a other byte array.
 			* @param bytes Destination byte array object.
 			* @param length Number of bytes to read.
-			* @return Numer of read bytes.
+			* @return Number of read bytes.
 			*/
 			int64 readBytes(ByteArray* bytes, int64 length = 0);
 
 			/**
 			* Compress the buffer.
-			* <p>The buffer is after the compressing not usable solong
+			* <p>The buffer is after the compressing not usable as long
 			* <code>uncompress()</code> was not called.<br>
 			* Compress use the zlib compression library.
 			* </p>
@@ -280,7 +283,7 @@ namespace u
 			*/
 			virtual void destroy()
 			{
-				delete (ByteArray*)this;
+				delete (ByteArray*) this;
 			}
 
 			/**
@@ -291,7 +294,7 @@ namespace u
 			int64 writeData(DataArray& bytes, int64 length = 0);
 
 			/**
-			* Set the postion of the pointer.
+			* Set the position of the pointer.
 			* <p>If the value to big, it will set automatically to the end.</p>
 			* @param value New position of the pointer.
 			*/
@@ -304,10 +307,10 @@ namespace u
 			virtual int64 position() const;
 
 			/**
-			* Get the amount of availabe units.
+			* Get the amount of available units.
 			* @return Number of units left.
 			*/
-			virtual int64 available() const;
+			virtual uint64 available() const;
 
 			/**
 			* Get the size of the buffer.
@@ -319,9 +322,9 @@ namespace u
 			/**
 			 * Remove a part from the data.
 			 * <p>This can help to implement a buffer principle.</p>
-			 * @param offset Startposition of the deletement.
+			 * @param offset Start position of the deletement.
 			 * @param length Amount of data to be delete,
-			 * @return true, if the removing successfull.
+			 * @return true, if the removing successful.
 			 */
 			virtual bool splice(int64 offset, int64 length);
 	};

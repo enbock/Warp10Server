@@ -14,7 +14,7 @@ Datablock::Datablock() : Object()
 
 }
 
-Datablock::Datablock(Datablock & value)
+Datablock::Datablock(Datablock& value)
 {
 	*this = value;
 }
@@ -24,8 +24,8 @@ Datablock& Datablock::operator=(Datablock& value)
 	deleteAttributes();
 
 	int64 i, l;
-	l = value._list.size();
-	for(i=0; i<l; i++)
+	l     = value._list.size();
+	for(i = 0; i < l; i++)
 	{
 		saveAttribute(value._list[i]);
 	}
@@ -44,7 +44,7 @@ Datablock::~Datablock()
 
 void Datablock::deleteAttributes()
 {
-	_attribute * entry;
+	_attribute* entry;
 	while(!_list.empty())
 	{
 		//trace("Remove a entry.");
@@ -59,12 +59,12 @@ String Datablock::className()
 	return "u::Datablock";
 }
 
-Datablock::_attribute & Datablock::operator[](String name)
+Datablock::_attribute& Datablock::operator[](String name)
 {
-	int64 i,l;
-	_attribute *entry;
-	l = _list.size();
-	for(i=0; i<l; i++)
+	int64 i, l;
+	_attribute* entry;
+	l     = _list.size();
+	for(i = 0; i < l; i++)
 	{
 		entry = _list[i];
 		if(entry->name == name) return *entry;
@@ -76,18 +76,18 @@ Datablock::_attribute & Datablock::operator[](String name)
 	return *entry;
 }
 
-void Datablock::saveAttribute(Datablock::_attribute *entry)
+void Datablock::saveAttribute(Datablock::_attribute* entry)
 {
 	entry->ref.push_back(this);
 	_list.push_back(entry);
 }
 
-void Datablock::deleteAttribute(Datablock::_attribute *entry)
+void Datablock::deleteAttribute(Datablock::_attribute* entry)
 {
-	int64 i,l;
+	int64 i, l;
 
-	l=_list.size();
-	for(i=0; i<l; i++)
+	l     = _list.size();
+	for(i = 0; i < l; i++)
 	{
 		if(_list[i] == entry)
 		{
@@ -96,8 +96,8 @@ void Datablock::deleteAttribute(Datablock::_attribute *entry)
 		}
 	}
 
-	l = entry->ref.size();
-	for(i=0; i<l; i++)
+	l     = entry->ref.size();
+	for(i = 0; i < l; i++)
 	{
 		if(entry->ref[i] == this)
 		{
@@ -117,25 +117,25 @@ String Datablock::toString()
 
 Datablock::_attribute::operator Object*()
 {
-	return (Object*)value;
+	return (Object*) value;
 }
 
 Datablock::_attribute::operator String*()
 {
-	return (String*)value;
+	return (String*) value;
 }
 
 Datablock::_attribute::operator Datablock*()
 {
-	return (Datablock*)value;
+	return (Datablock*) value;
 }
 
 Datablock::_attribute::operator int64()
 {
-	return *((int64*)value);
+	return *((int64*) value);
 }
 
-Object *Datablock::_attribute::operator =(Object *value)
+Object* Datablock::_attribute::operator=(Object* value)
 {
 	destroyValue();
 	isObject = true;
@@ -144,12 +144,14 @@ Object *Datablock::_attribute::operator =(Object *value)
 	return value;
 }
 
-int64 Datablock::_attribute::operator =(int64 value)
+int64 Datablock::_attribute::operator=(int64 value)
 {
 	destroyValue();
 	isObject = false;
 	this->value = new int64();
-	*((int64*)this->value) = value;
+	*((int64*)
+			this->value
+	) = value;
 
 	return value;
 }
@@ -167,24 +169,24 @@ void Datablock::_attribute::destroyValue()
 		if(isObject == true)
 		{
 			//trace("Destroy object.");
-			if(valid((Object *)value)) ((Object*)value)->destroy();
+			if(valid((Object*) value)) ((Object*) value)->destroy();
 		}
 		else
 		{
 			//trace("Destroy a int.");
-			delete (int64*)value;
+			delete (int64*) value;
 		}
 		value = null;
-		if(_noDelete == false) delete (_attribute*)this;
+		if(_noDelete == false) delete (_attribute*) this;
 	}
 }
 
 u::Datablock::_attribute::_attribute(String keyName)
 {
 	_noDelete = false;
-	value = null;
-	isObject = false;
-	name = keyName;
+	value     = null;
+	isObject  = false;
+	name      = keyName;
 }
 
 u::Datablock::_attribute::~_attribute()
@@ -213,7 +215,7 @@ bool u::Datablock::hasKey(String key)
 Vector<String> u::Datablock::getKeys()
 {
 	Vector<String> result;
-	int length = _list.length(), i;
+	int            length = _list.length(), i;
 	for(i = 0; i < length; i++)
 	{
 		result.push(_list[i]->name);
@@ -230,8 +232,9 @@ void u::Datablock::remove(String key)
 	int64 l = _list.length(), i;
 	for(i = 0; i < l; i++)
 	{
-		if(_list[i]->name == key) {
-			delete (_attribute*)_list[i];
+		if(_list[i]->name == key)
+		{
+			delete (_attribute*) _list[i];
 			return;
 		}
 	}

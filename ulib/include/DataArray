@@ -20,12 +20,12 @@ namespace u
 	* allowed this class to use other type of data (like DataBlock-units) in
 	* stream/buffer.</p>
 	*/
-	class DataArray: public Object
+	class DataArray : public Object
 	{
 		protected:
 		public:
 			/**
-			* Set the postion of the pointer.
+			* Set the position of the pointer.
 			* <p>If the value to big, it will set automatically to the end.</p>
 			* @param value New position of the pointer.
 			*/
@@ -38,10 +38,10 @@ namespace u
 			virtual int64 position() const = 0;
 
 			/**
-			* Get the amount of availabe units.
+			* Get the amount of available units.
 			* @return Number of units left.
 			*/
-			virtual int64 available() const = 0;
+			virtual uint64 available() const = 0;
 
 			/**
 			* Get the size of the buffer.
@@ -81,9 +81,9 @@ namespace u
 			/**
 			 * Remove a part from the data.
 			 * <p>This can help to implement a buffer principle.</p>
-			 * @param offset Startposition of the deletement.
+			 * @param offset Start position of the deletement.
 			 * @param length Amount of data to be delete,
-			 * @return true, if the removing successfull.
+			 * @return true, if the removing successful.
 			 */
 			virtual bool splice(int64 offset, int64 length) = 0;
 	};

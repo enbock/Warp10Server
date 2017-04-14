@@ -27,7 +27,7 @@ WebBuilder::~WebBuilder()
 */
 void WebBuilder::destroy()
 {
-	delete (WebBuilder*)this;
+	delete (WebBuilder*) this;
 }
 
 /**
@@ -44,12 +44,12 @@ String WebBuilder::className()
 IListener* WebBuilder::createListener()
 {
 	trace(
-		className() + "::createListener: Create socket on " + _address
-		+ " " + int2string(_port)
+			className() + "::createListener: Create socket on " + _address
+			+ " " + int2string(_port)
 	);
 	lock();
 	WebListener* listener = new WebListener(
-		this, new Socket(AF_INET, _address, _port)
+			this, new Socket(AF_INET, _address, _port)
 	);
 	unlock();
 	return listener;

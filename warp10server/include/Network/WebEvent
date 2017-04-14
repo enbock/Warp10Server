@@ -52,8 +52,12 @@ namespace Warp10
 				 * </ul>
 				 * </p>
 				 */
-				WebEvent(String const& type, WebConnection* connection, WebRequest request);
-				
+				WebEvent(
+						String const& type
+						, WebConnection* connection
+						, WebRequest request
+				);
+
 				/**
 				 * Default constructor.
 				 * <p>Events:<ul>
@@ -82,13 +86,13 @@ namespace Warp10
 				* @return String with the class name.
 				*/
 				virtual String className();
-	
+
 				/**
 				 * Clone the event.
 				 * @return A with new created copy of this event.
 				 */
 				virtual u::Event* clone();
-				
+
 
 			protected:
 		};

@@ -23,7 +23,7 @@
 #endif
 
 #undef __FD_SETSIZE
-#define	__FD_SETSIZE		102400
+#define    __FD_SETSIZE        102400
 
 #include <ByteArray>
 #include <sys/socket.h>
@@ -40,12 +40,12 @@ namespace u
 	* possible.<br>
 	* With this socket class you can serv connection or connect to a server. So
 	* use this for client and server implementations.<br>
-	* The datatransport goes via byte arrays.<br>
+	* The data transport goes via byte arrays.<br>
 	* <br>
 	* In follow examples for client and server basics:<br>
-	* <b>Example 1</b>; Download of a webpage:
+	* <b>Example 1</b>; Download of a web page:
 	* <pre>Socket *_s;
-	trace("Create a socket to a webserver");
+	trace("Create a socket to a web server");
 	_s = new Socket(AF_INET, "itbock.de", 80);
 
 	trace("Create send message");
@@ -131,7 +131,7 @@ namespace u
 		protected:
 			/**
 			* Descriptor of the socket.
-			* <p>If this value -1, then the socket wasn't created sucessfully.</p>
+			* <p>If this value -1, then the socket wasn't created successfully.</p>
 			*/
 			int32 _descriptor;
 
@@ -153,7 +153,7 @@ namespace u
 			/**
 			* Connection data.
 			*/
-			void *_addr;
+			void* _addr;
 
 			/**
 			* Size of address description.
@@ -177,9 +177,9 @@ namespace u
 
 			/**
 			* A flag, for close cleanup.
-			* <p>Each time, if a new socket onject created, create it a socket
+			* <p>Each time, if a new socket object created, create it a socket
 			* file descriptor. If the socket never used, like listen or
-			* connect, then helps this flag the destructore to detect this.</p>
+			* connect, then helps this flag the destructor to detect this.</p>
 			*/
 			bool _neverUsed;
 
@@ -202,7 +202,7 @@ namespace u
 			* Receiving buffer size.
 			* <p>When the socket is reading data it need to buffer the data before
 			* it can be saved in a byte array. This value define, how big the
-			* buffe will be on each read progress.<br>
+			* buffer will be on each read progress.<br>
 			* The default value is defined by <code>SOCKET_RECV_BUFFER</code>.</p>
 			*/
 			int64 receiveBufferSize;
@@ -210,11 +210,11 @@ namespace u
 
 			/**
 			* Default constructor.
-			* <p>The constructore create a internal socket descriptor as facate to
+			* <p>The constructor create a internal socket descriptor as facade to
 			* the Unix socket library.<br>
-			* The agruments using values direct from the library. The domain specfied
+			* The arguments using values direct from the library. The domain specified
 			* the kind of socket(local, internet, etc). The type set the semantic
-			* of the communication. The last parameter defnes the procotol which will
+			* of the communication. The last parameter defines the protocol which will
 			* used. Use <code>getProtocolByName()</code> to get the wanted number or
 			* use 0 for <b>ip</b>(internet protocol).<br>
 			* In follow a short table for domain and type value.
@@ -236,7 +236,7 @@ namespace u
 			* </table>
 			* Sockets support more values. See <a
 			* href="http://www.linuxhowtos.org/manpages/2/socket.htm">socket man
-			* pages</a> for more informations.
+			* pages</a> for more information.
 			* </p>
 			* @param domain Socket domain(local, internet, etc).
 			* @param hostname String with name hostname or other host description.
@@ -246,11 +246,11 @@ namespace u
 			* @see http://www.linuxhowtos.org/manpages/2/socket.htm
 			*/
 			Socket(
-				int32 domain = PF_LOCAL
-				, String hostname = "localhost"
-				, int64 port = 0
-				, int32 type = SOCK_STREAM
-				, int32 protocol = 0
+					int32 domain = PF_LOCAL
+					, String hostname = "localhost"
+					, int64 port = 0
+					, int32 type = SOCK_STREAM
+					, int32 protocol = 0
 			);
 
 			/**
@@ -342,7 +342,7 @@ namespace u
 			* @param data ByteArray object with the data for send.
 			* @return Ammount of send data or -1 on error.
 			*/
-			int64 send(ByteArray *data);
+			int64 send(ByteArray* data);
 
 			/**
 			* Read data from the socket.
@@ -354,7 +354,7 @@ namespace u
 			* @param data ByteArray object to save the received data.
 			* @return Ammount of read data or -1 on error.
 			*/
-			int64 read(ByteArray *data);
+			int64 read(ByteArray* data);
 
 			/**
 			* Hostname.
@@ -401,11 +401,11 @@ namespace u
 			 * @param protocol Protocol, which use the socket.
 			 */
 			void init(
-				int32 domain
-				, String hostname
-				, int64 port
-				, int32 type
-				, int32 protocol
+					int32 domain
+					, String hostname
+					, int64 port
+					, int32 type
+					, int32 protocol
 			);
 
 		protected:

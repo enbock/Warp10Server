@@ -11,18 +11,20 @@ using namespace Warp10::Network;
 */
 WebListener::WebListener(IBuilder* builder, Socket* socket) : IListener()
 {
-	_builder  = ((WebBuilder*)builder);
+	_builder   = ((WebBuilder*) builder);
 	_socket    = socket;
 	_isClosed  = false;
 	_closeSent = false;
 
 	addEventListener(
-		u::Network::Event::CLOSE,
-		Callback(this, cb_cast(&WebListener::onClose))
+			u::Network::Event::CLOSE, Callback(
+					this
+					, cb_cast(&WebListener::onClose))
 	);
 	addEventListener(
-		WebEvent::CAN_CLOSE,
-		Callback(this, cb_cast(&WebListener::onCanClose))
+			WebEvent::CAN_CLOSE, Callback(
+					this
+					, cb_cast(&WebListener::onCanClose))
 	);
 }
 
@@ -33,12 +35,14 @@ WebListener::~WebListener()
 {
 	_socket->destroy();
 	removeEventListener(
-		u::Network::Event::CLOSE,
-		Callback(this, cb_cast(&WebListener::onClose))
+			u::Network::Event::CLOSE, Callback(
+					this
+					, cb_cast(&WebListener::onClose))
 	);
 	removeEventListener(
-		WebEvent::CAN_CLOSE,
-		Callback(this, cb_cast(&WebListener::onCanClose))
+			WebEvent::CAN_CLOSE, Callback(
+					this
+					, cb_cast(&WebListener::onCanClose))
 	);
 	trace(className() + "::~WebListener: Down.");
 }
@@ -48,7 +52,7 @@ WebListener::~WebListener()
 */
 void WebListener::destroy()
 {
-	delete (WebListener*)this;
+	delete (WebListener*) this;
 }
 
 /**
@@ -66,10 +70,11 @@ void WebListener::listen()
 {
 	bool ret = _socket->listen();
 
-	if(ret == false) {
-		error(className()+"::listen: Can not etablish connection.");
+	if(ret == false)
+	{
+		error(className() + "::listen: Can not etablish connection.");
 		u::Network::Event close(
-			u::Network::Event::CLOSE
+				u::Network::Event::CLOSE
 		);
 		dispatchEvent(&close);
 		return;
@@ -90,10 +95,11 @@ void WebListener::onClose(Object* arg)
 	bool sendWillClose = false;
 	arg->destroy();
 	lock();
-	if(_isClosed == false) {
+	if(_isClosed == false)
+	{
 
 		_socket->close();
-		
+
 		int64 i = 0, l = _connections.length();
 		for(; i < l; i++)
 		{
@@ -104,12 +110,13 @@ void WebListener::onClose(Object* arg)
 
 		sendWillClose = true;
 	}
-	_isClosed = true;
+	_isClosed          = true;
 	unlock();
 
 	checkClosed();
 
-	if(sendWillClose == true) {
+	if(sendWillClose == true)
+	{
 		WebEvent willClose(WebEvent::WILL_CLOSE);
 		dispatchEvent(&willClose);
 	}
@@ -130,24 +137,26 @@ void WebListener::onCanClose(Object* arg)
 void WebListener::checkClosed()
 {
 	lock();
-	int64 count   = _connections.length();
-	bool isClosed = _isClosed;
+	int64 count    = _connections.length();
+	bool  isClosed = _isClosed;
 	unlock();
 	trace(
-		className() + "::checkClosed: " + int2string(count)
-		+ " connection left and socket is " 
-		+ (isClosed == false ? "connected" : "disconnected")
-		+ "."
+			className() + "::checkClosed: " + int2string(count)
+			+ " connection left and socket is "
+			+ (isClosed == false ? "connected" : "disconnected")
+			+ "."
 	);
 	if(
-		count == 0 && isClosed == true
-		&& hasEventListener(WebEvent::WILL_CLOSE) == false
-	) {
+			count == 0 && isClosed == true
+			&& hasEventListener(WebEvent::WILL_CLOSE) == false
+			)
+	{
 		lock(); // sync canClose and connection closed here
 		bool sent = _closeSent;
 		_closeSent = true;
 		unlock();
-		if (sent  == false) {
+		if(sent == false)
+		{
 			u::Network::Event closed(u::Network::Event::CLOSED);
 			dispatchEvent(&closed);
 		}
@@ -155,7 +164,7 @@ void WebListener::checkClosed()
 }
 
 /**
-* Listen for incomming connections.
+* Listen for incoming connections.
 */
 void WebListener::listenSocket(Object* arg)
 {
@@ -173,7 +182,7 @@ void WebListener::listenSocket(Object* arg)
 		// listening interrupted...socket closed?
 		if(valid(_socket) && _socket->isConnected())
 		{
-			error(className()+"::listenSocket: Error on getting connection.");
+			error(className() + "::listenSocket: Error on getting connection.");
 		}
 		else
 		{
@@ -185,22 +194,22 @@ void WebListener::listenSocket(Object* arg)
 	}
 	else
 	{
-		trace(className()+"::listenSocket: Incomming connection.");
+		trace(className() + "::listenSocket: Incoming connection.");
 		IConnection* newConnection = _builder->createConnection(newSocket);
 		if(newConnection != null && _isClosed == false)
 		{
 			_connections.push(newConnection);
 
 			newConnection->addEventListener(
-				u::Network::Event::CLOSED
-				, Callback(
-					this, cb_cast(&WebListener::onConnectionClosed)
-				)
+					u::Network::Event::CLOSED
+					, Callback(
+							this, cb_cast(&WebListener::onConnectionClosed)
+					)
 			);
 
 			WebEvent connectionCreated(
-				WebEvent::INCOMMING_CONNECTION
-				, (WebConnection*)newConnection
+					WebEvent::INCOMMING_CONNECTION
+					, (WebConnection*) newConnection
 			);
 			unlock();
 			dispatchEvent(&connectionCreated);
@@ -209,8 +218,8 @@ void WebListener::listenSocket(Object* arg)
 		else
 		{
 			error(
-				className()
-				+ "::listenSocket: Can not etablish incomming conection"
+					className()
+					+ "::listenSocket: Can not etablish incomming conection"
 			);
 			newSocket->destroy();
 		}
@@ -225,25 +234,28 @@ void WebListener::listenSocket(Object* arg)
 /**
 * Connection was closed.
 */
-void WebListener::onConnectionClosed(Object *arg)
+void WebListener::onConnectionClosed(Object* arg)
 {
-	u::Network::Event* event = ((u::Network::Event*)arg);
-	IConnection* connection  = ((IConnection*)event->target());
+	u::Network::Event* event      = ((u::Network::Event*) arg);
+	IConnection      * connection = ((IConnection*) event->target());
 	lock();
-	int64 index = _connections.erase(connection);
-	if (index != -1) {
+	int64 index    = _connections.erase(connection);
+	if(index != -1)
+	{
 		trace(
-			className() + "::onConnectionClosed: Removed connection from list."
+				className()
+				+ "::onConnectionClosed: Removed connection from list."
 		);
 		connection->removeEventListener(
-			u::Network::Event::CLOSED
-			, Callback(this, cb_cast(&WebListener::onConnectionClosed))
+				u::Network::Event::CLOSED
+				, Callback(this, cb_cast(&WebListener::onConnectionClosed))
 		);
 		connection->destroy();
 	}
-	bool isClosed = _isClosed;
+	bool  isClosed = _isClosed;
 	unlock();
-	if (isClosed == true) {
+	if(isClosed == true)
+	{
 		checkClosed();
 	}
 

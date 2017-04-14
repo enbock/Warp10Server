@@ -20,7 +20,7 @@ namespace u
 	* Base event.
 	* <p>A event is a running/transporting message between object. This
 	* class is the base class of all event.<br>
-	* A event can have attributes. This attribute will be copyied while running
+	* A event can have attributes. This attribute will be copied while running
 	* of the event.
 	* </p>
 	*/
@@ -32,7 +32,7 @@ namespace u
 			/**
 			* Name of the event.
 			*/
-			const String* _type;
+			const String   * _type;
 			/**
 			* Target of the object.
 			* <p>This will be set on the running moment.</p>
@@ -46,7 +46,7 @@ namespace u
 			static const String COMPLETE;
 
 			/**
-			* Definiton for a progress event.
+			* Definition for a progress event.
 			*/
 			static const String PROGRESS;
 

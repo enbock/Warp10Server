@@ -14,7 +14,7 @@ namespace Warp10
 		{
 			protected:
 				String _address;
-				int64 _port;
+				int64  _port;
 
 			public:
 				/**

@@ -67,16 +67,15 @@ u::Timeout::~Timeout()
 
 void u::Timeout::destroy()
 {
-	delete (Timeout*)this;
+	delete (Timeout*) this;
 }
 
 String u::Timeout::toString()
 {
-	return "["+className()+":"
-		+ " timeout=" + int2string(_time)
-		+ " is running=" + (String)(_run == true ? "yes" : "no")
-		+ "]"
-	;
+	return "[" + className() + ":"
+	       + " timeout=" + int2string(_time)
+	       + " is running=" + (String) (_run == true ? "yes" : "no")
+	       + "]";
 }
 
 void u::Timeout::stop()
@@ -95,7 +94,7 @@ void u::Timeout::stop()
 	unlock();
 }
 
-void u::Timeout::tick(Object *arg)
+void u::Timeout::tick(Object* arg)
 {
 	lock();
 	if(_run == false)
@@ -104,7 +103,8 @@ void u::Timeout::tick(Object *arg)
 		return;
 	}
 
-	if(getCurrentTime() >= _time) {
+	if(getCurrentTime() >= _time)
+	{
 		_run = false;
 		unlock();
 		ThreadSystem::create(_function);

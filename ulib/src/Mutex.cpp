@@ -3,9 +3,12 @@
 * $Id: $
 */
 
-#include <Object>
 #ifndef NDEBUG
+
 #include <assert.h>
+#include <Mutex>
+#include <Object>
+
 #endif
 
 using namespace u;
@@ -30,7 +33,7 @@ Mutex::~Mutex()
 
 void Mutex::destroy()
 {
-	delete (Mutex*)this;
+	delete (Mutex*) this;
 }
 
 bool Mutex::lock()

@@ -1,5 +1,5 @@
 /*
-* EventDispacher
+* EventDispatcher
 *
 *  Created on: 09.04.2011
 *      Author: Endre Bock
@@ -25,19 +25,19 @@ namespace u
 	* self. The dispatcher manager the register und calling of event.<br>
 	* In the classical way collect the project all event calling for the next
 	* frame and start it then. In this system call the functions of the events
-	* imitially in the actual thread. Is the dispatcEvent() function finished, so
+	* immediately in the actual thread. Is the dispatchEvent() function finished, so
 	* exists already the threads with the call of the add event function. Never
 	* initialize objects for listening event functions after you dispatch a event.
 	* <br/><br/>
 	* A function which is the callback for a event has to be in follow syntax:
-	* <pre>void &lt;NAME_OF_FUNCION>(Object *arg);</pre>
+	* <pre>void &lt;NAME_OF_FUNCTION>(Object *arg);</pre>
 	* To add or remove a function you need to use the Callback class:
 	* <pre>addEventListener(Event::PROGRESS,
 	* 	Callback(this, cb_cast(&amp;&lt;U_CLASS>::&lt;NAME_OF_FUNCTION>)
 	* ));</pre>
 	* The callback function has to destroy the event object copy, otherwise you
 	* get memory leaks.
-	* <pre>void &lt;U_CLASS>::&lt;NAME_OF_FUNCION>(Object *arg)
+	* <pre>void &lt;U_CLASS>::&lt;NAME_OF_FUNCTION>(Object *arg)
 	* {
 	* 	Event *event = (Event*)arg;
 	* 	event->destroy();
@@ -63,10 +63,12 @@ namespace u
 					* Listening functions.
 					*/
 					Vector<Callback> list;
+
 					/**
 					* Constructor.
 					*/
 					_eventVector();
+
 					/**
 					* Copy const constructor.
 					* <p>The const copy is used by the Vector.</p>
@@ -95,7 +97,7 @@ namespace u
 
 			/**
 			* Copy operator.
-			* <p>Copies one EventDispacher data into another. By this copies
+			* <p>Copies one EventDispatcher data into another. By this copies
 			* also the added event listener. The listener has then to be
 			* removed from both objects, before you destroy the callback object.
 			* </p>
@@ -111,7 +113,7 @@ namespace u
 			* Add a listing function for a event.
 			* <p>A double adding of a function is not possible. A second call with
 			* identical parameters will be ignored.<br>
-			* The callback will be copyied internally. So is it not necessary to save
+			* The callback will be copied internally. So is it not necessary to save
 			* the callback object anywhere outside. The argument of teh callback will
 			* later filled with the event object. So don't put anything in the
 			* <code>arg</code> attribute of the callback object.
@@ -145,10 +147,10 @@ namespace u
 
 			/**
 			* Call a listening function for the event.
-			* <p><b>Attention:</b> dispatcEvent will lock the object.</p>
+			* <p><b>Attention:</b> dispatchEvent will lock the object.</p>
 			* @param event Pointer to the event object.
 			*/
-			Event* dispatchEvent(Event *event);
+			Event* dispatchEvent(Event* event);
 
 			/**
 			* Name of this class.

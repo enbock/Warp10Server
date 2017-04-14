@@ -8,7 +8,6 @@
 #include <ServerEvent>
 #include <Server>
 #include <signal.h>
-#include <Network/Event>
 
 using namespace u;
 using namespace Warp10;
@@ -16,21 +15,21 @@ using namespace Warp10;
 Server::Server(Vector<String> arg) : RoomOwner()
 {
 	// connect Ctrl+C with shutdown
-	signal((int)SIGINT, OSEventHandler);
-	signal((int)SIGKILL, OSEventHandler);
-	signal((int)SIGABRT, OSEventHandler);
-	signal((int)SIGTERM, OSEventHandler);
+	signal((int) SIGINT, OSEventHandler);
+	signal((int) SIGKILL, OSEventHandler);
+	signal((int) SIGABRT, OSEventHandler);
+	signal((int) SIGTERM, OSEventHandler);
 
 	_isShuttingDown = false;
 
 	_room.addEventListener(
-		ServerEvent::SHUTDOWN, 
-		Callback(this, cb_cast(&Server::onShutdown))
+			ServerEvent::SHUTDOWN, Callback(this, cb_cast(&Server::onShutdown))
 	);
 
 	_manager.addEventListener(
-		u::Network::Event::CLOSED, 
-		Callback(this, cb_cast(&Server::onManagerClosed))
+			u::Network::Event::CLOSED, Callback(
+					this
+					, cb_cast(&Server::onManagerClosed))
 	);
 
 	trace(className() + ": Server is running.");
@@ -42,15 +41,15 @@ Server::Server(Vector<String> arg) : RoomOwner()
 Server::~Server()
 {
 	_webService->destroy();
-	
+
 	_room.removeEventListener(
-		ServerEvent::SHUTDOWN, 
-		Callback(this, cb_cast(&Server::onShutdown))
+			ServerEvent::SHUTDOWN, Callback(this, cb_cast(&Server::onShutdown))
 	);
 
 	_manager.removeEventListener(
-		u::Network::Event::CLOSED, 
-		Callback(this, cb_cast(&Server::onManagerClosed))
+			u::Network::Event::CLOSED, Callback(
+					this
+					, cb_cast(&Server::onManagerClosed))
 	);
 
 	trace(className() + ": Server is down.");
@@ -60,11 +59,11 @@ void Server::shutdown()
 {
 	// tell the network for shutdown
 	_room.dispatchEvent(
-		new ServerEvent(ServerEvent::SHUTDOWN)
+			new ServerEvent(ServerEvent::SHUTDOWN)
 	)->destroy();
 }
 
-void Server::onShutdown(Object *arg)
+void Server::onShutdown(Object* arg)
 {
 	arg->destroy();
 
@@ -74,16 +73,17 @@ void Server::onShutdown(Object *arg)
 	unlock();
 
 	_manager.dispatchEvent(
-		new u::Network::Event(u::Network::Event::CLOSE)
+			new u::Network::Event(u::Network::Event::CLOSE)
 	)->destroy();
 }
 
 void Server::programExit()
 {
-	lock();	unlock(); // wait for other progress(es)
+	lock();
+	unlock(); // wait for other progress(es)
 	trace(
-		//ThreadSystem::toString()+"\n" + 
-		className() + ": Exit programm."
+	//ThreadSystem::toString()+"\n" +
+			className() + ": Exit programm."
 	);
 	u::programExit();
 }
@@ -95,7 +95,7 @@ String Server::className()
 
 void Server::destroy()
 {
-	delete (Server *)this;
+	delete (Server*) this;
 }
 
 String Server::toString()
@@ -106,7 +106,7 @@ String Server::toString()
 void Warp10::OSEventHandler(int signalNumber)
 {
 	trace("OSEventHandler: Interrupt received.");
-	((Server *)__main__)->shutdown();
+	((Server*) __main__)->shutdown();
 }
 
 /**
@@ -118,10 +118,13 @@ void Server::onManagerClosed(Object* arg)
 	lock();
 	bool shutdown = _isShuttingDown == true;
 	unlock();
-	if (shutdown) {
+	if(shutdown)
+	{
 		trace(className() + "::onManagerClosed: All closed. Exit program.");
 		programExit();
-	} else {
+	}
+	else
+	{
 		error(className() + "::onManagerClosed: Unexpected closing.");
 		this->shutdown();
 		//trace(className() + ": All closed. Continue program.");

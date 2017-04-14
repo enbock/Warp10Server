@@ -13,11 +13,11 @@
 namespace u
 {
 
-	#define cb_cast(func) static_cast<void (Object::*)(Object*)>(func)
+#define cb_cast(func) static_cast<void (Object::*)(Object*)>(func)
 
 	/**
 	* A call of a function with a object.
-	* <p>The function table and the object are seperated in the memory.<br>
+	* <p>The function table and the object are separated in the memory.<br>
 	* This class allow to call a function and connect the object to the this
 	* pointer.<br>
 	* <b>Note:</b> Never call a function with a incorrect object. ;)
@@ -37,10 +37,10 @@ namespace u
 			* <p>The function must be defined in a class, which are inherited of
 			* u::Object.</p>
 			*/
-			void(Object::*function)(Object*);
+			void (Object::*function)(Object*);
 
 			/**
-			* Data for the fucntion.
+			* Data for the function.
 			* <p>A callback function have exact one argument. This argument is this
 			* object. Is this pointer null, receive the called function a null pointer
 			* in his argument.</p>
@@ -49,12 +49,14 @@ namespace u
 
 			/**
 			* Create a new callback object.
-			* @param obj The target object, which serv the function.
+			* @param obj The target object, which serve the function.
 			* @param func The function, which will be called.
-			* @param argument A optinaly argument to transport to the called function.
+			* @param argument A optionally argument to transport to the called function.
 			*/
-			Callback(Object* obj, void(Object::*func)(Object*)
-					, Object *argument = null);
+			Callback(
+					Object* obj, void(Object::*func)(Object*)
+					, Object* argument = null
+			);
 
 			/**
 			* Create a empty callback object.
@@ -72,7 +74,7 @@ namespace u
 			Callback(const Callback& value);
 
 			/**
-			* Excecute the all.
+			* Execute the all.
 			* @return Return pointer from the called function.
 			*/
 			void call(void);
@@ -94,12 +96,12 @@ namespace u
 			virtual void destroy();
 
 			/**
-			* Infos about this object.
+			* Information about this object.
 			*/
 			virtual String toString();
 
 			/**
-			* Classname.
+			* Class name.
 			*/
 			virtual String className();
 	};

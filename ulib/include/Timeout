@@ -103,7 +103,7 @@ namespace u
 			virtual void tick(Object* arg);
 
 			/**
-			 * Get the current microtime.
+			 * Get the current micro time.
 			 * @return Current time in milliseconds.
 			 */
 			virtual uint64 getCurrentTime();

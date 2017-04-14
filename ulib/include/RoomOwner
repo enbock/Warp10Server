@@ -33,6 +33,7 @@ namespace u
 			* <p>Create the event owner object.</p>
 			*/
 			RoomOwner();
+
 			/**
 			* Destructor.
 			* <p>
@@ -40,12 +41,14 @@ namespace u
 			* </p>
 			*/
 			~RoomOwner();
+
 			/**
 			* The copy constructor.
 			* <p>Creates and duplicate a RoomOwner.</p>
 			* @value The source object.
 			*/
 			RoomOwner(RoomOwner& value);
+
 			/**
 			* Copy operator.
 			* <p>Copy the other object into this one.</p>
@@ -53,23 +56,27 @@ namespace u
 			* @return A reference to this object.
 			*/
 			RoomOwner& operator=(RoomOwner& value);
+
 			/**
 			* Return the name of this class.
 			* @return The class name as String.
 			*/
 			String className();
+
 			/**
 			* Destroy this object.
 			*/
 			void destroy();
+
 			/**
 			* The event room object.
 			* @return A pointer to the event room.
 			*/
 			EventRoom* room();
+
 			/**
-			* Dump some informations about this object.
-			* @return A String with informations.
+			* Dump some information about this object.
+			* @return A String with information.
 			*/
 			String toString();
 	};

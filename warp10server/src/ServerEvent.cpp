@@ -12,10 +12,10 @@ using namespace u;
 
 const String u::ServerEvent::SHUTDOWN("u::ServerEvent::shutdown");
 const String u::ServerEvent::REGISTER_NETWORK_PLUGIN(
-	"u::ServerEvent::registerNetworkPlugin"
+		"u::ServerEvent::registerNetworkPlugin"
 );
 const String u::ServerEvent::NETWORK_PLUGIN_REGISTERED(
-	"u::ServerEvent::networkPluginRegistered"
+		"u::ServerEvent::networkPluginRegistered"
 );
 
 u::ServerEvent::ServerEvent(String const& type) : Event(type)
@@ -28,7 +28,7 @@ u::ServerEvent::~ServerEvent()
 
 }
 
-Event *u::ServerEvent::clone()
+Event* u::ServerEvent::clone()
 {
 	ServerEvent* event = new ServerEvent(*_type);
 	event->data = data;
@@ -36,12 +36,10 @@ Event *u::ServerEvent::clone()
 }
 
 
-
 void u::ServerEvent::destroy()
 {
-	delete (ServerEvent*)this;
+	delete (ServerEvent*) this;
 }
-
 
 
 String u::ServerEvent::className()

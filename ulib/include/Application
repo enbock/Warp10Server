@@ -42,7 +42,7 @@
 
 namespace u
 {
-	bool __PROGRAMM_END__ = false;
+	bool __PROGRAM_END__ = false;
 
 	/**
 	* Finished the program thread.
@@ -51,19 +51,19 @@ namespace u
 	{
 		if(ThreadSystem::isTerminating == true && ThreadSystem::numThreads() == 0)
 		{
-			__PROGRAMM_END__ = true;
+			__PROGRAM_END__ = true;
 		}
 		//else trace(Object::int2string(ThreadSystem::numThreads())+ " left...wait.");
 		if(ThreadSystem::isTerminating == false)	ThreadSystem::shutdown();
 	}
 
 	/**
-	* This controlls the thread system and termination of the program.
+	* This controls the thread system and termination of the program.
 	*/
 	void mainLoop()
 	{
 		int64 time = 1000000 / FPS;
-		while(__PROGRAMM_END__ == false)
+		while(__PROGRAM_END__ == false)
 		{
 			ThreadSystem::tick();
 			if(ThreadSystem::isTerminating) programExit();
@@ -75,7 +75,7 @@ namespace u
 	* The main object for global access.
 	* <p>Normalize is this object not necessary, but for handlers or other
 	* external routines exists possibly no other way. So long the program is
-	* runng, contain this pointer the address of the main object.
+	* running, contain this pointer the address of the main object.
 	* </p>
 	*/
 	Object *__main__;

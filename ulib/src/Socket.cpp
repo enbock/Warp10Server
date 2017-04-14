@@ -13,42 +13,42 @@
 #include <sys/types.h>
 
 #undef __FD_SETSIZE
-#define	__FD_SETSIZE		102400
+#define    __FD_SETSIZE        102400
 
 using namespace u;
 
 u::Socket::Socket(
-	int32 domain
-	, String hostname
-	, int64 port
-	, int32 type
-	, int32 protocol
-)	: Object()
+		int32 domain
+		, String hostname
+		, int64 port
+		, int32 type
+		, int32 protocol
+) : Object()
 {
 	init(domain, hostname, port, type, protocol);
 }
 
 void u::Socket::init(
-	int32 domain
-	, String hostname
-	, int64 port
-	, int32 type
-	, int32 protocol
+		int32 domain
+		, String hostname
+		, int64 port
+		, int32 type
+		, int32 protocol
 )
 {
 	//trace("Max connections: " + int2string(FD_SETSIZE));
 	char reuse = 1;
 
-	_type = type;
-	_domain = domain;
-	_protocol = protocol;
-	_con = -1;
-	_hostname = hostname;
-	_port = port;
+	_type             = type;
+	_domain           = domain;
+	_protocol         = protocol;
+	_con              = -1;
+	_hostname         = hostname;
+	_port             = port;
 	maxWaitingClients = SOCKET_MAX_CLIENTS;
 	receiveBufferSize = SOCKET_RECV_BUFFER;
-	_neverUsed = true;
-	_isSending = false;
+	_neverUsed        = true;
+	_isSending        = false;
 
 	switch(_domain)
 	{
@@ -59,48 +59,55 @@ void u::Socket::init(
 
 			memset(_addr, 0, sizeof(struct sockaddr_un));
 
-			((struct sockaddr_un *)_addr)->sun_family = _domain;
+			((struct sockaddr_un*) _addr)->sun_family = _domain;
 			strcpy(
-				((struct sockaddr_un *)_addr)->sun_path
-				, _hostname.c_str()
+					((struct sockaddr_un*) _addr)->sun_path
+					, _hostname.c_str()
 			);
-			_addrLen = sizeof(*((struct sockaddr_un *)_addr));
+			_addrLen = sizeof(*((struct sockaddr_un*) _addr));
 
-		} break;
+		}
+			break;
 		default:
 		{
-			_addr = new (struct sockaddr_in);
+			_addr    = new (struct sockaddr_in);
 			_addrLen = sizeof(struct sockaddr_in);
 			memset(_addr, 0, _addrLen);
-			((struct sockaddr_in *)_addr)->sin_family = _domain;
-			((struct sockaddr_in *)_addr)->sin_port = htons(_port);
-		} break;
+			((struct sockaddr_in*) _addr)->sin_family = _domain;
+			((struct sockaddr_in*) _addr)->sin_port   = htons(_port);
+		}
+			break;
 	}
 
 	_descriptor = ::socket(_domain, _type, _protocol);
-	::setsockopt(_descriptor, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
+	::setsockopt(
+			_descriptor
+			, SOL_SOCKET
+			, SO_REUSEADDR
+			, (char*) &reuse
+			, sizeof(reuse));
 
-	if(_descriptor == -1) error(className()+": Socket creation error.");
+	if(_descriptor == -1) error(className() + ": Socket creation error.");
 }
 
-u::Socket::Socket(Socket & value) : Object(value)
+u::Socket::Socket(Socket& value) : Object(value)
 {
-	_type = value._type;
-	_domain = value._domain;
-	_protocol = value._protocol;
-	_con = -1;
-	_hostname = value._hostname;
-	_port = value._port;
+	_type             = value._type;
+	_domain           = value._domain;
+	_protocol         = value._protocol;
+	_con              = -1;
+	_hostname         = value._hostname;
+	_port             = value._port;
 	maxWaitingClients = SOCKET_MAX_CLIENTS;
 	receiveBufferSize = SOCKET_RECV_BUFFER;
-	_neverUsed = true;
-	_addr = null;
-	_addrLen = 0;
-	_descriptor = -1;
-	_isSending = false;
+	_neverUsed        = true;
+	_addr             = null;
+	_addrLen          = 0;
+	_descriptor       = -1;
+	_isSending        = false;
 	init(
-		value._domain, value._hostname, value._port, value._type
-		, value._protocol
+			value._domain, value._hostname, value._port, value._type
+			, value._protocol
 	);
 }
 
@@ -129,27 +136,29 @@ void u::Socket::destructor()
 	{
 		case AF_UNIX:
 		{
-			delete ((struct sockaddr_un *)_addr);
-		} break;
+			delete ((struct sockaddr_un*) _addr);
+		}
+			break;
 		default:
 		{
-			delete ((struct sockaddr_in *)_addr);
-		} break;
+			delete ((struct sockaddr_in*) _addr);
+		}
+			break;
 	}
 	unlock();
 }
 
 void u::Socket::destroy()
 {
-	delete (Socket*)this;
+	delete (Socket*) this;
 }
 
-Socket& u::Socket::operator =(Socket &value)
+Socket& u::Socket::operator=(Socket& value)
 {
 	destructor();
 	Socket(
-		value._domain, value._hostname, value._port, value._type
-		, value._protocol
+			value._domain, value._hostname, value._port, value._type
+			, value._protocol
 	);
 	if(value.isConnected())
 	{
@@ -165,7 +174,7 @@ String u::Socket::className()
 
 int32 u::Socket::getProtocolByName(String name)
 {
-	protoent *data;
+	protoent* data;
 
 	data = getprotobyname(name.c_str());
 
@@ -182,31 +191,46 @@ bool u::Socket::connect()
 		case AF_UNIX:
 		{
 			_con = ::connect(
-				_descriptor
-				, (const sockaddr*)_addr
-				, _addrLen
+					_descriptor
+					, (const sockaddr*) _addr
+					, _addrLen
 			);
-		} break;
+		}
+			break;
 		case AF_INET:
 		case AF_INET6:
 		default:
 		{
-			struct addrinfo hints, *servinfo, *p;
+			struct addrinfo hints, * servinfo, * p;
 			memset(&hints, 0, sizeof hints);
-			hints.ai_family = _domain;
+			hints.ai_family   = _domain;
 			hints.ai_socktype = _type;
 
-			if(::getaddrinfo(_hostname.c_str(), int2string((int)_port).c_str(), &hints, &servinfo) != 0)
+			if(::getaddrinfo(
+					_hostname.c_str()
+					, int2string((int) _port).c_str()
+					, &hints
+					, &servinfo
+			) != 0)
 			{
-				error(className()+"::connect: Can't resolv hostname "+_hostname+":"
-					+int2string(_port));
+				error(
+						className()
+						+ "::connect: Can't resolv hostname "
+						+ _hostname
+						+ ":"
+						+ int2string(_port));
 				return false;
 			}
 
 			for(p = servinfo; p != NULL; p = p->ai_next)
 			{
-				((struct sockaddr_in *)_addr)->sin_addr = ((struct sockaddr_in*)p->ai_addr)->sin_addr;
-				_con = ::connect(_descriptor, (const struct sockaddr*)_addr, _addrLen);
+				((struct sockaddr_in*) _addr)->sin_addr
+						= ((struct sockaddr_in*) p->ai_addr)->sin_addr;
+				_con = ::connect(
+						_descriptor
+						, (const struct sockaddr*) _addr
+						, _addrLen
+				);
 				if(isConnected())
 				{
 					break;
@@ -214,7 +238,8 @@ bool u::Socket::connect()
 			}
 
 			freeaddrinfo(servinfo);
-		} break;
+		}
+			break;
 	}
 	unlock();
 	return isConnected();
@@ -235,7 +260,7 @@ void u::Socket::close()
 	_neverUsed = false;
 	::shutdown(_descriptor, SHUT_RDWR);
 	::close(_descriptor);
-	_con = -1;
+	_con        = -1;
 	_descriptor = -1;
 	unlock();
 }
@@ -245,12 +270,17 @@ bool u::Socket::listen()
 	if(isConnected()) return false;
 
 	lock();
-	_con = ::bind(_descriptor, (const struct sockaddr*)_addr, _addrLen);
+	_con = ::bind(_descriptor, (const struct sockaddr*) _addr, _addrLen);
 	unlock();
 
 	if(!isConnected())
 	{
-		error(className()+"::listen: Socket bind error. ["+int2string(_descriptor)+"]");
+		error(
+				className()
+				+ "::listen: Socket bind error. ["
+				+ int2string(_descriptor)
+				+ "]"
+		);
 		return false; // bind error
 	}
 
@@ -259,44 +289,50 @@ bool u::Socket::listen()
 	unlock();
 	if(!isConnected())
 	{
-		error(className()+"::listen: Socket listen error. ["+int2string(_descriptor)+"]");
+		error(
+				className()
+				+ "::listen: Socket listen error. ["
+				+ int2string(_descriptor)
+				+ "]"
+		);
 		return false;
 	}
 
 	return true;
 }
 
-int64 u::Socket::send(ByteArray *data)
+int64 u::Socket::send(ByteArray* data)
 {
-	int64 len				// ammount of byte to send
-		, ret					// number of sent bytes
-		, pos					// position of the array pointer before send
+	int64 len                // ammount of byte to send
+	,     ret                    // number of sent bytes
+	,     pos                    // position of the array pointer before send
 	;
-	char *buffer;		// send buffer
+	char* buffer;        // send buffer
 
 	if(!isConnected()) return -1;
 	lock();
-	if(_isSending == true) {
+	if(_isSending == true)
+	{
 		unlock();
 		return 0;
 	}
 	_isSending = true;
 
-	pos = data->position();
-	len = data->bytesAvailable();
+	pos    = data->position();
+	len    = data->bytesAvailable();
 	buffer = new char[len];
-	len = data->readBytes(buffer, len);
+	len    = data->readBytes(buffer, len);
 	// MSG_NOSIGNAL protected an illegal memory exception on interupted sockets
-	ret = ::send(_descriptor, buffer, len, MSG_NOSIGNAL);
+	ret    = ::send(_descriptor, buffer, len, MSG_NOSIGNAL);
 
 	if(ret == -1)
 	{
-		error(className()+"::send: Sending failed.");
+		error(className() + "::send: Sending failed.");
 		data->position(pos);
 	}
 	else
 	{
-		data->position(pos+ret);
+		data->position(pos + ret);
 	}
 
 	delete[] buffer;
@@ -304,18 +340,18 @@ int64 u::Socket::send(ByteArray *data)
 	unlock();
 
 	trace(
-		className() + "::send: Sent " + int2string(ret) + " bytes of "
-		+ int2string(len) + " bytes."
+			className() + "::send: Sent " + int2string(ret) + " bytes of "
+			+ int2string(len) + " bytes."
 	);
 	return ret;
 }
 
-int64 u::Socket::read(ByteArray *data)
+int64 u::Socket::read(ByteArray* data)
 {
-	int64 ret				// ammount of received bytes.
-		, len					// maximum of read bytes
+	int64 ret                // ammount of received bytes.
+	,     len                    // maximum of read bytes
 	;
-	char *buffer;		// read buffer
+	char* buffer;        // read buffer
 
 	if(!isConnected()) return -1;
 
@@ -325,7 +361,7 @@ int64 u::Socket::read(ByteArray *data)
 	data->position(data->length());
 
 	lock();
-	len = receiveBufferSize;
+	len    = receiveBufferSize;
 	buffer = new char[len];
 
 	ret = ::recv(_descriptor, buffer, len, 0);
@@ -340,24 +376,24 @@ int64 u::Socket::read(ByteArray *data)
 
 	data->position(0); // set pointer to begin
 
-	trace(className()+"::read: Received "+int2string(ret)+" bytes.");
+	trace(className() + "::read: Received " + int2string(ret) + " bytes.");
 	return ret;
 }
 
 bool u::Socket::hasIncomingData()
 {
-	fd_set rfds;
+	fd_set         rfds;
 	struct timeval tv;
-	int retval;
+	int            retval;
 
 	FD_ZERO(&rfds);
 	FD_SET(_descriptor, &rfds);
 
-	tv.tv_sec = 0;
+	tv.tv_sec  = 0;
 	tv.tv_usec = 0;
 
 	lock();
-	retval = select(_descriptor+1, &rfds, NULL, NULL, &tv);
+	retval = select(_descriptor + 1, &rfds, NULL, NULL, &tv);
 	unlock();
 
 	return retval > 0;
@@ -372,11 +408,13 @@ String u::Socket::hostip()
 		case AF_UNIX:
 		{
 			return "127.0.0.1";
-		} break;
+		}
+			break;
 		default:
 		{
-			return inet_ntoa(((struct sockaddr_in*)_addr)->sin_addr);
-		} break;
+			return inet_ntoa(((struct sockaddr_in*) _addr)->sin_addr);
+		}
+			break;
 	}
 
 	return "";
@@ -394,11 +432,11 @@ int64 u::Socket::port()
 
 u::Socket* u::Socket::accept()
 {
-	Socket* clientSocket; 		// client socket data
+	Socket* clientSocket;        // client socket data
 
 	lock();
 	int32 srcDescriptor = _descriptor;
-	int32 domain = _domain;
+	int32 domain        = _domain;
 	unlock();
 
 	if(srcDescriptor == -1) return null;
@@ -407,9 +445,9 @@ u::Socket* u::Socket::accept()
 	::close(clientSocket->_descriptor); // try to destroy socket..not needed
 
 	clientSocket->_descriptor = ::accept(
-		srcDescriptor
-		, (struct sockaddr *)(clientSocket->_addr)
-		, &(clientSocket->_addrLen)
+			srcDescriptor
+			, (struct sockaddr*) (clientSocket->_addr)
+			, &(clientSocket->_addrLen)
 	);
 
 	if(clientSocket->_descriptor != -1)

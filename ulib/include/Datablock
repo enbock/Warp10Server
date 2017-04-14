@@ -16,7 +16,7 @@ namespace u
 	/**
 	* Datablock to save data.
 	* <p>The datablock handle dynamic data objects. The key can defined in runtime.
-	* So you don't need to define an espacially data object to save structured
+	* So you don't need to define an especially data object to save structured
 	* data.<br>
 	* Realize, that this need more performance. Please think first about, if an
 	* defined database not better for your work.<br>
@@ -40,9 +40,9 @@ namespace u
 			/**
 			* Structure to save the data objects.
 			* <p>This structure helps to save and synchronise the data.<br>
-			* The reference vector save all databojecz, which use the attribute.
+			* The reference vector save all data objects, which use the attribute.
 			* So is it possible to detect, when the last user remove this attribute.
-			* In this moment destroys the attribute the contained data and hisself.</p>
+			* In this moment destroys the attribute the contained data and him self.</p>
 			*/
 			class _attribute
 			{
@@ -65,36 +65,43 @@ namespace u
 					* <p>Is this flag false, then will the object destroyed as int64
 					* value.</p>
 					*/
-					bool isObject;
+					bool               isObject;
 					/**
-					* Reference to the using datablocks.
+					* Reference to the using data blocks.
 					*/
 					Vector<Datablock*> ref;
+
 					/**
 					* Convert the pointer to a u::Object pointer and return it.
 					*/
 					operator Object*();
+
 					/**
 					* Convert the pointer to a u::String pointer and return it.
 					*/
 					operator String*();
+
 					/**
 					* Convert the pointer to a u::Datablock pointer and return it.
 					*/
 					operator Datablock*();
+
 					/**
 					* Convert the pointer to a int64 value.
 					* <p>The value will be copied and has no relation to the pointer.</p>
 					*/
 					operator int64();
+
 					/**
 					* Save the u::Object pointer.
 					*/
 					Object* operator=(Object* value);
+
 					/**
 					* Create a copy of the value and save it inside.
 					*/
 					int64 operator=(int64 value);
+
 					/**
 					* Destroy the attribute and the data if the last reference removed.
 					* <p>If any pointer in the reference vector, then will do this
@@ -109,7 +116,7 @@ namespace u
 					_attribute(String keyName);
 
 					/**
-					 * Delete the attribute from all datablocks.
+					 * Delete the attribute from all data blocks.
 					 */
 					~_attribute();
 
@@ -119,6 +126,7 @@ namespace u
 					*/
 					void destroyValue();
 			};
+
 			/**
 			* List of saved data.
 			*/
@@ -169,7 +177,7 @@ namespace u
 			 * Get the list of keys.
 			 * @return The key list.
 			 */
-			Vector<String> getKeys();
+			Vector <String> getKeys();
 
 			/**
 			 * Search, if an key exists.
@@ -190,13 +198,13 @@ namespace u
 			* <p>The function add also this object into the attribute's
 			* reference list.</p>
 			*/
-			void saveAttribute(_attribute *entry);
+			void saveAttribute(_attribute* entry);
 
 			/**
 			* Remove a attribute from the list.
-			* <p>Also remove the function the this pointer from the reference lsit.</p>
+			* <p>Also remove the function the this pointer from the reference list.</p>
 			*/
-			void deleteAttribute(_attribute *entry);
+			void deleteAttribute(_attribute* entry);
 
 			/**
 			* Remove and destroy all attributes.

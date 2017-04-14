@@ -6,7 +6,7 @@
 #include <Network/IBuilder>
 #include <Datablock>
 
-namespace u 
+namespace u
 {
 	namespace Network
 	{
@@ -17,7 +17,7 @@ namespace u
 		* <li> Provide register for INetworkBuilder
 		* <li> Create/destroy listeners
 		* </ul>
-		* Listening events on the mannager:
+		* Listening events on the manager:
 		* <ul>
 		* <li> <code>u::Network::Event::REGISTER_NETWORK</code>
 		* <li> <code>u::Network::Event::REQUEST_LISTENER</code>
@@ -45,8 +45,8 @@ namespace u
 				/**
 				* Listener list.
 				*/
-				Vector<IListener*> _listener; 
-				bool _isClosing;
+				Vector<IListener*> _listener;
+				bool               _isClosing;
 
 			public:
 				/**
@@ -74,25 +74,25 @@ namespace u
 				 * Register a new network.
 				 * @param arg REGISTER_NETWORK event object.
 				 */
-				virtual void onRegisterNetwork(Object *arg);
+				virtual void onRegisterNetwork(Object* arg);
 
 				/**
 				 * Requesting a listener.
 				 * @param arg REQUEST_LISTENER event object.
 				 */
-				virtual void onRequestListener(Object *arg);
+				virtual void onRequestListener(Object* arg);
 
 				/**
 				 * Listener was closed.
 				 * @param arg CLOSED event object.
 				 */
-				virtual void onListenerClosed(Object *arg);
+				virtual void onListenerClosed(Object* arg);
 
 				/**
 				 * Request to close all listeners.
 				 * @param arg CLOSE event.
 				 */
-				virtual void onCloseRequest(Object *arg);
+				virtual void onCloseRequest(Object* arg);
 
 				/**
 				 * Checking if all listeners removed.

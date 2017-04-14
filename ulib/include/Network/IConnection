@@ -9,7 +9,7 @@ namespace u
 	{
 		/**
 		 * Network connection interface.
-		 * <p>Conection has to listen:<ul>
+		 * <p>Connection has to listen:<ul>
 		 * <li> u::Network::Event::CLOSE
 		 * </ul>
 		 * Follow events are expected to send:<ul>
@@ -20,11 +20,12 @@ namespace u
 		{
 			public:
 				/**
-				 * Clenaup destructor.
+				 * Cleanup destructor.
 				 */
-				~IConnection() {};
+				~IConnection()
+				{};
 		};
-	}	
+	}
 }
 
 

@@ -40,11 +40,11 @@ namespace u
 	/**
 	* A NULL value.
 	*/
-	#define null NULL
+#define null NULL
 	/**
 	* Integer 8-bit value.
 	*/
-	typedef int8_t int8;
+	typedef int8_t  int8;
 	/**
 	* Integer 16-bit value.
 	*/
@@ -61,7 +61,7 @@ namespace u
 	/**
 	* Unsigned integer 8-bit value.
 	*/
-	typedef u_int8_t uint8;
+	typedef u_int8_t  uint8;
 	/**
 	* Unsigned integer 16-bit value.
 	*/
@@ -75,16 +75,16 @@ namespace u
 	*/
 	typedef u_int64_t uint64;
 
-	#define MAXINT8		0x7F
-	#define MAXUINT8	0xFF
-	#define MAXINT16	0x7FFF
-	#define MAXUINT16	0xFFFF
-	#define MAXINT32	0x7FFFFFFF
-	#define MAXUINT32	0xFFFFFFFF
-	#define MAXINT64	0x7FFFFFFFFFFFFFFF
-	#define MAXUINT64	0xFFFFFFFFFFFFFFFF
+#define MAXINT8     0x7F
+#define MAXUINT8    0xFF
+#define MAXINT16    0x7FFF
+#define MAXUINT16   0xFFFF
+#define MAXINT32    0x7FFFFFFF
+#define MAXUINT32   0xFFFFFFFF
+#define MAXINT64    0x7FFFFFFFFFFFFFFF
+#define MAXUINT64   0xFFFFFFFFFFFFFFFF
 
-	#define TRIMSPACES " \t\r\n"
+#define TRIMSPACES  " \t\r\n"
 
 	class String;
 
@@ -177,8 +177,8 @@ namespace u
 
 		protected:
 	};
-	
-	template<class T> class Vector ;
+
+	template <class T> class Vector;
 
 	/**
 	* Stringclass.
@@ -211,7 +211,7 @@ namespace u
 
 			/**
 			* Constructor for size_t values.
-			* <p>The value will convert to text and not more for arithmetic operations useable.</p>
+			* <p>The value will convert to text and not more for arithmetic operations usable.</p>
 			*/
 			String(size_t);
 
@@ -257,18 +257,18 @@ namespace u
 			String& operator=(const String&);
 
 			/**
-			* Index operator to acces the text.
+			* Index operator to access the text.
 			* @param pos Position of the text character.
 			* @return The character.
 			*/
-			const char& operator[] ( size_t pos ) const;
+			const char& operator[](size_t pos) const;
 
 			/**
-			* Index operator to acces the text.
+			* Index operator to access the text.
 			* @param pos Position of the text character.
 			* @return The character.
 			*/
-      		char& operator[] ( size_t pos );
+			char& operator[](size_t pos);
 
 			/**
 			* Search in the string for the last position of val.
@@ -287,36 +287,36 @@ namespace u
 			* <p>The default space letters are
 			* <ul><li> Space " "
 			* <li> Tabulator "\t"
-			* <li> Carrige return "\r"
+			* <li> Carriage return "\r"
 			* <li> New line "\n"
 			* </ul></p>
 			* @param t Letter(s) for trim.
 			*/
-			String trimRight (const std::string & t = TRIMSPACES);
+			String trimRight(const std::string& t = TRIMSPACES);
 
 			/**
 			* Remove letters from left.
 			* <p>The default space letters are
 			* <ul><li> Space " "
 			* <li> Tabulator "\t"
-			* <li> Carrige return "\r"
+			* <li> Carriage return "\r"
 			* <li> New line "\n"
 			* </ul></p>
 			* @param t Letter(s) for trim.
 			*/
-			String trimLeft (const std::string & t = TRIMSPACES);
+			String trimLeft(const std::string& t = TRIMSPACES);
 
 			/**
 			* Remove letters from both sides.
 			* <p>The default space letters are
 			* <ul><li> Space " "
 			* <li> Tabulator "\t"
-			* <li> Carrige return "\r"
+			* <li> Carriage return "\r"
 			* <li> New line "\n"
 			* </ul></p>
 			* @param t Letter(s) for trim.
 			*/
-			String trim (const std::string & t = TRIMSPACES);
+			String trim(const std::string& t = TRIMSPACES);
 
 			/**
 			* Search for a string and replace it.
@@ -369,152 +369,158 @@ namespace u
 	/**
 	* Vector class.
 	* <p>This class is a template to merge <code>std::vector&lt;T></code>
-	* and <code>Object</code>. Here are no new functionalities.<br>
+	* and <code>Object</code>. Here are no new functionality.<br>
 	* This class in implement in the Object file to with the same reason of
 	* String.
 	* </p>
 	* @see String
 	*/
-	template<class T>
-	class Vector : public std::vector<T>, public Object
-	{
-		public:
-			/**
-			* Override of scalar operator.
-			*/
-			T operator[](int64 __n)
-			{
-				return this->at(__n);
-			};
-
-			/**
-			* Remove a element from the vector.
-			* @param value Position of element for delete.
-			*/
-			void erase(int64 value)
-			{
-				((std::vector<T>*)this)->erase(this->begin()+value);
-			};
-
-			/**
-			* Remove a element from the vector.
-			* <p>If the element not is the list, this function will do nothing.
-			* If the element multiply times exists, it will delete only the first
-			* one.</p>
-			* @param element The element to delete.
-			* @return Index position at this the element was found. -1 for not found.
-			*/
-			int64 erase(T value)
-			{
-				int64 i,l;
-				l = ((std::vector<T>*)this)->size();
-				for(i=0; i<l; i++)
+	template <class T>
+		class Vector : public std::vector<T>, public Object
+		{
+			public:
+				/**
+				* Override of scalar operator.
+				*/
+				T operator[](int64 __n)
 				{
-					if(((std::vector<T>*)this)->at(i) == value)
+					return this->at(__n);
+				};
+
+				/**
+				* Remove a element from the vector.
+				* @param value Position of element for delete.
+				*/
+				void erase(int64 value)
+				{
+					((std::vector<T>*)
+							this
+					)->erase(this->begin() + value);
+				};
+
+				/**
+				* Remove a element from the vector.
+				* <p>If the element not is the list, this function will do nothing.
+				* If the element multiply times exists, it will delete only the first
+				* one.</p>
+				* @param element The element to delete.
+				* @return Index position at this the element was found. -1 for not found.
+				*/
+				int64 erase(T value)
+				{
+					int64 i, l;
+					l     = ((std::vector<T>*)
+							this
+					)->size();
+					for(i = 0; i < l; i++)
 					{
-						erase(i);
-						return i;
+						if(((std::vector<T>*) this)->at(i) == value)
+						{
+							erase(i);
+							return i;
+						}
 					}
+					return -1;
 				}
-				return -1;
-			}
 
-			/**
-			* Return informations.
-			*/
-			virtual String toString()
-			{
-				String str = "["+className()+"<T>";
-				int64 l;
-
-				l = this->size();
-				str += " length=" + int2string(l);
-				str += "]";
-				return str;
-			};
-
-			/**
-			* Search of a element.
-			* @param value Searching element.
-			* @return Index or -1 if not found.
-			*/
-			int64 indexOf(T value)
-			{
-				int64 l, i;
-				l = this->size();
-				for(i=0; i<l; i++)
+				/**
+				* Return information.
+				*/
+				virtual String toString()
 				{
-					if(this->at(i) == value) return i;
+					String str = "[" + className() + "<T>";
+					int64  l;
+
+					l = this->size();
+					str += " length=" + int2string(l);
+					str += "]";
+					return str;
+				};
+
+				/**
+				* Search of a element.
+				* @param value Searching element.
+				* @return Index or -1 if not found.
+				*/
+				int64 indexOf(T value)
+				{
+					int64 l, i;
+					l     = this->size();
+					for(i = 0; i < l; i++)
+					{
+						if(this->at(i) == value) return i;
+					}
+					return -1;
+				};
+
+				/**
+				* Delete me self.
+				*/
+				virtual void destroy()
+				{
+					delete (Vector<T>*) this;
 				}
-				return -1;
-			};
 
-			/**
-			* Delete me self.
-			*/
-			virtual void destroy()
-			{
-				delete (Vector<T>*)this;
-			}
+				/**
+				* Name of the class.
+				*/
+				virtual String className()
+				{
+					return "u::Vector";
+				}
 
-			/**
-			* Name of the class.
-			*/
-			virtual String className()
-			{
-				return "u::Vector";
-			}
+				/**
+				* Amount of entries.
+				* @return Number of entries in the vector.
+				*/
+				int64 length()
+				{
+					return this->size();
+				}
 
-			/**
-			* Ammount of entries.
-			* @return Number of entries in the vector.
-			*/
-			int64 length()
-			{
-				return this->size();
-			}
+				/**
+				* Add a element on the end of the vector.
+				* @param value Element to add.
+				*/
+				void push(T value)
+				{
+					this->push_back(value);
+				}
 
-			/**
-			* Add a element on the end of the vector.
-			* @param value Element to add.
-			*/
-			void push(T value)
-			{
-				this->push_back(value);
-			}
+				/**
+				* Removes the last element and return it.
+				* @return The removed element.
+				*/
+				T pop()
+				{
+					T value = this->back();
+					this->pop_back();
+					return value;
+				}
 
-			/**
-			* Removes the last element and return it.
-			* @return The removed element.
-			*/
-			T pop()
-			{
-				T value = this->back();
-				this->pop_back();
-				return value;
-			}
+				/**
+				* Removes the first element end return it.
+				* @return The removed element.
+				*/
+				T shift()
+				{
+					T value = this->front();
+					((std::vector<T>*)
+							this
+					)->erase(this->begin());
+					return value;
+				}
 
-			/**
-			* Removes the first element end return it.
-			* @return The removed element.
-			*/
-			T shift()
-			{
-				T value = this->front();
-				((std::vector<T>*)this)->erase(this->begin());
-				return value;
-			}
+				/**
+				* Add a element on the begin.
+				* @param value Element to add.
+				*/
+				void unshift(T value)
+				{
+					this->insert(0, value);
+				}
 
-			/**
-			* Add a element on the begin.
-			* @param value Element to add.
-			*/
-			void unshift(T value)
-			{
-				this->insert(0, value);
-			}
-
-	};
+		};
 
 }
 

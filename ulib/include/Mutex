@@ -7,6 +7,7 @@
 #define MUTEX_
 
 #define _MULTI_THREADED
+
 #include <pthread.h>
 
 namespace u
@@ -14,14 +15,14 @@ namespace u
 	class String;
 
 	/**
-	* Multiple acces unit.
+	* Multiple access unit.
 	* <p>The mutex can be used to serialize a access on a object between
 	* different threads. Only one thread can have a lock of a mutex. All
-	* other thread are stucking solong the mutex isn't unlocked.<br>
+	* other thread are stucking as long the mutex isn't unlocked.<br>
 	* With mutex you can get real easy deadlocks. A thread can lock a mutex only
 	* one time. By a second lock without unlocking before you get 100% a
 	* deadlock and the program stuck for ever.
-	* The mutex functionality is a essantial functionality and implement in all
+	* The mutex functionality is a essential functionality and implement in all
 	* classes which extends direct or indirect from Object.
 	* </p>
 	*/
@@ -42,10 +43,12 @@ namespace u
 			* Default constructor.
 			*/
 			Mutex();
+
 			/**
 			* Default destructor.
 			*/
-			~Mutex();
+			virtual ~Mutex();
+
 			/**
 			* Default destroyer.
 			*/
@@ -79,7 +82,7 @@ namespace u
 			 * <p>For the situation, that classes in the destroy progress need to
 			 * class virtual implementations of subclasses, they HAVE TO use
 			 * this function as destructor.<br>
-			 * <b>Attantion:</b> If a class use the forward destructor, all follow
+			 * <b>Attention:</b> If a class use the forward destructor, all follow
 			 * subclass HAS TO use the forward destructor to.</p>
 			 */
 			virtual void doDestruct();

@@ -9,19 +9,19 @@
 
 using namespace u;
 
-Callback::Callback(Object* obj, void(Object::*func)(Object*), Object *argument)
-	: Object()
+Callback::Callback(Object* obj, void(Object::*func)(Object*), Object* argument)
+		: Object()
 {
-	target = obj;
+	target   = obj;
 	function = func;
-	arg = argument;
+	arg      = argument;
 }
 
 Callback::Callback() : Object()
 {
-	target = null;
+	target   = null;
 	function = null;
-	arg = null;
+	arg      = null;
 }
 
 /*
@@ -36,15 +36,15 @@ Callback& Callback::operator=(Callback& value)
 */
 Callback::Callback(const Callback& value)
 {
-	target = value.target;
+	target   = value.target;
 	function = value.function;
-	arg = value.arg;
+	arg      = value.arg;
 }
 
 
 void Callback::call(void)
 {
-	if(valid((Object *)target))
+	if(valid((Object*) target))
 	{
 		(target->*function)(arg);
 	}
@@ -53,26 +53,25 @@ void Callback::call(void)
 bool Callback::operator==(const Callback& other) const
 {
 	bool ret = true;
-	if(other.target != this->target) ret = false;
+	if(other.target != this->target) ret            = false;
 	if(ret && other.function != this->function) ret = false;
-	if(ret && other.arg != this->arg) ret = false;
+	if(ret && other.arg != this->arg) ret           = false;
 	return ret;
 }
 
 void Callback::destroy()
 {
-	delete (Callback*)this;
+	delete (Callback*) this;
 }
 
 String Callback::toString()
 {
 	String str = "[" + className()
-	 + " (" 
-	 + ptr2string((Object *)this) 
-	 + ")"
-	;
+	             + " ("
+	             + ptr2string((Object*) this)
+	             + ")";
 	//*
-	str += " target=" + (target?target->toString():"<Defunc>");
+	str += " target=" + (target ? target->toString() : "<Defunc>");
 	/*/
 	str += " target=" + (target?target->className():"<Defunc>");
 	//*/

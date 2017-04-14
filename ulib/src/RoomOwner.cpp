@@ -16,13 +16,12 @@ u::RoomOwner::RoomOwner() : Object()
 
 String u::RoomOwner::toString()
 {
-	String str = "["+className()+"<"+ptr2string(this)+"> Listeners:";
-	str+=_room.toString();
-	str+="]";
+	String str = "[" + className() + "<" + ptr2string(this) + "> Listeners:";
+	str += _room.toString();
+	str += "]";
 	return str;
 
 }
-
 
 
 u::RoomOwner::~RoomOwner()
@@ -31,27 +30,23 @@ u::RoomOwner::~RoomOwner()
 }
 
 
-
-RoomOwner & u::RoomOwner::operator =(RoomOwner & value)
+RoomOwner& u::RoomOwner::operator=(RoomOwner& value)
 {
 	_room = value._room;
 	return *this;
 }
 
 
-
-EventRoom *u::RoomOwner::room()
+EventRoom* u::RoomOwner::room()
 {
 	return &_room;
 }
 
 
-
-u::RoomOwner::RoomOwner(RoomOwner & value)
+u::RoomOwner::RoomOwner(RoomOwner& value)
 {
-	operator = (value);
+	operator=(value);
 }
-
 
 
 String u::RoomOwner::className()
@@ -60,10 +55,9 @@ String u::RoomOwner::className()
 }
 
 
-
 void u::RoomOwner::destroy()
 {
-	delete (RoomOwner*)this;
+	delete (RoomOwner*) this;
 }
 
 

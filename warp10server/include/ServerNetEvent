@@ -27,8 +27,8 @@ namespace u
 			* <p>Via this event ask a program(eg. Server Admin) for a new network
 			* connection to the server to control the server.<br>
 			* The answer should be a NEW_CONNECTION event.<br>
-			* A controll connection will etablished via unix sockets. So has the
-			* <code>address</code> to be the filenname of the socket.</p>
+			* A control connection will etablished via unix sockets. So has the
+			* <code>address</code> to be the filen name of the socket.</p>
 			*/
 			static const String GET_CTRL_CONNECTION;
 			/**
@@ -61,7 +61,7 @@ namespace u
 			/**
 			* Constructor of a ServerNetEvent Object.
 			* <p>A network event can used in many different situations. On a new
-			* connection or new listening of incomming connections transports via
+			* connection or new listening of incoming connections transports via
 			* the room attribute the new event room in that the protocol works.<br>
 			* The address and port is eg. necessary on requests for new connections.
 			* <br>If the  data attributes unused, to let them null or empty. When
@@ -69,12 +69,14 @@ namespace u
 			* </p>
 			* @see http://drive.ww/Architektur/EARoot/EA1/EA5.html EA/impl./_Protocols
 			* @param type Event type.
-			* @param adress Destination address(hostname, socket file, etc).
+			* @param address Destination address(hostname, socket file, etc).
 			* @param port Connection port, if necessary.
 			* @param room Event room of protocol.
 			*/
-			ServerNetEvent(String const& type, String address = "", int64 port = 0
-				, EventRoom* room = null);
+			ServerNetEvent(
+					String const& type, String address = "", int64 port = 0
+					, EventRoom* room = null
+			);
 
 			/**
 			* Destructor.

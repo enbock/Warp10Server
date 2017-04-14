@@ -29,6 +29,7 @@ endif
 endif
 
 CFLAGS += -std=c++11 -fPIC  -DFD_SETSIZE=1024000
+#-Wsystem-headers
 
 # Produktion
 ifeq ($(DEV), true)

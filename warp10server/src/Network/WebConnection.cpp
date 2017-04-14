@@ -17,8 +17,8 @@ WebConnection::WebConnection(Socket* socket) : IConnection()
 	_isClosed  = false;
 
 	addEventListener(
-		u::Network::Event::CLOSE
-		, Callback(this, cb_cast(&WebConnection::onClose))
+			u::Network::Event::CLOSE
+			, Callback(this, cb_cast(&WebConnection::onClose))
 	);
 }
 
@@ -28,8 +28,8 @@ WebConnection::WebConnection(Socket* socket) : IConnection()
 WebConnection::~WebConnection()
 {
 	removeEventListener(
-		u::Network::Event::CLOSE
-		, Callback(this, cb_cast(&WebConnection::onClose))
+			u::Network::Event::CLOSE
+			, Callback(this, cb_cast(&WebConnection::onClose))
 	);
 	_socket->destroy();
 }
@@ -39,7 +39,7 @@ WebConnection::~WebConnection()
 */
 void WebConnection::destroy()
 {
-	delete (WebConnection*)this;
+	delete (WebConnection*) this;
 }
 
 /**
@@ -78,7 +78,8 @@ void WebConnection::read(Object* arg)
 
 	trace(className() + ":read: Start reading.");
 	int64 l;
-	do {
+	do
+	{
 		l = _socket->read(buffer);
 	} while(l != 0);
 	trace(className() + "::read: Done.");
@@ -103,7 +104,7 @@ void WebConnection::send(ByteArray* data)
 	{
 		if(socket->send(data) == -1)
 		{
-			error(className()+"::send() Unable to send data.");
+			error(className() + "::send() Unable to send data.");
 			error("TODO CLOSE");
 			/**
 			Callback cb(this, cb_cast(&NetworkDecoder::doClosed));
@@ -117,20 +118,23 @@ void WebConnection::send(ByteArray* data)
 /**
 * Close request received.
 */
-void WebConnection::onClose(Object *arg)
+void WebConnection::onClose(Object* arg)
 {
-	u::Network::Event* event = ((u::Network::Event*)arg);
+	u::Network::Event* event = ((u::Network::Event*) arg);
 	event->destroy();
 
 	lock();
-	if (_isClosed == false) {
+	if(_isClosed == false)
+	{
 		_socket->close();
-	} else {
+	}
+	else
+	{
 		// avoid double close
 		unlock();
 		return;
 	}
-	_isClosed  = true;
+	_isClosed = true;
 	unlock();
 
 	u::Network::Event closed(u::Network::Event::CLOSED);
@@ -145,23 +149,27 @@ void WebConnection::decodeBuffer(ByteArray* buffer)
 	Vector<String> header;
 	buffer->position(0);
 	int64 startPosition = 0, position = 0;
-	bool continueRead = true;
+	bool  continueRead  = true;
 	// read header
-	while (continueRead) {
+	while(continueRead)
+	{
 		position++;
 		buffer->position(position);
 		char byte = buffer->readByte();
-		if (byte == 0x0D || position + 1 == buffer->length()) {
-			int64 length = position - startPosition ;
-			if (length == 0) {
+		if(byte == 0x0D || position + 1 == buffer->length())
+		{
+			int64 length = position - startPosition;
+			if(length == 0)
+			{
 				// end of header
 				continueRead = false;
 				continue;
 			}
-			char* line = (char*)malloc(length + 1);
-			if (!line) {
+			char* line = (char*) malloc(length + 1);
+			if(!line)
+			{
 				error(
-					className() + "::decodeBuffer: Out of memory."
+						className() + "::decodeBuffer: Out of memory."
 				);
 				return;
 			}
@@ -173,7 +181,7 @@ void WebConnection::decodeBuffer(ByteArray* buffer)
 			header.push(headerLine);
 			free(line);
 			startPosition = position + 2;
-			continueRead = startPosition < buffer->length();
+			continueRead  = startPosition < buffer->length();
 		}
 	}
 
@@ -183,22 +191,25 @@ void WebConnection::decodeBuffer(ByteArray* buffer)
 	trace("");
 #endif
 
-	Vector<String>* commandParts = ((String)header[0]).explode(" ");
+	Vector<String>* commandParts = ((String) header[0]).explode(" ");
 
-	if (commandParts->length() < 2) {
+	if(commandParts->length() < 2)
+	{
 		error(className() + "::decodeBuffer: Invalid request.");
-		
+
 		u::Network::Event close(u::Network::Event::CLOSE);
 		dispatchEvent(&close);
 		delete commandParts;
 		return;
 	}
-	
+
 	WebRequest request;
-	request.method = commandParts->at(0);
+	request.method   = commandParts->at(0);
 	request.resource = commandParts->at(1);
 	if(commandParts->length() > 2)
+	{
 		request.protocol = commandParts->at(2);
+	}
 	delete commandParts;
 
 	WebEvent requestEvent(WebEvent::REQUEST, this, request);

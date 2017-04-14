@@ -50,17 +50,19 @@ namespace Warp10
 				 * @param data Binary data.
 				 */
 				virtual void send(ByteArray* data);
+
 			protected:
 				/**
 				 * Threaded read data.
 				 * @param arg NULL reference.
 				 */
 				virtual void read(Object*);
+
 				/**
 				 * Close request received.
 				 * @param arg CLOSE event object.
 				 */
-				virtual void onClose(Object *arg);
+				virtual void onClose(Object* arg);
 
 				/**
 				 * Decode buffer and transform to request.

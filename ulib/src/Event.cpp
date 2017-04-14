@@ -15,14 +15,14 @@ const String u::Event::PROGRESS("u::Event::progress");
 
 u::Event::Event(String const& type) : Object()
 {
-	_type = &type;
+	_type   = &type;
 	_target = null;
 }
 
 u::Event::~Event()
 {
 	_target = null;
-	_type = null;
+	_type   = null;
 }
 
 EventDispatcher* u::Event::target()
@@ -44,14 +44,14 @@ String u::Event::toString()
 {
 	String str = "[" + className();
 	str += " type=" + *_type;
-	str += " target=" + (_target!=null?_target->toString():"null");
+	str += " target=" + (_target != null ? _target->toString() : "null");
 	str += "]";
 	return str;
 }
 
 void u::Event::destroy()
 {
-	delete (Event*)this;
+	delete (Event*) this;
 }
 
 String u::Event::className()

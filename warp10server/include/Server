@@ -22,10 +22,11 @@
 using namespace u;
 using namespace Warp10::Network;
 
-namespace u 
+namespace u
 {
 	void programExit();
-	extern Object *__main__;
+
+	extern Object* __main__;
 }
 
 namespace Warp10
@@ -35,7 +36,7 @@ namespace Warp10
 	 * Event handler.
 	 * <p>This function handles the event from the operating system and calls
 	 * specified events.<br>
-	 * In follow the list of activies for the events:
+	 * In follow the list of activities for the events:
 	 * <ul>
 	 * 	<li> SIGINT - send EventServer::SHUTDOWN </li>
 	 * </ul>
@@ -70,7 +71,7 @@ namespace Warp10
 			/**
 			 * Constructor.
 			 * <p>This function create the server application instance. Also
-			 * it create the subobjects: control service and network service.<br/>
+			 * it create the sub objects: control service and network service.<br/>
 			 * The constructor add also the event listening for the shutdown
 			 * protocol.</p>
 			 * @param arg List of argument from the command line.
@@ -109,10 +110,10 @@ namespace Warp10
 			/**
 			 * Event receiver for EventServer::SHUTDOWN.
 			 * <p>This function shutdown the thread system and stops so the server
-			 * excecution.</p>
+			 * execution.</p>
 			 * @param arg The event object.
 			 */
-			void onShutdown(Object *arg);
+			void onShutdown(Object* arg);
 
 			/**
 			 * Exit the server
