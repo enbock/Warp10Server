@@ -10,6 +10,8 @@ set(SOURCE_FILES
         ulib/src/
         warp10server/app/warp10server.cpp
         warp10server/include/
-        warp10server/src/)
+        warp10server/src/
+        ulib/include/FileSystem/FileLoader
+        ulib/src/ByteStream.cpp ulib/include/ByteStream)
 
 add_executable(Warp10Server ${SOURCE_FILES})

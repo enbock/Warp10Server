@@ -64,7 +64,7 @@ all: $(FILES)
 %: $(SRCDIR)/%$(CPP) $(ULIBDIR)/$(ULIB)
 	echo "[C] $@"
 ifeq ($(TYPE),static)
-	$(CC) $(LFLAGS) $(CFLAGS) $(INCLUDE) -o $@ $< $(ULIBDIR)/$(ULIB) `g++ -print-file-name=libpthread.a`
+	$(CC) $(LFLAGS) $(CFLAGS) $(INCLUDE) -o $@ $< $(ULIBDIR)/$(ULIB) `g++ -print-file-name=libpthread.a` `g++ -print-file-name=libz.a`
 else
 	$(CC) $(LFLAGS) $(CFLAGS) $(INCLUDE) -o $@ $< $(ULIBDIR)/$(ULIB) `g++ -print-file-name=libpthread.so` `g++ -print-file-name=libz.a`
 endif

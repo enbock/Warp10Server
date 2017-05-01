@@ -307,7 +307,7 @@ int64 u::Socket::send(ByteArray* data)
 	,     ret                    // number of sent bytes
 	,     pos                    // position of the array pointer before send
 	;
-	char* buffer;        // send buffer
+	char* buffer;        // send _buffer
 
 	if(!isConnected()) return -1;
 	lock();
@@ -351,7 +351,7 @@ int64 u::Socket::read(ByteArray* data)
 	int64 ret                // ammount of received bytes.
 	,     len                    // maximum of read bytes
 	;
-	char* buffer;        // read buffer
+	char* buffer;        // read _buffer
 
 	if(!isConnected()) return -1;
 

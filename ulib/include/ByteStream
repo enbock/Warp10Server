@@ -1,0 +1,162 @@
+//
+// Created by Endre Bock on 30.04.2017.
+//
+
+#ifndef WARP10SERVER_BYTESTREAM_H
+#define WARP10SERVER_BYTESTREAM_H
+
+#include <DataArray>
+#include <ByteArray>
+
+#ifndef BYTESTREAM_DEFAULT_SIZE
+#define BYTESTREAM_DEFAULT_SIZE 1024000 // 1 MB
+#endif
+
+namespace u
+{
+	/**
+	 * A "ring" buffer to stream binary data.
+	 */
+	class ByteStream : public DataArray
+	{
+		protected:
+			ByteArray _buffer;
+			/**
+			 * Position offset, where the first readable byte is placed.
+			 */
+			uint64    _startPosition;
+			/**
+			 * Amount of bytes in buffer.
+			 */
+			uint64    _used;
+
+		public:
+			/**
+			 * Constructor.
+			 * @param size Size of the buffer.
+			 */
+			ByteStream(uint64 size);
+
+			/**
+			 * Default constructor.
+			 */
+			ByteStream();
+
+			/**
+			 * Copy constructor.
+			 *
+			 * @param src Source object.
+			 */
+			ByteStream(const ByteStream& src);
+
+			/**
+			 * Destructor.
+			 */
+			~ByteStream();
+
+			/**
+			* Set the position of the pointer.
+			* <p>If the value to big, it will set automatically to the end.</p>
+			* @param value New position of the pointer.
+			*/
+			void position(int64 value);
+
+			/**
+			* Get the pointer position.
+			* @return The position.
+			*/
+			int64 position() const;
+
+			/**
+			* Get the amount of available units.
+			* @return Number of units left.
+			*/
+			uint64 available() const;
+
+			/**
+			* Get the size of the buffer.
+			* @return Size of the buffer.
+			*/
+			int64 length() const;
+
+			/**
+			* Set a new size of the buffer data.
+			* @param value New size.
+			*/
+			void length(int64 value);
+
+			/**
+			* Destroy this object.
+			*/
+			void destroy();
+
+			/**
+			* Abstract function to write data into this data array.
+			* @param bytes Data object.
+			* @param length Number of data units to write.
+			* @return Number of written data units.
+			*/
+			int64 writeData(ByteArray& bytes, int64 length);
+
+			/**
+			 * Write maximum possible bytes into stream.
+			 * @param bytes
+			 * @return
+			 */
+			int64 writeData(ByteArray& bytes);
+
+			/**
+			 * Alias for write data with byte array.
+			* @param bytes Data object.
+			* @param length Number of data units to write.
+			* @return Number of written data units.
+			 */
+			int64 writeData(DataArray& bytes, int64 length);
+
+			/**
+			 * Read data from buffer.
+			 *
+			 * @param bytes Target.
+			 * @param length Maximum bytte length to read.
+			 * @return Read bytes.
+			 */
+			int64 readData(ByteArray* bytes, int64 length);
+
+			/**
+			 * Read all available data from buffer.
+			 *
+			 * @param bytes Target.
+			 * @return Read bytes.
+			 */
+			int64 readData(ByteArray* bytes);
+
+			/**
+			* Read data from this object into the destination data object.
+			* @param byte Destination data object.
+			* @param length Number of data units.
+			* @return Number of read data units.
+			*/
+			bool splice(int64 offset, int64 length);
+
+			/**
+			 * Get the class name.
+			 * @return
+			 */
+			String className();
+
+			/**
+			 * Get the free bytes.
+			 * @return
+			 */
+			uint64 free();
+
+			/**
+			 * Dump outout
+			 * @return
+			 */
+			String toString() override;
+	};
+}
+
+
+#endif //WARP10SERVER_BYTESTREAM_H

@@ -13,5 +13,6 @@ tDelete
 tEvent
 tObject
 tThread
+tStream
 docker/run/warp10*
 cmake-build-debug

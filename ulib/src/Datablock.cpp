@@ -177,7 +177,10 @@ void Datablock::_attribute::destroyValue()
 			delete (int64*) value;
 		}
 		value = null;
-		if(_noDelete == false) delete (_attribute*) this;
+		if(_noDelete == false)
+		{
+			delete (_attribute*)this;
+		}
 	}
 }
 
@@ -215,7 +218,7 @@ bool u::Datablock::hasKey(String key)
 Vector<String> u::Datablock::getKeys()
 {
 	Vector<String> result;
-	int            length = _list.length(), i;
+	int64          length = _list.length(), i;
 	for(i = 0; i < length; i++)
 	{
 		result.push(_list[i]->name);
